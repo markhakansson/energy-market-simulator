@@ -1,0 +1,25 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markhakansson/m7011e-dynamic-web-systems.git"
+  },
+  "author": "arostr-5, marhak-6",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/markhakansson/m7011e-dynamic-web-systems/issues"
+  },
+  "homepage": "https://github.com/markhakansson/m7011e-dynamic-web-systems#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-graphql": "^0.9.0",
+    "graphql": "^14.5.8",
+    "mongoose": "^5.7.8"
+  }
+}
