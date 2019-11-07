@@ -13,7 +13,8 @@ const schema = require('./schema');
 const mongoose = require('mongoose');
 
 // mongoose.connect('mongodb://<dbuser>:<dbpassword>@<MongoDB URI>')
-mongoose.connect('mongodb://test:test@127.0.0.1:27017') 
+// mongoose.connect('mongodb://test:test@127.0.0.1:27017') 
+mongoose.connect('mongodb://127.0.0.1:27017/hora') 
 
 mongoose.connection.once('open', () => {
     console.log('conneted to database');
@@ -25,7 +26,7 @@ var root = {
 };// Create an express server and a GraphQL endpoint
 var app = express();
 app.use('/graphql', express_graphql({
-    schema: schema.build,
+    schema,
     rootValue: root,
     graphiql: true
 }));

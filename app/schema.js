@@ -1,171 +1,252 @@
-const { buildSchema } = require('graphql');// GraphQL schema
+// const { buildSchema } = require('graphql');// GraphQL schema
 
-const build = buildSchema(`
-        type Query {
-            weather(id: Int!): Weather
-        },
-        type Weather {
-            id: ID
-            timestamp: Int
-            wind_speed: Float
-            wind_direction: String
-            description: String
-        },
-        type Consumer {
-            id: ID
-            timestamp: Int
-            consumption: Int
-        },
-        type Prosumer {
-            id: ID
-            timestamp: Int
-            consumption: Int
-            battery: Int
-            sell_market: Int
-            buy_market: Int
-        },
-        type Market {
-            id: ID
-            timestamp: Int
-            price: Int
-            battery: Int
-            consumption: Int
-            demand: Int
-        }`);
+// const build = buildSchema(`
+//         type Query {
+//             weather(id: Int!): Weather
+//         },
+//         type Weather {
+//             id: ID
+//             timestamp: Int
+//             wind_speed: Float
+//             wind_direction: String
+//             description: String
+//         },
+//         type Consumer {
+//             id: ID
+//             timestamp: Int
+//             consumption: Int
+//         },
+//         type Prosumer {
+//             id: ID
+//             timestamp: Int
+//             consumption: Int
+//             battery: Int
+//             sell_market: Int
+//             buy_market: Int
+//         },
+//         type Market {
+//             id: ID
+//             timestamp: Int
+//             price: Int
+//             battery: Int
+//             consumption: Int
+//             demand: Int
+//         }`);
 
-module.exports = { build }
+// module.exports = { build }
 
 const graphql = require('graphql');
-const Consumer = require('../model/Consumer');
-const Market = require('../model/Market');
-const Prosumer = require('../model/Prosumer');
-const Weather = require('../model/Weather');
+const Consumer = require('./model/consumer');
+const Market = require('./model/market');
+const Prosumer = require('./model/prosumer');
+const Weather = require('./model/weather');
 
 
 const { 
     GraphQLObjectType, GraphQLString, 
-    GraphQLID, GraphQLInt,GraphQLSchema, 
+    GraphQLID, GraphQLInt, GraphQLFloat, GraphQLSchema, 
     GraphQLList,GraphQLNonNull 
 } = graphql;
 
-//Schema defines data on the Graph like object types(book type), relation between 
-//these object types and describes how it can reach into the graph to interact with 
-//the data to retrieve or mutate the data   
-
 const ConsumerType = new GraphQLObjectType({
     name: 'Consumer',
-    //We are wrapping fields in the function as we dont want to execute this ultil 
-    //everything is inilized. For example below code will throw error AuthorType not 
-    //found if not wrapped in a function
     fields: () => ({
         id: { type: GraphQLID  },
-        name: { type: GraphQLString }, 
-        pages: { type: GraphQLInt },
-        author: {
-        type: AuthorType,
+        timestamp: { type: GraphQLInt }, 
+        consumption: { type: GraphQLInt },
+        
+        consumer: {
+        type: ConsumerType,
         resolve(parent, args) {
-            return Author.findById(parent.authorID);
+            return Consumer.findById(parent.id);
         }
     }
     })
 });
 
-const AuthorType = new GraphQLObjectType({
-    name: 'Author',
+const MarketType = new GraphQLObjectType({
+    name: 'Market',
     fields: () => ({
         id: { type: GraphQLID },
-        name: { type: GraphQLString },
-        age: { type: GraphQLInt },
-        book:{
-            type: new GraphQLList(BookType),
-            resolve(parent,args){
-                return Book.find({ authorID: parent.id });
-            }
+        timestamp: { type: GraphQLInt },
+        price: { type: GraphQLInt },
+        battery: { type: GraphQLInt },
+        consumption: { type: GraphQLInt },
+        demand: { type: GraphQLInt },
+        
+        market: {
+        type: MarketType,
+        resolve(parent,args){
+            return Market.findById(parent.id);
         }
+    }
+        
     })
-})
+});
 
-//RootQuery describe how users can use the graph and grab data.
-//E.g Root query to get all authors, get all books, get a particular 
-//book or get a particular author.
+const ProsumerType = new GraphQLObjectType({
+    name: 'Prosumer',
+    fields: () => ({
+        id: { type: GraphQLID  },
+        timestamp: { type: GraphQLInt }, 
+        comsumption: { type: GraphQLInt },
+        battery: { type: GraphQLInt },
+        sell_market: { type: GraphQLInt },
+        buy_market: { type: GraphQLInt },
+        
+        prosumer: {
+        type: ProsumerType,
+        resolve(parent, args) {
+            return Prosumer.findById(parent.id);
+        }
+    }
+    })
+});
+
+const WeatherType = new GraphQLObjectType({
+    name: 'Weather',
+    fields: () => ({
+        id: { type: GraphQLID  },
+        timestamp: { type: GraphQLInt }, 
+        wind_speed: { type: GraphQLFloat }, 
+        wind_direction: { type: GraphQLString }, 
+        description: { type: GraphQLString }, 
+
+        weather: {
+        type: WeatherType,
+        resolve(parent, args) {
+            return Weather.findById(parent.id);
+        }
+    }
+    })
+});
+
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
-        book: {
-            type: BookType,
+        consumer: {
+            type: ConsumerType,
             //argument passed by the user while making the query
             args: { id: { type: GraphQLID } },
             resolve(parent, args) {
-                //Here we define how to get data from database source
-
-                //this will return the book with id passed in argument 
-                //by the user
-                return Book.findById(args.id);
+                return Consumer.findById(args.id);
             }
         },
-        books:{
-            type: new GraphQLList(BookType),
-            resolve(parent, args) {
-                return Book.find({});
-            }
-        },
-        author:{
-            type: AuthorType,
+        market: {
+            type: MarketType,
+            //argument passed by the user while making the query
             args: { id: { type: GraphQLID } },
             resolve(parent, args) {
-                return Author.findById(args.id);
+                return Market.findById(args.id);
             }
         },
-        authors:{
-            type: new GraphQLList(AuthorType),
+        prosumer: {
+            type: ProsumerType,
+            //argument passed by the user while making the query
+            args: { id: { type: GraphQLID } },
             resolve(parent, args) {
-                return Author.find({});
+                return Prosumer.findById(args.id);
+            }
+        },
+        weather: {
+            type: WeatherType,
+            //argument passed by the user while making the query
+            args: { id: { type: GraphQLID } },
+            resolve(parent, args) {
+                return Weather.findById(args.id);
             }
         }
     }
 });
  
-//Very similar to RootQuery helps user to add/update to the database.
+//helps user to add/update to the database.
 const Mutation = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
-        addAuthor: {
-            type: AuthorType,
+        addConsumer: {
+            type: ConsumerType,
             args: {
-                //GraphQLNonNull make these field required
-                name: { type: new GraphQLNonNull(GraphQLString) },
-                age: { type: new GraphQLNonNull(GraphQLInt) }
+                id: { type: new GraphQLNonNull(GraphQLID)},
+                timestamp: { type: new GraphQLNonNull(GraphQLInt) }, 
+                consumption: { type: new GraphQLNonNull(GraphQLInt) },
             },
             resolve(parent, args) {
-                let author = new Author({
-                    name: args.name,
-                    age: args.age
+                let consumer = new Consumer({
+                    id: args.id,
+                    timestamp: args.timestamp,
+                    consumption: args.consumption
                 });
-                return author.save();
+                return consumer.save();
             }
         },
-        addBook:{
-            type:BookType,
-            args:{
-                name: { type: new GraphQLNonNull(GraphQLString)},
-                pages: { type: new GraphQLNonNull(GraphQLInt)},
-                authorID: { type: new GraphQLNonNull(GraphQLID)}
+        addMarket: {
+            type: MarketType,
+            args: {
+                id: { type: new GraphQLNonNull(GraphQLID)},
+                timestamp: { type: new GraphQLNonNull(GraphQLInt) }, 
+                price: { type: new GraphQLNonNull(GraphQLInt) },
+                battery: { type: new GraphQLNonNull(GraphQLInt) }, 
+                consumption: { type: new GraphQLNonNull(GraphQLInt) },
+                demand: { type: new GraphQLNonNull(GraphQLInt) },
             },
-            resolve(parent,args){
-                let book = new Book({
-                    name:args.name,
-                    pages:args.pages,
-                    authorID:args.authorID
-                })
-                return book.save()
+            resolve(parent, args) {
+                let market = new Market({
+                    id: args.id,
+                    timestamp: args.timestamp,
+                    price: args.price,
+                    battery: args.battery,
+                    consumption: args.consumption,
+                    demand: args.demand
+                });
+                return market.save();
             }
-        }
+        },
+        addProsumer: {
+            type: ProsumerType,
+            args: {
+                id: { type: new GraphQLNonNull(GraphQLID)},
+                timestamp: { type: new GraphQLNonNull(GraphQLInt) }, 
+                consumption: { type: new GraphQLNonNull(GraphQLInt) },
+                battery: { type: new GraphQLNonNull(GraphQLInt) }, 
+                sell_market: { type: new GraphQLNonNull(GraphQLInt) },
+                buy_market: { type: new GraphQLNonNull(GraphQLInt) },
+            },
+            resolve(parent, args) {
+                let prosumer = new Prosumer({
+                    id: args.id,
+                    timestamp: args.timestamp,
+                    consumption: args.consumption,
+                    battery: args.battery,
+                    sell_market: args.sell_market,
+                    buy_market: args.buy_market
+                });
+                return prosumer.save();
+            }
+        },
+        addWeather: {
+            type: WeatherType,
+            args: {
+                id: { type: new GraphQLNonNull(GraphQLID)},
+                timestamp: { type: new GraphQLNonNull(GraphQLInt) }, 
+                wind_speed: { type: new GraphQLNonNull(GraphQLFloat) },
+                wind_direction: { type: new GraphQLNonNull(GraphQLString) }, 
+                description: { type: new GraphQLNonNull(GraphQLString) },
+            },
+            resolve(parent, args) {
+                let weather = new Weather({
+                    id: args.id,
+                    timestamp: args.timestamp,
+                    wind_speed: args.wind_speed,
+                    wind_direction: args.wind_direction,
+                    description: args.description
+                });
+                return weather.save();
+            }
+        },
     }
 });
 
-//Creating a new GraphQL Schema, with options query which defines query 
-//we will allow users to use when they are making request.
 module.exports = new GraphQLSchema({
     query: RootQuery,
-    mutation:Mutation
+    mutation: Mutation
 });
