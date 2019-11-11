@@ -41,7 +41,6 @@ const Market = require('./model/market');
 const Prosumer = require('./model/prosumer');
 const Weather = require('./model/weather');
 
-
 const { 
     GraphQLObjectType, GraphQLString, 
     GraphQLID, GraphQLInt, GraphQLFloat, GraphQLSchema, 
@@ -52,6 +51,7 @@ const ConsumerType = new GraphQLObjectType({
     name: 'Consumer',
     fields: () => ({
         id: { type: GraphQLID  },
+        name: { type: GraphQLString },
         timestamp: { type: GraphQLInt }, 
         consumption: { type: GraphQLInt },
         
@@ -68,8 +68,9 @@ const MarketType = new GraphQLObjectType({
     name: 'Market',
     fields: () => ({
         id: { type: GraphQLID },
+        name: { type: GraphQLString },
         timestamp: { type: GraphQLInt },
-        price: { type: GraphQLInt },
+        price: { type: GraphQLFloat },
         battery: { type: GraphQLInt },
         consumption: { type: GraphQLInt },
         demand: { type: GraphQLInt },
@@ -88,6 +89,7 @@ const ProsumerType = new GraphQLObjectType({
     name: 'Prosumer',
     fields: () => ({
         id: { type: GraphQLID  },
+        name: { type: GraphQLString },
         timestamp: { type: GraphQLInt }, 
         comsumption: { type: GraphQLInt },
         battery: { type: GraphQLInt },
@@ -107,6 +109,7 @@ const WeatherType = new GraphQLObjectType({
     name: 'Weather',
     fields: () => ({
         id: { type: GraphQLID  },
+        name: { type: GraphQLString },
         timestamp: { type: GraphQLInt }, 
         wind_speed: { type: GraphQLFloat }, 
         wind_direction: { type: GraphQLString }, 
@@ -140,6 +143,19 @@ const RootQuery = new GraphQLObjectType({
                 return Market.findById(args.id);
             }
         },
+        markets: {
+            type: new GraphQLList(MarketType),
+            resolve(parent, args) {
+                return Market.find({});
+            }
+        },
+        price: {
+            type: GraphQLFloat,
+            args: { id: { type: GraphQLID} },
+            resolve(parent, args) {
+                return Market.findById(args.id).price;
+            }
+        },
         prosumer: {
             type: ProsumerType,
             //argument passed by the user while making the query
@@ -166,13 +182,11 @@ const Mutation = new GraphQLObjectType({
         addConsumer: {
             type: ConsumerType,
             args: {
-                id: { type: new GraphQLNonNull(GraphQLID)},
                 timestamp: { type: new GraphQLNonNull(GraphQLInt) }, 
                 consumption: { type: new GraphQLNonNull(GraphQLInt) },
             },
             resolve(parent, args) {
                 let consumer = new Consumer({
-                    id: args.id,
                     timestamp: args.timestamp,
                     consumption: args.consumption
                 });
@@ -182,16 +196,16 @@ const Mutation = new GraphQLObjectType({
         addMarket: {
             type: MarketType,
             args: {
-                id: { type: new GraphQLNonNull(GraphQLID)},
+                name: { type: new GraphQLNonNull(GraphQLString) },
                 timestamp: { type: new GraphQLNonNull(GraphQLInt) }, 
-                price: { type: new GraphQLNonNull(GraphQLInt) },
+                price: { type: new GraphQLNonNull(GraphQLFloat) },
                 battery: { type: new GraphQLNonNull(GraphQLInt) }, 
                 consumption: { type: new GraphQLNonNull(GraphQLInt) },
                 demand: { type: new GraphQLNonNull(GraphQLInt) },
             },
             resolve(parent, args) {
                 let market = new Market({
-                    id: args.id,
+                    name: args.name,
                     timestamp: args.timestamp,
                     price: args.price,
                     battery: args.battery,
@@ -204,7 +218,7 @@ const Mutation = new GraphQLObjectType({
         addProsumer: {
             type: ProsumerType,
             args: {
-                id: { type: new GraphQLNonNull(GraphQLID)},
+                name: { type: new GraphQLNonNull(GraphQLString) },
                 timestamp: { type: new GraphQLNonNull(GraphQLInt) }, 
                 consumption: { type: new GraphQLNonNull(GraphQLInt) },
                 battery: { type: new GraphQLNonNull(GraphQLInt) }, 
@@ -213,7 +227,6 @@ const Mutation = new GraphQLObjectType({
             },
             resolve(parent, args) {
                 let prosumer = new Prosumer({
-                    id: args.id,
                     timestamp: args.timestamp,
                     consumption: args.consumption,
                     battery: args.battery,
@@ -226,7 +239,7 @@ const Mutation = new GraphQLObjectType({
         addWeather: {
             type: WeatherType,
             args: {
-                id: { type: new GraphQLNonNull(GraphQLID)},
+                name: { type: new GraphQLNonNull(GraphQLString) },
                 timestamp: { type: new GraphQLNonNull(GraphQLInt) }, 
                 wind_speed: { type: new GraphQLNonNull(GraphQLFloat) },
                 wind_direction: { type: new GraphQLNonNull(GraphQLString) }, 
@@ -234,7 +247,7 @@ const Mutation = new GraphQLObjectType({
             },
             resolve(parent, args) {
                 let weather = new Weather({
-                    id: args.id,
+                    name: args.name,
                     timestamp: args.timestamp,
                     wind_speed: args.wind_speed,
                     wind_direction: args.wind_direction,

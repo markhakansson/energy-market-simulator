@@ -2,19 +2,12 @@ var express = require('express');
 var express_graphql = require('express-graphql');
 const data = require('./data');
 const schema = require('./schema');
-/**
- * MongoDB
- * user: test
- * pwd: test
- * db: admin
- * port: 27017
- * host: 127.0.0.1
- */
+
 const mongoose = require('mongoose');
 
 // mongoose.connect('mongodb://<dbuser>:<dbpassword>@<MongoDB URI>')
 // mongoose.connect('mongodb://test:test@127.0.0.1:27017') 
-mongoose.connect('mongodb://127.0.0.1:27017/hora') 
+mongoose.connect('mongodb://127.0.0.1:27017/test') 
 
 mongoose.connection.once('open', () => {
     console.log('conneted to database');
