@@ -1,11 +1,12 @@
 
 
 class Prosumer {
-    constructor(name, market, consumption, battery) {
+    constructor(name, market, wind) {
         this.name = name;
         this.market = market;
-        this.consumption = consumption;
-        this.battery = battery;
+        this.wind = wind;
+        this.consumption = this.calcConsumption();
+        this.battery = 0;
         this.sell = 0;
         this. buy = 0;
     }
@@ -30,9 +31,14 @@ class Prosumer {
         return this.battery;
     }
 
+    calcConsumption() {
+        this.consumption = 10; // should be gauss distribution
+        updateTime();
+    }
+
     calcBattery() {
 
     }
 }
 
-module.exports = mongoose.model('Prosumer', prosumer);
+module.exports = mongoose.model('Prosumer', Prosumer);

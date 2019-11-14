@@ -1,11 +1,10 @@
 
 
 class Consumer {
-    constructor(name, market, consumption, time) {
+    constructor(name, market) {
         this.name = name;
         this.market = market;
-        this.consumption = consumption;
-        this.time = time;
+        this.consumption = this.calcConsumption();
     }
 
     get market() {
@@ -16,20 +15,12 @@ class Consumer {
         return this.consumption;
     }
 
-    set consumption(consumption) {
-        this.consumption = consumption;
-    }
-
-    set time(time) {
-        this.time = time;
-    }
-
     calcConsumption() {
-
+        this.consumption = 10; // should be gauss distribution
+        updateTime();
     }
 
 
 }
 
-
-module.exports = mongoose.model('Consumer', consumer);
+module.exports = mongoose.model('Consumer', Consumer);
