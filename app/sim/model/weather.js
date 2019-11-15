@@ -7,22 +7,22 @@ class Weather {
         this.description = "";
     }
 
-    set wind_speed(wind_speed) {
+    setWeather(wind_speed, wind_direction, description) {
         this.wind_speed = wind_speed;
+        this.wind_direction = wind_direction;
+        this.description = description;
     }
 
-    set wind_direction(wind_dir) {
-        this.wind_direction = wind_dir;
+    getWindSpeed() {
+        return this.wind_speed;
     }
 
-    set description(desc) {
-        this.description = desc;
+    getWindDir() {
+        return this.wind_direction;
     }
 
-    calcWeather() {
-        this.wind_speed = 5;
-        this.wind_direction = "SW";
-        this.description = "chilly breeze";
+    getDescription() {
+        return this.description;
     }
 
 }

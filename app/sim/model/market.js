@@ -4,28 +4,17 @@ class Market {
     constructor(name, price) {
         this.name = name;
         this.price = price;
-        this.consumption = this.calcConsumption();
+        this.consumption = this.setConsumption();
         this.battery = 0;
         this.demand = 0;
     }
 
-    set demand(demand) {
-        this._demand = demand;
-    }
 
-    set price(price) {
-        this._price = price;
-    }
-
-    get price() {
-        return this.price;
-    }
-
-    calcConsumption() {
+    setConsumption() {
         this.consumption = 10; // should be gauss distribution
     }
 
-    calcBattery() {
+    setBattery() {
         
     }
 }

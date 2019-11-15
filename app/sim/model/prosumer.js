@@ -1,43 +1,46 @@
 
 
 class Prosumer {
-    constructor(name, market, wind) {
+    constructor(name, market, wind, time) {
         this.name = name;
         this.market = market;
         this.wind = wind;
-        this.consumption = this.calcConsumption();
+        this.production = this.setProduction();
+        this.consumption = this.setConsumption();
+        this.time = time;
         this.battery = 0;
         this.sell = 0;
         this. buy = 0;
     }
 
-    get market() {
-        return this.market;
+    setProduction() {
+        this.production = 100 / 10;
     }
 
-    get consumption() {
-        return this.consumption;
-    }
-
-    get sell_market() {
-        return this.sell;
-    }
-
-    get buy_market() {
-        return this.buy;
-    }
-
-    get battery() {
-        return this.battery;
-    }
-
-    calcConsumption() {
+    setConsumption() {
         this.consumption = 10; // should be gauss distribution
-        updateTime();
+        this.updateTime();
     }
 
-    calcBattery() {
+    updateTime() {
+        this.time = Date.now();
+    }
 
+    setBattery() {
+        // if(battery >= 100) {
+        //     this.sell = this.battery - 100;
+        // }
+    }
+
+    display() {
+        console.log(this.name + " connected to " + this.market.name + 
+        "\n Time: " + Date(this.time).toString() + 
+        "\n Producing: " + this.production + " kW/h" +
+        "\n Consuming: " + this.consumption + " kW/h" +
+        "\n Battery: " + this.battery + " kW/h" + 
+        "\n Buying: " + this.buy + " kW/h" +
+        "\n Selling: " + this.sell + "kw/h"
+        );
     }
 }
 

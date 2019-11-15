@@ -1,27 +1,33 @@
 
 
 class Consumer {
-    constructor(name, market) {
+    constructor(name, market, time) {
         this.name = name;
         this.market = market;
-        this.consumption = this.calcConsumption();
+        this.time = time;
+        this.consumption = 0;
     }
 
-    set market(market) {
-        this._market = market;
-    }
-
-    get market() {
-        return this._market;
-    }
-
-    get consumption() {
-        return this._consumption;
-    }
-
-    calcConsumption() {
+    setConsumption() {
         this.consumption = 10; // should be gauss distribution
     }
+
+    getConsumption() {
+        return this.consumption;
+    }
+
+    updateTime(time) {
+        this._time = time;
+    }
+
+    display() {
+        console.log("Consumer " + this.name + " is connected to " + this.market.name + 
+        "\n Time: " + Date(this.time).toString() + 
+        "\n Consuming: " + this.consumption + " kW/h"
+        );
+
+    }
+    
 
 }
 
