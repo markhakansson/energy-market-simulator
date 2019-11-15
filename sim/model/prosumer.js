@@ -41,4 +41,4 @@ class Prosumer {
     }
 }
 
-module.exports = mongoose.model('Prosumer', Prosumer);
+module.exports = Prosumer;

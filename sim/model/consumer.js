@@ -23,4 +23,4 @@ class Consumer {
 
 }
 
-module.exports = mongoose.model('Consumer', Consumer);
+module.exports = Consumer;

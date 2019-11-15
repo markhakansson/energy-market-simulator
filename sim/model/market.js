@@ -31,4 +31,4 @@ class Market {
     }
 }
 
-module.exports = mongoose.model('Market', Market);
+module.exports = Market;
