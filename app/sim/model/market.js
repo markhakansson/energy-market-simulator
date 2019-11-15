@@ -10,11 +10,11 @@ class Market {
     }
 
     set demand(demand) {
-        this.demand = demand;
+        this._demand = demand;
     }
 
     set price(price) {
-        this.price = price;
+        this._price = price;
     }
 
     get price() {
@@ -23,7 +23,6 @@ class Market {
 
     calcConsumption() {
         this.consumption = 10; // should be gauss distribution
-        updateTime();
     }
 
     calcBattery() {

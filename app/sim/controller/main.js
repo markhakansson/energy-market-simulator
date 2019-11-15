@@ -1,7 +1,7 @@
-const Consumer = require('./model/consumer');
-const Market = require('./model/market');
-const Prosumer = require('./model/prosumer');
-const Weather = require('./model/weather');
+const Consumer = require('../model/consumer');
+const Market = require('../model/market');
+const Prosumer = require('../model/prosumer');
+const Weather = require('../model/weather');
 
 main();
 
@@ -15,6 +15,6 @@ function main() {
 
 }
 
-
+module.exports = main();
 
 
