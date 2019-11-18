@@ -6,8 +6,9 @@ var Stats = require('fast-stats').Stats;
  * Generates a number from a data set with gaussian distribution.
  * @param {*} data Array of numbers to use gaussian distribution on.
  * @param {*} decimals Number of decimals to generate.
+ * @param {*} percentage Propability threshold that the generated number should be above. Value between [0.0 - 1.0]. 
  */
-function gauss(data, decimals) {
+function gauss(data, decimals, percentage) {
     var stat = new Stats().push(data);
     var mean = stat.amean();
     var sd = stat.stddev();
@@ -17,19 +18,13 @@ function gauss(data, decimals) {
     var random = rand.getRandomFloat(mean - sd, mean + sd, decimals);
     var sample = distribution.pdf(random).toFixed(decimals);
 
-    while(sample < 0.1) {
+    while(sample < percentage || random < 1) {
         random = rand.getRandomFloat(mean - sd, mean + sd, decimals);
         sample = distribution.pdf(random).toFixed(decimals);
-        console.log('sample: ' + sample);   
-    }
+        //console.log('Sample:' + sample);
+    } 
 
-    console.log('mean: ' + mean);       
-    console.log('sd: ' + sd);
-    console.log('variance: ' + variance);
-    console.log('dist: ' + distribution);
-    console.log('random: ' + random);   
-    console.log('sample: ' + sample); 
-
+    //console.log('Random: ' + random);
     return random;
   
 }
