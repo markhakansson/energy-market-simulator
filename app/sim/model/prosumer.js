@@ -47,6 +47,17 @@ class Prosumer {
         this.useBatteryRatio = ratio;
     }
 
+    generateProduction(windSpeed) {
+        this.production = windSpeed * 250;
+        let prod_diff = this.production - this.consumption;
+
+        // Check if there is an excessive production of power
+        if(prod_diff > 0) {
+            this.chargeBattery(this.fillBatteryRatio * prod_diff);
+            this.sellToMarket((1 - this.fillBatteryRatio) * prod_diff);
+        }
+    }
+
     generateConsumption() {
         // Yearly consumption 25,000 kWh around 70 kWh a day/ 3 kWh an hour
         let consumption = this.consumption / 1000;
@@ -60,29 +71,49 @@ class Prosumer {
         }
 
         this.consumption = gauss.gauss(arr, 4, 0.1) * 1000;   
-        
+        let cons_diff = this.consumption - this.production;
+
+        // Check if household's demand exceeds production
+        if(cons_diff > 0) {
+            this.useBattery(this.useBatteryRatio * cons_diff);
+            this.buyFromMarket((1 - this.useBatteryRatio) * cons_diff);
+        } 
+
     }
 
-    generateProduction(windSpeed) {
-        this.production = windSpeed * 250;
+    chargeBattery(energy) {
+        if(this.currBatteryCap + energy >= this.maxBatteryCap) {
+            this.currBatteryCap = this.maxBatteryCap;
+            this.sellToMarket(this.currBatteryCap + energy - this.maxBatteryCap);
+        } else {
+            this.currBatteryCap += energy;
+        }
+    }
+
+    useBattery(energy) {
+        if(this.currBatteryCap - energy < 0) {
+            let buyEnergy = energy - this.currBatteryCap;
+            this.buyFromMarket(buyEnergy);
+            this.currBatteryCap = 0;
+        } else {
+            this.currBatteryCap -= energy;
+        }
     }
 
     updateTime() {
         this.time = Date.now();
     }
 
-    setBattery() {
-        // if(battery >= 100) {
-        //     this.sell = this.battery - 100;
-        // }
+    buyFromMarket(energy) {
+        let boughtEnergy = this.market.buy(energy); 
+        
+        if(boughEnergy < energy) {
+            this.consumption -= (energy - boughtEnergy);
+        }
     }
 
-    buyFromMarket(value) {
-        let power = this.market.buy(value);   
-    }
-
-    sellToMarket(value) {
-        this.market.sell(value);
+    sellToMarket(energy) {
+        this.market.sell(energy);
     }
 
     display() {
