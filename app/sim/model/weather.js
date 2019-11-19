@@ -17,7 +17,7 @@ class Weather {
         } else {
             arr = [0.8 * this.wind_speed, 0.9 * this.wind_speed, 0.95 * this.wind_speed, 1.1 * this.wind_speed];
         }
-        var speed = gauss(arr, 2, 0.1);        
+        this.wind_speed = gauss.gaussLimit(arr, 2, 0.1, 1, 40);        
     }
 
     getWindSpeed() {
