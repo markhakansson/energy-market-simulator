@@ -27,7 +27,7 @@ function gauss(data, decimals, percentage) {
     console.log('Random: ' + random);
     console.log('Sample:' + sample);
 
-    return random;
+    return random.toFixed(decimals);
   
 }
 
@@ -58,7 +58,7 @@ function gaussLimit(data, decimals, percentage, min, max) {
     console.log('Random: ' + random);
     console.log('Sample:' + sample);
 
-    return random;
+    return random.toFixed(decimals);
   
 }
 
