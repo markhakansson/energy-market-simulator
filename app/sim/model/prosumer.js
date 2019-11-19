@@ -1,7 +1,7 @@
 const gauss = require('../../helper/gauss');
 
 class Prosumer {
-    constructor(name, market, wind, time, batterySize) {
+    constructor(name, market, wind, time, fillBattRatio, useBattRatio, batterySize) {
         this.name = name;
         this.market = market;
         this.wind = wind;
@@ -10,8 +10,8 @@ class Prosumer {
         this.time = time;
         this.currBatteryCap = 0;
         this.maxBatteryCap = batterySize;
-        this.fillBatteryRatio = 0.0;
-        this.useBatteryRatio = 0.0;
+        this.fillBatteryRatio = this.setFillBatteryRatio(fillBattRatio);
+        this.useBatteryRatio = this.setUseBatteryRatio(useBattRatio);
     }
 
     setProduction() {
