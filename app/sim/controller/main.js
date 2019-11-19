@@ -12,14 +12,17 @@ let weather = new Weather();
 
 let consumer1 = new Consumer("Hakansson", market, Date.now());
 let consumer2 = new Consumer("Strandberg", market, Date.now());
-let prosumer1 = new Prosumer("elon", market, weather.getWindSpeed(), Date.now());
+
+let prosumer1 = new Prosumer("elon", market, null, Date.now(), 0.5, 0.5, 1000);
 
 function main() {
     setTimeout(function() {
-        weather.setWeather(10, "SW", "chilly breeze");
-        
-        prosumer1.setConsumption();
-        prosumer1.setBattery(); // Does nothing
+        weather.generateWind();
+        market.generateProduction();
+
+        prosumer1.generateProduction(weather.wind_speed);
+        prosumer1.generateConsumption();
+
 
         consumer1.generateConsumption();
         consumer2.generateConsumption();

@@ -26,20 +26,20 @@ class Consumer {
 
         this.consumption = gauss.gauss(arr, 4, 0.1) * 1000;   
         
-    }
-
-    getConsumption() {
-        return this.consumption;
-    }
-
-    updateTime(time) {
-        this._time = time;
+        let buy = this.market.buy(consumption);
+        if ( buy == 0 ) {
+            this.consumption = 0;
+            console.log("BLACK OUT! at time: " + this.time);
+            return null;
+        }
+        
     }
 
     display() {
         console.log("Consumer " + this.name + " is connected to " + this.market.name + 
         "\n Time: " + Date(this.time).toString() + 
-        "\n Consuming: " + this.consumption + " kW/h"
+        "\n Consuming: " + this.consumption + " W/h" + 
+        "\n Price per W/h is: " + this.market.price
         );
 
     }
