@@ -3,6 +3,7 @@ var gauss = require('../../helper/gauss')
 class Weather {
     constructor() {
         this.wind_speed = 10;
+        this.temperature = 20;
     }
 
     setWeather(wind_speed) {
