@@ -6,7 +6,7 @@ const Weather = require('../model/weather');
 
 
 console.log("Simulator now running... ");
-const market = new Market("Sweden", 2);
+const market = new Market("Sweden", 2, 10000);
 
 let weather = new Weather();
 
@@ -21,8 +21,8 @@ function main() {
         prosumer1.setConsumption();
         prosumer1.setBattery(); // Does nothing
 
-        consumer1.setConsumption();
-        consumer2.setConsumption();
+        consumer1.generateConsumption();
+        consumer2.generateConsumption();
 
         console.log("------------------------------------------------------------------------------");
         prosumer1.display();
