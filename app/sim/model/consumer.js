@@ -1,5 +1,4 @@
 var gauss = require('../../helper/gauss')
-const Consumer = require('./model/consumer');
 
 class Consumer {
     constructor(name, market, time) {

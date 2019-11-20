@@ -18,7 +18,9 @@ let prosumer1 = new Prosumer("elon", market, null, Date.now(), 0.5, 0.5, 1000);
 function main() {
     setTimeout(function() {
         weather.generateWind();
+        
         market.generateProduction();
+        market.generateConsumption();
 
         prosumer1.generateProduction(weather.wind_speed);
         prosumer1.generateConsumption();

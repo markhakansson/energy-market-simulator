@@ -1,10 +1,9 @@
-const Market = require('./model/market');
 
 
 class Market {
     constructor(name, price, maxBatteryCap) {
-        this.startUp = true;
         this.name = name;
+        this.startUp = true;
         this.price = price;
         this.consumption = 10 * 3000; // 10 times the household
         this.currBatteryCap = 0;
@@ -58,16 +57,17 @@ class Market {
         return 0;
    }
 
+
+
    generateProduction() {
         if (this.startUp) {
             console.log("Market " + this.name + " is starting up...");
-            setTimeout(function() {
+            setTimeout(() => {
                 this.startUp = false;
-                this.currBatteryCap += 3000;
-
             }, 30000);
-             
+
         } else {
+            console.log("Market " + this.name + " is running!");
             this.currBatteryCap += 3000;
         }
        
@@ -77,17 +77,19 @@ class Market {
         let consumption = this.consumption / 1000;
         let arr;
 
-            if(consumption < ( 4.0 * 10 )) {
-                arr = [0.8 * consumption, consumption, 1.2 * consumption];
-            } else {
-                arr = [0.8 * consumption, 0.9 * consumption, 0.95 * consumption, 1.1 * consumption];
-            }
+        if(consumption < ( 4.0 * 10 )) {
+            arr = [0.8 * consumption, consumption, 1.2 * consumption];
+        } else {
+            arr = [0.8 * consumption, 0.9 * consumption, 0.95 * consumption, 1.1 * consumption];
+        }
 
-            this.consumption = gauss.gauss(arr, 4, 0.1) * 1000;
-            this.currBatteryCap -= this.consumption;
+        this.consumption = gauss.gauss(arr, 4, 0.1) * 1000;
+        this.currBatteryCap -= this.consumption;
     }
 
     
 }
+
+
 
 module.exports = Market;

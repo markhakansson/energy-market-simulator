@@ -1,5 +1,4 @@
 var gauss = require('../../helper/gauss')
-const Weather = require('./model/weather');
 
 class Weather {
     constructor() {
@@ -12,10 +11,10 @@ class Weather {
         // });
         this.wind_speed = 10;
         this.temperature = 20;
-        weather.save(function(err){
-            if (err) throw err;
-            console.log("Weather saved to db!");
-        })
+        // weather.save(function(err){
+        //     if (err) throw err;
+        //     console.log("Weather saved to db!");
+        // })
     }
 
     setWeather(wind_speed) {

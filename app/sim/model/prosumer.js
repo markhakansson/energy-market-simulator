@@ -1,5 +1,4 @@
 const gauss = require('../../helper/gauss');
-const Prosumer = require('./model/prosumer');
 
 class Prosumer {
     constructor(name, market, wind, time, fillBattRatio, useBattRatio, batterySize) {
