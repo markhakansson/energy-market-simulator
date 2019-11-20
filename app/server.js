@@ -13,6 +13,7 @@ mongoose.connection.once('open', () => {
     console.log('conneted to database');
 });
 
+
 // var root = {
 //     course: data.getCourse,
 //     courses: data.getCourses

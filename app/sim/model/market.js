@@ -1,3 +1,4 @@
+const Market = require('./model/market');
 
 
 class Market {
