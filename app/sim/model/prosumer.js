@@ -7,12 +7,12 @@ class Prosumer {
         this.wind = wind;
         this.production = 1000; // Wh
         this.consumption = 3000; // Wh
-        this.time = time;
         this.currBatteryCap = 0;
         this.maxBatteryCap = batterySize;
         this.fillBatteryRatio = fillBattRatio;
         this.useBatteryRatio = useBattRatio;
-        this.bought;
+        this.bought = 0;
+        this.blackout = false;
     }
 
     setProduction() {
@@ -103,10 +103,6 @@ class Prosumer {
         }
     }
 
-    updateTime() {
-        this.time = Date.now();
-    }
-
     buyFromMarket(energy) {
         let boughtEnergy = this.market.buy(energy); 
         this.bought = boughtEnergy;
@@ -127,7 +123,8 @@ class Prosumer {
         "\n Consuming: " + this.consumption + " Wh" +
         "\n Bought energy: " + this.bought + " Wh" +
         "\n Price per Wh is: " + this.market.price + " SEK" +
-        "\n Battery: " + this.currBatteryCap + " Wh"
+        "\n Battery: " + this.currBatteryCap + " Wh" +
+        "\n Black out: " + this.blackout
         );
     }
 }
