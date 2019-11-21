@@ -1,3 +1,4 @@
+const gauss = require('../../helper/gauss');
 
 
 class Market {
@@ -5,6 +6,7 @@ class Market {
         this.name = name;
         this.startUp = true;
         this.price = price;
+        this.production = 50000;
         this.consumption = 10 * 3000; // 10 times the household
         this.currBatteryCap = 0;
         this.maxBatteryCap = maxBatteryCap;
@@ -64,12 +66,22 @@ class Market {
             console.log("Market " + this.name + " is starting up...");
             setTimeout(() => {
                 this.startUp = false;
-            }, 30000);
+            }, 10000);
 
         } else {
             console.log("Market " + this.name + " is running!");
-            this.currBatteryCap += 3000;
+            console.log(this.currBatteryCap);
+            console.log(this.maxBatteryCap);
+            if ( ( this.currBatteryCap += this.production ) < this.maxBatteryCap) {
+                this.currBatteryCap += this.production;
+            }
+        
         }
+
+        if ( this.currBatteryCap <= 0 ) {
+            console.log("Market BLACK OUT!!!!!")
+            this.startUp = true;
+        } 
        
    }
 
@@ -83,7 +95,7 @@ class Market {
             arr = [0.8 * consumption, 0.9 * consumption, 0.95 * consumption, 1.1 * consumption];
         }
 
-        this.consumption = gauss.gauss(arr, 4, 0.1) * 1000;
+        this.consumption = gauss.gauss(arr, 4, 0.1) * 100;
         this.currBatteryCap -= this.consumption;
     }
 
