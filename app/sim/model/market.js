@@ -2,19 +2,20 @@ const gauss = require('../../helper/gauss');
 
 
 class Market {
-    constructor(name, price, maxBatteryCap) {
+    constructor(name, price, production, maxBatteryCap) {
         this.name = name;
+        this.status = "";
         this.startUp = true;
         this.price = price;
-        this.production = 50000;
-        this.consumption = 10 * 3000; // 10 times the household
+        this.production = production;
+        this.consumption = production / 10;
         this.currBatteryCap = 0;
         this.maxBatteryCap = maxBatteryCap;
     }
 
    buy(demand) {
        let currBatt = this.currBatteryCap - demand;
-        if ( currBatt > 0 ) {
+        if ( currBatt > 0  && !this.startUp) {
             /**
              * if current battery is less than 2/3 of max battery capacity
              * increase price by 1/3
@@ -63,15 +64,13 @@ class Market {
 
    generateProduction() {
         if (this.startUp) {
-            console.log("Market " + this.name + " is starting up...");
+            this.status = "starting up...";
             setTimeout(() => {
                 this.startUp = false;
             }, 10000);
 
         } else {
-            console.log("Market " + this.name + " is running!");
-            console.log(this.currBatteryCap);
-            console.log(this.maxBatteryCap);
+            this.status = "running!";
             if ( ( this.currBatteryCap += this.production ) < this.maxBatteryCap) {
                 this.currBatteryCap += this.production;
             }
@@ -85,18 +84,15 @@ class Market {
        
    }
 
-    generateConsumption() {
-        let consumption = this.consumption / 1000;
-        let arr;
-
-        if(consumption < ( 4.0 * 10 )) {
-            arr = [0.8 * consumption, consumption, 1.2 * consumption];
-        } else {
-            arr = [0.8 * consumption, 0.9 * consumption, 0.95 * consumption, 1.1 * consumption];
-        }
-
-        this.consumption = gauss.gauss(arr, 4, 0.1) * 100;
-        this.currBatteryCap -= this.consumption;
+    display() {
+        console.log("Market is " + this.status +
+            "\n Time: " + Date(this.time).toString() + 
+            "\n Producing: " + this.production + " Wh" +
+            "\n Consuming: " + this.consumption + " Wh" +
+            "\n Price per Wh is: " + this.price + " SEK" +
+            "\n CurrentBatteryCap: " + this.currBatteryCap + " Wh" +
+            "\n MaxBatteryCap: " + this.maxBatteryCap + " Wh"
+        );
     }
 
     

@@ -6,14 +6,14 @@ const Weather = require('../model/weather');
 
 
 console.log("Simulator now running... ");
-const market = new Market("Sweden", 2, 100000);
+const market = new Market("Sweden", 2, 5000, 100000);
 
 let weather = new Weather();
 
 let consumer1 = new Consumer("Hakansson", market, Date.now());
 let consumer2 = new Consumer("Strandberg", market, Date.now());
 
-let prosumer1 = new Prosumer("elon", market, null, Date.now(), 0.5, 0.5, 1000);
+let prosumer1 = new Prosumer("elon", market, Date.now(), 0.5, 0.5, 1000);
 
 function main() {
     setTimeout(function() {
@@ -35,6 +35,7 @@ function main() {
         console.log("------------------------------------------------------------------------------");
         consumer2.display();
         console.log("------------------------------------------------------------------------------");
+        market.display();
 
 
 
