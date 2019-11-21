@@ -1,10 +1,12 @@
 const gauss = require('../../helper/gauss');
+var tools = require('../../helper/tools');
 
 class Prosumer {
-    constructor(name, market, wind, time, fillBattRatio, useBattRatio, batterySize) {
+    constructor(name, market, wind, fillBattRatio, useBattRatio, batterySize) {
         this.name = name;
         this.market = market;
         this.wind = wind;
+        this.timeMultiplier = 5;
         this.production = 1000; // Wh
         this.consumption = 3000; // Wh
         this.currBatteryCap = 0;
@@ -13,15 +15,9 @@ class Prosumer {
         this.useBatteryRatio = useBattRatio;
         this.bought = 0;
         this.blackout = false;
-    }
-
-    setProduction() {
-        this.production = 1000;
-    }
-
-    setConsumption() {
-        this.consumption = 3000; // should be gauss distribution
-        this.updateTime();
+        this.turbineStatus = "WORKING!";
+        this.turbineBreakagePercent = 0.05;
+        this.turbineWorking = true;
     }
 
     /**
@@ -48,15 +44,32 @@ class Prosumer {
         this.useBatteryRatio = ratio;
     }
 
-    generateProduction(windSpeed) {
-        this.wind = windSpeed;
-        this.production = windSpeed * 250;
-        let prod_diff = this.production - this.consumption;
+    randomizeTurbineBreaking() {
+        if(this.turbineWorking) {
+            let rand = Math.random();
 
-        // Check if there is an excessive production of power
-        if(prod_diff > 0) {
-            this.chargeBattery(this.fillBatteryRatio * prod_diff);
-            this.sellToMarket((1 - this.fillBatteryRatio) * prod_diff);
+            if(rand < this.turbineBreakagePercent) {
+                this.turbineWorking = false;
+                this.turbineStatus = "BROKEN! REPAIRMAN CALLED!";
+                this.callTurbineRepairman();
+            }
+        }
+
+        return this.turbineWorking;
+    }
+
+    generateProduction(windSpeed) {    
+        if(this.randomizeTurbineBreaking()) {
+            this.wind = windSpeed;
+            this.production = windSpeed * 250;
+            let prod_diff = this.production - this.consumption;
+
+            // Check if there is an excessive production of power
+            if(prod_diff > 0) {
+                this.chargeBattery(this.fillBatteryRatio * prod_diff);
+                this.sellToMarket((1 - this.fillBatteryRatio) * prod_diff);
+            }
+    
         }
     }
 
@@ -82,6 +95,19 @@ class Prosumer {
                 this.buyFromMarket((1 - this.useBatteryRatio) * cons_diff);
             } 
         }
+    }
+
+    callTurbineRepairman() {
+        tools.sleep(2 * this.timeMultiplier * 1000).then(() => {
+            this.turbineStatus = "REPAIRMAN ON THE WAY...";
+        });
+        tools.sleep(this.timeMultiplier * 1000).then(() => {
+            this.turbineStatus = "REPAIRING...";
+        });
+        tools.sleep(2 * this.timeMultiplier * 1000).then(() => {
+            this.turbineWorking = true;
+            this.turbineStatus = "WORKING!";
+        });
     }
 
     chargeBattery(energy) {
@@ -124,7 +150,8 @@ class Prosumer {
         "\n Bought energy: " + this.bought + " Wh" +
         "\n Price per Wh is: " + this.market.price + " SEK" +
         "\n Battery: " + this.currBatteryCap + " Wh" +
-        "\n Black out: " + this.blackout
+        "\n Blackout: " + this.blackout + 
+        "\n Turbine status: " + this.turbineStatus 
         );
     }
 }
