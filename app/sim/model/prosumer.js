@@ -20,30 +20,6 @@ class Prosumer {
         this.turbineWorking = true;
     }
 
-    /**
-     * Set how much of any excessive production should be used to fill the battery.
-     * The rest will be sold to the market.
-     * @param {*} ratio Ratio to set (percent). Can only be a value between [0.0, 1.0].
-     */
-    setFillBatteryRatio(ratio) {
-        if(ratio > 1.0 || ratio < 0.0) {
-            console.log("Warning! Ratio for filling the battery is wrong!");
-        }   
-        this.fillBatteryRatio = ratio;
-    }
-
-    /**
-     * Set how much electricity should be used up from the battery when the household's demands are exceeding
-     * their own production. 
-     * @param {*} ratio Ratio to set (percent). Can only be a value between [0.0, 1.0].
-     */
-    setUseBatteryRatio(ratio) {
-        if(ratio > 1.0 || ratio < 0.0) {
-            console.log("Warning! Ratio for using the battery is wrong!");
-        }   
-        this.useBatteryRatio = ratio;
-    }
-
     randomizeTurbineBreaking() {
         if(this.turbineWorking) {
             let rand = Math.random();
@@ -63,12 +39,12 @@ class Prosumer {
         if(this.randomizeTurbineBreaking()) {
             this.wind = windSpeed;
             this.production = windSpeed * 250;
-            let prod_diff = this.production - this.consumption;
+            let prodDiff = this.production - this.consumption;
 
             // Check if there is an excessive production of power
-            if(prod_diff > 0) {
-                this.chargeBattery(this.fillBatteryRatio * prod_diff);
-                this.sellToMarket((1 - this.fillBatteryRatio) * prod_diff);
+            if(prodDiff > 0) {
+                this.chargeBattery(this.fillBatteryRatio * prodDiff);
+                this.sellToMarket((1 - this.fillBatteryRatio) * prodDiff);
             }
     
         } 
