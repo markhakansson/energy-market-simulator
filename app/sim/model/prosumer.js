@@ -49,6 +49,7 @@ class Prosumer {
             let rand = Math.random();
 
             if(rand < this.turbineBreakagePercent) {
+                this.production = 0;
                 this.turbineWorking = false;
                 this.turbineStatus = "BROKEN! REPAIRMAN CALLED!";
                 this.callTurbineRepairman();
@@ -70,7 +71,7 @@ class Prosumer {
                 this.sellToMarket((1 - this.fillBatteryRatio) * prod_diff);
             }
     
-        }
+        } 
     }
 
     generateConsumption() {
