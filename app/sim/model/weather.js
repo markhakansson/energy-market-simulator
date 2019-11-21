@@ -13,7 +13,7 @@ class Weather {
         this.temperature = 20;
         // weather.save(function(err){
         //     if (err) throw err;
-        //     console.log("Weather saved to db!");
+        //     console.log("Weather saved to db!")
         // })
     }
 
