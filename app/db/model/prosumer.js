@@ -14,7 +14,7 @@ this.useBatteryRatio = this.setUseBatteryRatio(useBattRatio);
 
  */
 const prosumer = new Schema({
-    name: String,
+    name: { type: String, unique: true },
     wind: Number,
     market: String,
     timestamp: { type: Date, default: Date.now() },

@@ -10,7 +10,7 @@ this.currBatteryCap = 0;
 this.maxBatteryCap = maxBatteryCap;
  */
 const market = new Schema({
-    name: String,
+    name: { type: String, unique: true },
     timestamp: { type: Date, default: Date.now() },
     price: Number,
     currBatteryCap: Number,

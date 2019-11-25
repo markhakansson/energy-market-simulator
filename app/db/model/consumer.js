@@ -8,7 +8,7 @@ const Schema = mongoose.Schema;
     this.consumption = 3000; 
  */
 const consumer = new Schema({
-    name: String,
+    name: { type: String, unique: true },
     market: String,
     timestamp: { type: Date, default: Date.now() },
     consumption: Number

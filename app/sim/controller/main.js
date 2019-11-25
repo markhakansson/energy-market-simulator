@@ -1,14 +1,14 @@
 const Consumer = require('../model/consumer');
 const Market = require('../model/market');
 const Prosumer = require('../model/prosumer');
-const Weather = require('../model/weather');
+const WeatherSim = require('../model/weather');
 
 
 
 console.log("Simulator now running... ");
 // const market = new Market("Sweden", 2, 5000, 100000);
 
-let weather = new Weather("test", 10, 20);
+let weather = new WeatherSim("test", 10, 20);
 
 // let consumer1 = new Consumer("Hakansson", market, Date.now());
 // let consumer2 = new Consumer("Strandberg", market, Date.now());
@@ -41,7 +41,7 @@ function main() {
 
         main();
 
-    }, 5000);
+    }, 2000);
 }     
  
 module.exports = main();

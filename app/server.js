@@ -1,19 +1,20 @@
 const express = require('express');
-const express_graphql = require('express-graphql');
-const schema = require('./api/schemas/consumer');
-const schema = require('./api/schemas/market');
-const schema = require('./api/schemas/prosumer');
-const schema = require('./api/schemas/weather');
-const schema = require('./api/mutation');
-const schema = require('./api/rootQuery');
+const main = require('./sim/controller/main');
+// const express_graphql = require('express-graphql');
+// const consumer = require('./api/schemas/consumer');
+// const market = require('./api/schemas/market');
+// const prosumer = require('./api/schemas/prosumer');
+// const weather = require('./api/schemas/weather');
+// const mutation = require('./api/mutation');
+// const rootQuery = require('./api/rootQuery');
 
-// const simulator = require('.')
+const simulator = require('.')
 
 const mongoose = require('mongoose');
 
 // mongoose.connect('mongodb://<dbuser>:<dbpassword>@<MongoDB URI>')
 // mongoose.connect('mongodb://test:test@127.0.0.1:27017') 
-mongoose.connect('mongodb://127.0.0.1:27017/test') 
+mongoose.connect('mongodb://127.0.0.1:27017/hora') 
 
 mongoose.connection.once('open', () => {
     console.log('conneted to database');
