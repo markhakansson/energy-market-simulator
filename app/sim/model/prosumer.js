@@ -1,0 +1,136 @@
+const gauss = require('../../helper/gauss');
+var tools = require('../../helper/tools');
+
+class Prosumer {
+    constructor(name, market, wind, fillBattRatio, useBattRatio, batterySize) {
+        this.name = name;
+        this.market = market;
+        this.wind = wind;
+        this.timeMultiplier = 5;
+        this.production = 1000; // Wh
+        this.consumption = 3000; // Wh
+        this.currBatteryCap = 0;
+        this.maxBatteryCap = batterySize;
+        this.fillBatteryRatio = fillBattRatio;
+        this.useBatteryRatio = useBattRatio;
+        this.bought = 0;
+        this.blackout = false;
+        this.turbineStatus = "WORKING!";
+        this.turbineBreakagePercent = 0.05;
+        this.turbineWorking = true;
+    }
+
+    randomizeTurbineBreaking() {
+        if(this.turbineWorking) {
+            let rand = Math.random();
+
+            if(rand < this.turbineBreakagePercent) {
+                this.production = 0;
+                this.turbineWorking = false;
+                this.turbineStatus = "BROKEN! REPAIRMAN CALLED!";
+                this.callTurbineRepairman();
+            }
+        }
+
+        return this.turbineWorking;
+    }
+
+    generateProduction(windSpeed) {    
+        if(this.randomizeTurbineBreaking()) {
+            this.wind = windSpeed;
+            this.production = windSpeed * 250;
+            let prodDiff = this.production - this.consumption;
+
+            // Check if there is an excessive production of power
+            if(prodDiff > 0) {
+                this.chargeBattery(this.fillBatteryRatio * prodDiff);
+                this.sellToMarket((1 - this.fillBatteryRatio) * prodDiff);
+            }
+    
+        } 
+    }
+
+    generateConsumption() {
+        // Yearly consumption 25,000 kWh around 70 kWh a day/ 3 kWh an hour
+        let consumption = this.consumption / 100;
+        let arr;
+
+        // Threshold of 4 kWh. If it reaches over that point the distribution will favor smaller wind speeds.
+        if(consumption > 0) {
+            if(consumption < 40) {
+                arr = [0.8 * consumption, consumption, 1.2 * consumption];
+            } else {
+                arr = [0.8 * consumption, 0.9 * consumption, 0.95 * consumption, 1.1 * consumption];
+            }
+
+            this.consumption = gauss.gaussLimit(arr, 4, 0.05, 0, 60) * 100;   
+            let cons_diff = this.consumption - this.production;
+
+            // Check if household's demand exceeds production
+            if(cons_diff > 0) {
+                this.useBattery(this.useBatteryRatio * cons_diff);
+                this.buyFromMarket((1 - this.useBatteryRatio) * cons_diff);
+            } 
+        }
+    }
+
+    callTurbineRepairman() {
+        tools.sleep(2 * this.timeMultiplier * 1000).then(() => {
+            this.turbineStatus = "REPAIRMAN ON THE WAY...";
+        });
+        tools.sleep(this.timeMultiplier * 1000).then(() => {
+            this.turbineStatus = "REPAIRING...";
+        });
+        tools.sleep(2 * this.timeMultiplier * 1000).then(() => {
+            this.turbineWorking = true;
+            this.turbineStatus = "WORKING!";
+        });
+    }
+
+    chargeBattery(energy) {
+        if(this.currBatteryCap + energy >= this.maxBatteryCap) {
+            this.currBatteryCap = this.maxBatteryCap;
+            this.sellToMarket(this.currBatteryCap + energy - this.maxBatteryCap);
+        } else {
+            this.currBatteryCap += energy;
+        }
+    }
+
+    useBattery(energy) {
+        if(this.currBatteryCap - energy < 0) {
+            let buyEnergy = energy - this.currBatteryCap;
+            this.buyFromMarket(buyEnergy);
+            this.currBatteryCap = 0;
+        } else {
+            this.currBatteryCap -= energy;
+        }
+    }
+
+    buyFromMarket(energy) {
+        let boughtEnergy = this.market.buy(energy); 
+        this.bought = boughtEnergy;
+        if(boughtEnergy < energy) {
+            this.consumption -= (energy - boughtEnergy);
+        }
+    }
+
+    sellToMarket(energy) {
+        this.market.sell(energy);
+    }
+
+    display() {
+        console.log(this.name + " is connected to " + this.market.name +
+        "\n Time: " + Date(this.time).toString() + 
+        "\n Wind: " + this.wind + " m/s" +
+        "\n Producing: " + this.production + " Wh" +
+        "\n Consuming: " + this.consumption + " Wh" +
+        "\n Bought energy: " + this.bought + " Wh" +
+        "\n Price per Wh is: " + this.market.price + " SEK" +
+        "\n Battery: " + this.currBatteryCap + " Wh" +
+        "\n Blackout: " + this.blackout + 
+        "\n Turbine status: " + this.turbineStatus 
+        );
+    }
+}
+
+module.exports = Prosumer;

@@ -5,3 +5,6 @@
 |    2019-11-06|   4      Discussion, setup of NodeJS, GraphQL and        ||                          MongoDB, preliminary schema defined            |
 |    2019-11-07|   3       GraphQL implemention of adding and mutating    |                           schemas in mongodb                             |
 |    2019-11-14|   7      Simulator logic, MVC design
+|    2019-11-15|   6      Simulator implementation and Gauss
+|    2019-11-19|   7      Simulator is running somewhat, Gaussian functionality needs to be fixed and started implementation of schema models to mongodb
+|    2019-11-20|   3      Simulator implementation and API structure
