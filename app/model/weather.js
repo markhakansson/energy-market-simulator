@@ -9,7 +9,6 @@ const weather = new Schema({
     timestamp: { type: Date, default: Date.now() },
     wind_speed: Number,
     temperature:Number
-
 });
 
 module.exports = mongoose.model('Weather', weather);

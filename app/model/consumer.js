@@ -12,7 +12,6 @@ const consumer = new Schema({
     market: String,
     timestamp: { type: Date, default: Date.now() },
     consumption: Number
-
 });
 
 module.exports = mongoose.model('Consumer', consumer);

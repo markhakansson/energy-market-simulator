@@ -1,6 +1,5 @@
 const graphql = require('graphql');
-const Consumer = require('./model/consumer');
-
+const Consumer = require('../../model/consumer');
 
 const { 
     GraphQLObjectType, GraphQLString, 
@@ -26,3 +25,5 @@ const ConsumerType = new GraphQLObjectType({
     }
     })
 });
+
+module.exports = ConsumerType;

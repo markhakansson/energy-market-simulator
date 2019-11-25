@@ -1,13 +1,10 @@
 const graphql = require('graphql');
 
-
 const { 
     GraphQLObjectType, GraphQLString, 
     GraphQLID, GraphQLInt, GraphQLFloat, GraphQLSchema, 
     GraphQLList,GraphQLNonNull 
 } = graphql;
-
-
 
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
@@ -18,6 +15,13 @@ const RootQuery = new GraphQLObjectType({
             args: { id: { type: GraphQLID } },
             resolve(parent, args) {
                 return Consumer.findById(args.id);
+            }
+        },
+        consumer: {
+            type: ConsumerType,
+            args: {name: { type: GraphQLString} },
+            resolve(_, args) {
+                return Consumer.find(args.name);
             }
         },
         market: {
@@ -59,7 +63,5 @@ const RootQuery = new GraphQLObjectType({
         }
     }
 });
-
-
 
 module.exports = new GraphQLSchema({ query: RootQuery });

@@ -1,5 +1,5 @@
 const graphql = require('graphql');
-const Market = require('./model/market');
+const Market = require('../../model/market');
 
 const { 
     GraphQLObjectType, GraphQLString, 
@@ -29,3 +29,5 @@ const MarketType = new GraphQLObjectType({
         
     })
 });
+
+module.exports = MarketType;

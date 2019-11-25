@@ -16,7 +16,6 @@ const market = new Schema({
     currBatteryCap: Number,
     maxBatteryCap: Number,
     consumption: Number
-
 });
 
 module.exports = mongoose.model('Market', market);

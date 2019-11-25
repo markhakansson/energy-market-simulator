@@ -1,5 +1,5 @@
 const graphql = require('graphql');
-const Prosumer = require('./model/prosumer');
+const Prosumer = require('../../model/prosumer');
 
 const { 
     GraphQLObjectType, GraphQLString, 
@@ -29,3 +29,5 @@ const ProsumerType = new GraphQLObjectType({
     }
     })
 });
+
+module.exports = ProsumerType;

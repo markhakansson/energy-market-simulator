@@ -1,5 +1,5 @@
 const graphql = require('graphql');
-const Weather = require('./model/weather');
+const Weather = require('../../model/weather');
 
 const { 
     GraphQLObjectType, GraphQLString, 
@@ -27,3 +27,5 @@ const WeatherType = new GraphQLObjectType({
     }
     })
 });
+
+module.exports = WeatherType;
