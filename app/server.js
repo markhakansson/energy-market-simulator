@@ -1,6 +1,12 @@
 const express = require('express');
 const express_graphql = require('express-graphql');
-const schema = require('./schema');
+const schema = require('./api/schemas/consumer');
+const schema = require('./api/schemas/market');
+const schema = require('./api/schemas/prosumer');
+const schema = require('./api/schemas/weather');
+const schema = require('./api/mutation');
+const schema = require('./api/rootQuery');
+
 // const simulator = require('.')
 
 const mongoose = require('mongoose');
@@ -12,7 +18,6 @@ mongoose.connect('mongodb://127.0.0.1:27017/test')
 mongoose.connection.once('open', () => {
     console.log('conneted to database');
 });
-
 
 // var root = {
 //     course: data.getCourse,
