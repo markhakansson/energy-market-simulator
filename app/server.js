@@ -25,9 +25,9 @@ mongoose.connection.once('open', () => {
 // };// Create an express server and a GraphQL endpoint
 var app = express();
 // app.use('/sim', simulator);
-app.use('/graphql', express_graphql({
-    schema,
-    rootValue: root,
-    graphiql: true
-}));    
-app.listen(4000, () => console.log('Express GraphQL Server Now Running On localhost:4000/graphql'));
+// app.use('/graphql', express_graphql({
+//     schema,
+//     rootValue: root,
+//     graphiql: true
+// }));    
+// app.listen(4000, () => console.log('Express GraphQL Server Now Running On localhost:4000/graphql'));
