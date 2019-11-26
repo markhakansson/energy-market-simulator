@@ -10,3 +10,4 @@
 | 2019-11-19 | 6 | Wrap up the work on the basic simulator models |
 | 2019-11-20 | 4 | Work on bugs where the household won't buy from the market |
 | 2019-11-25 | 7 | Start working on the GraphQL API. Read about authorization/authentication with GraphQL |
+| 2019-11-26 | 5 | Refactor the old GraphQL implementation. Add more API functionality. |
