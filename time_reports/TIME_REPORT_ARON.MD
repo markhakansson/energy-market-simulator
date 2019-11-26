@@ -9,3 +9,4 @@
 |    2019-11-19|   7      Simulator is running somewhat, Gaussian functionality needs to be fixed and started implementation of schema models to mongodb
 |    2019-11-20|   3      Simulator implementation and API structure
 |    2019-11-25|   7      db handling and storing simulated values to db instead of print out, need to fix unique name in mongodb
+|    2019-11-26|   7      now storing weather in db and only handling variables between sim and db
