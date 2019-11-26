@@ -13,24 +13,23 @@ let weather = new WeatherSim("test", 10, 20);
 // let consumer1 = new Consumer("Hakansson", market, Date.now());
 // let consumer2 = new Consumer("Strandberg", market, Date.now());
 
-// let prosumer1 = new Prosumer("elon", market, Date.now(), 0.5, 0.5, 1000);
+let prosumer1 = new Prosumer("elon", market, Date.now(), 0.5, 0.5, 1000);
 
 function main() {
     setTimeout(function() {
-        weather.generateWind();
-        console.log("weather generated!");
+        weather.update();
         // market.generateProduction();
 
-        // prosumer1.generateProduction(weather.wind_speed);
-        // prosumer1.generateConsumption();
+        prosumer1.generateProduction(weather.wind_speed);
+        prosumer1.generateConsumption();
 
 
         // consumer1.generateConsumption();
         // consumer2.generateConsumption();
 
-        // console.log("------------------------------------------------------------------------------");
-        // prosumer1.display();
-        // console.log("------------------------------------------------------------------------------");
+        console.log("------------------------------------------------------------------------------");
+        prosumer1.display();
+        console.log("------------------------------------------------------------------------------");
         // consumer1.display();
         // console.log("------------------------------------------------------------------------------");
         // consumer2.display();
