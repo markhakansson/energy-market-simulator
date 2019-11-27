@@ -13,7 +13,7 @@ class WeatherSim {
         
         this.weather.save((err) => {
             if(err) throw err;
-            console.log("Weather " + this.name + " created and saved to db!");
+            console.log("Weather " + this.weather.name + " created and saved to db!");
 
         });
 

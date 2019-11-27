@@ -1,21 +1,16 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-/**
-this.startUp = true;
-this.name = name;
-this.price = price;
-this.consumption = 10 * 3000; // 10 times the household
-this.currBatteryCap = 0;
-this.maxBatteryCap = maxBatteryCap;
- */
 const market = new Schema({
-    name: { type: String, unique: true },
+    name: String,
     timestamp: { type: Date, default: Date.now() },
+    status: String,
+    startUp: Boolean,
     price: Number,
+    production: Number,
+    consumption: Number,
     currBatteryCap: Number,
-    maxBatteryCap: Number,
-    consumption: Number
+    maxBatteryCap: Number
 
 });
 

@@ -5,22 +5,7 @@ var Prosumer = require('../../db/model/prosumer');
 
 class ProsumerSim {
     constructor(name, market, wind, fillBattRatio, useBattRatio, batterySize) {
-        // this.name = name;
-        // this.market = market;
-        // this.wind = wind;
-        // this.timeMultiplier = 5;
-        // this.production = 1000; // Wh
-        // this.consumption = 3000; // Wh
-        // this.currBatteryCap = 0;
-        // this.maxBatteryCap = batterySize;
-        // this.fillBatteryRatio = fillBattRatio;
-        // this.useBatteryRatio = useBattRatio;
-        // this.bought = 0;
-        // this.blackout = false;
-        // this.turbineStatus = "WORKING!";
-        // this.turbineBreakagePercent = 0.05;
-        // this.turbineWorking = true;
-
+    
         this.prosumer = new Prosumer( {
             name: name,
             wind: wind,
@@ -43,7 +28,7 @@ class ProsumerSim {
 
         this.prosumer.save((err) => {
             if(err) throw err;
-            console.log("Prosumer " + this.name + " created and saved to db!");
+            console.log("Prosumer " + this.prosumer.name + " created and saved to db!");
 
         });
     }
@@ -129,6 +114,7 @@ class ProsumerSim {
     }
 
     useBattery(energy) {
+        let self = this.prosumer;
         if(self.currBatteryCap - energy < 0) {
             let buyEnergy = energy - self.currBatteryCap;
             this.buyFromMarket(buyEnergy);
@@ -139,6 +125,7 @@ class ProsumerSim {
     }
 
     buyFromMarket(energy) {
+        let self = this.prosumer;
         let boughtEnergy = self.market.buy(energy); 
         self.bought = boughtEnergy;
         if(boughtEnergy < energy) {
@@ -147,22 +134,12 @@ class ProsumerSim {
     }
 
     sellToMarket(energy) {
+        let self = this.prosumer;
         self.market.sell(energy);
     }
 
     update() {
         let self = this.prosumer;
-        console.log(self.name + " is connected to " + self.market.name +
-        "\n Time: " + self.timestamp.toString() + 
-        "\n Wind: " + self.wind + " m/s" +
-        "\n Producing: " + self.production + " Wh" +
-        "\n Consuming: " + self.consumption + " Wh" +
-        "\n Bought energy: " + self.bought + " Wh" +
-        "\n Price per Wh is: " + self.market.price + " SEK" +
-        "\n Battery: " + self.currBatteryCap + " Wh" +
-        "\n Blackout: " + self.blackout + 
-        "\n Turbine status: " + self.turbineStatus 
-        );
 
         self = new Prosumer( {
             name: self.name,
@@ -185,13 +162,13 @@ class ProsumerSim {
 
         self.save((err) => {
             if(err) throw err;
-            console.log(self.name + " is connected to " + self.market.name +
+            console.log(self.name + " is connected to " + self.market.market.name +
             "\n Time: " + self.timestamp.toString() + 
             "\n Wind: " + self.wind + " m/s" +
             "\n Producing: " + self.production + " Wh" +
             "\n Consuming: " + self.consumption + " Wh" +
             "\n Bought energy: " + self.bought + " Wh" +
-            "\n Price per Wh is: " + self.market.price + " SEK" +
+            "\n Price per Wh is: " + self.market.market.price + " SEK" +
             "\n Battery: " + self.currBatteryCap + " Wh" +
             "\n Blackout: " + self.blackout + 
             "\n Turbine status: " + self.turbineStatus 
@@ -199,4 +176,4 @@ class ProsumerSim {
     }
 }
 
-module.exports = Prosumer;
+module.exports = ProsumerSim;
