@@ -3,7 +3,14 @@ var Weather = require('../../db/model/weather');
 
 class WeatherSim {
     constructor(name, wind_speed, temperature) {
-                
+        if (wind_speed < 1 || wind_speed > 40) {
+            throw new Error("Illegal wind speed");
+        }
+        
+        if (temperature < -100 || temperature > 100) {
+            throw new Error("Illegal temperature");
+        }
+        
         this.weather = new Weather( {
             name: name,    
             timestamp: Date.now(),
