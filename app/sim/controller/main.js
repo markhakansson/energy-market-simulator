@@ -8,7 +8,7 @@ const WeatherSim = require('../model/weather');
 console.log("Simulator now running... ");
 // const market = new MarketSim("Sweden", 2, 5000, 100000);
 
-let weather = new WeatherSim("test", 100, 20);
+let weather = new WeatherSim("sun", 10, 20);
 
 // let consumer1 = new ConsumerSim("Hakansson", market);
 // let consumer2 = new Consumer("Strandberg", market, Date.now());
