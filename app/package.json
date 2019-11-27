@@ -22,6 +22,7 @@
     "graphql": "^14.5.8",
     "mongoose": "^5.7.8",
     "gaussian": "*",
-    "fast-stats": "*"
+    "fast-stats": "*",
+    "graphql-iso-date": "*"
   }
 }

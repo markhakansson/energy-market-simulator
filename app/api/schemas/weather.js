@@ -1,12 +1,15 @@
 const graphql = require('graphql');
 const Weather = require('../../model/weather');
+const graphqlIsoDate = require('graphql-iso-date');
 
 const { 
     GraphQLObjectType, GraphQLString, GraphQLID, 
     GraphQLInt, GraphQLFloat, GraphQLNonNull 
 } = graphql;
 
-
+const {
+    GraphQLDateTime
+} = graphqlIsoDate;
 
 const WeatherType = new GraphQLObjectType({
     name: 'Weather',
@@ -30,21 +33,6 @@ const WeatherQueries = {
     }
 }
 
-const WeatherMutations = {
-    addWeather: {
-        type: WeatherType,
-        args: {
-            name: { type: new GraphQLNonNull(GraphQLString) },
-            description: { type: new GraphQLNonNull(GraphQLString) },
-        },
-        resolve(parent, args) {
-            let weather = new Weather({
-                name: args.name,
-                description: args.description,
-            });
-            return weather.save();
-        }
-    },
-};
+const WeatherMutations = {};
 
 module.exports = {WeatherType, WeatherQueries, WeatherMutations};

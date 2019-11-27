@@ -1,10 +1,15 @@
 const graphql = require('graphql');
 const Consumer = require('../../model/consumer');
+const graphqlIsoDate = require('graphql-iso-date');
 
 const { 
-    GraphQLObjectType, GraphQLString, GraphQLID, 
+    GraphQLObjectType, GraphQLString, GraphQLID, GraphQLList, 
     GraphQLInt, GraphQLFloat, GraphQLNonNull 
 } = graphql;
+
+const {
+    GraphQLDateTime
+} = graphqlIsoDate;
 
 const ConsumerType = new GraphQLObjectType({
     name: 'Consumer',
@@ -12,7 +17,8 @@ const ConsumerType = new GraphQLObjectType({
     fields: () => ({
         id: { type: GraphQLID  },
         name: { type: GraphQLString },
-        timestamp: { type: GraphQLInt }, 
+        market: { type: GraphQLString },
+        timestamp: { type: GraphQLDateTime }, 
         consumption: { type: GraphQLInt },
     })
 });
@@ -25,6 +31,12 @@ const ConsumerQueries = {
             return Consumer.findOne({name: args.name});
         }
     },
+    consumers: {
+        type: new GraphQLList(ConsumerType),
+        resolve(parent, args) {
+            return Consumer.find({});
+        }
+    }
 }
 
 const ConsumerMutations = {
@@ -42,16 +54,22 @@ const ConsumerMutations = {
             return consumer.save();
         }
     },
-    updateConsumption: {
+    updateConsumerConsumption: {
         type: ConsumerType,
         args: {
             name: { type: new GraphQLNonNull(GraphQLString) },
             consumption: { type: new GraphQLNonNull(GraphQLFloat) },
         },
         resolve(parent, args) {
-            let consumer = Consumer.findOne({name: args.name});
-            consumer.consumption = args.consumption;
-            consumer.save();
+            let filter = {name: args.name};
+            let data = Consumer.findOne(filter).exec();
+            data.then(function(doc){
+                let consumer = new Consumer({
+                    name: doc.name,
+                    consumption: args.consumption,
+                });
+                consumer.save();
+            });
         }
     },
 

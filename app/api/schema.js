@@ -1,13 +1,4 @@
 const graphql = require('graphql');
-const Consumer = require('../model/consumer');
-const Market = require('../model/market');
-const Prosumer = require('../model/prosumer');
-const Weather = require('../model/weather');
-
-const ConsumerType = require('./schemas/consumer').ConsumerType;
-const MarketType = require('./schemas/market').MarketType;
-const ProsumerType = require('./schemas/prosumer').ProsumerType;
-const WeatherType = require('./schemas/weather').WeatherType;
 
 const ConsumerQueries = require('./schemas/consumer').ConsumerQueries;
 const MarketQueries = require('./schemas/market').MarketQueries;
@@ -25,7 +16,7 @@ const {
 } = graphql;
 
 const RootQuery = new GraphQLObjectType({
-    name: 'Query',
+    name: 'RootQuery',
     fields: {
         ...ConsumerQueries,
         ...ProsumerQueries,

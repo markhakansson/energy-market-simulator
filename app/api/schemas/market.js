@@ -1,5 +1,6 @@
 const graphql = require('graphql');
 const Market = require('../../model/market');
+const graphqlIsoDate = require('graphql-iso-date');
 
 const { 
     GraphQLObjectType, GraphQLString, 
@@ -7,12 +8,16 @@ const {
     GraphQLList,GraphQLNonNull 
 } = graphql;
 
+const {
+    GraphQLDateTime
+} = graphqlIsoDate;
+
 const MarketType = new GraphQLObjectType({
     name: 'Market',
     fields: () => ({
         id: { type: GraphQLID },
         name: { type: GraphQLString },
-        timestamp: { type: GraphQLInt },
+        timestamp: { type: GraphQLDateTime },
         price: { type: GraphQLFloat },
         battery: { type: GraphQLInt },
         consumption: { type: GraphQLInt },
@@ -33,7 +38,7 @@ const MarketQueries = ({
         resolve(parent, args) {
             return Market.find({});
         }
-    },        
+    },   
 })
 
 const MarketMutations = {
