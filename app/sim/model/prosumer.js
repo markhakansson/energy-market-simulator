@@ -1,58 +1,73 @@
 const gauss = require('../../helper/gauss');
 var tools = require('../../helper/tools');
+var Prosumer = require('../../db/model/prosumer');
 
-class Prosumer {
+
+class ProsumerSim {
     constructor(name, market, wind, fillBattRatio, useBattRatio, batterySize) {
-        this.name = name;
-        this.market = market;
-        this.wind = wind;
-        this.timeMultiplier = 5;
-        this.production = 1000; // Wh
-        this.consumption = 3000; // Wh
-        this.currBatteryCap = 0;
-        this.maxBatteryCap = batterySize;
-        this.fillBatteryRatio = fillBattRatio;
-        this.useBatteryRatio = useBattRatio;
-        this.bought = 0;
-        this.blackout = false;
-        this.turbineStatus = "WORKING!";
-        this.turbineBreakagePercent = 0.05;
-        this.turbineWorking = true;
-    }
+    
+        this.prosumer = new Prosumer( {
+            name: name,
+            wind: wind,
+            market: market,
+            timeMultiplier: 5,
+            timestamp: Date.now(),
+            production: 1000,
+            consumption: 3000,
+            currBatteryCap: 0,
+            maxBatteryCap: batterySize,
+            fillBatteryRatio: fillBattRatio,
+            useBatteryRatio: useBattRatio,
+            bought: 0,
+            blackout: false,
+            turbineStatus: "WORKING!",
+            turbineWorking: true,
+            turbineBreakPercent: 0.05,
 
+        });
+
+        this.prosumer.save((err) => {
+            if(err) throw err;
+            console.log("Prosumer " + this.prosumer.name + " created and saved to db!");
+
+        });
+    }
     randomizeTurbineBreaking() {
-        if(this.turbineWorking) {
+        let self = this.prosumer;
+        if(self.turbineWorking) {
             let rand = Math.random();
 
-            if(rand < this.turbineBreakagePercent) {
-                this.production = 0;
-                this.turbineWorking = false;
-                this.turbineStatus = "BROKEN! REPAIRMAN CALLED!";
+            if(rand < self.turbineBreakagePercent) {
+                self.production = 0;
+                self.turbineWorking = false;
+                self.turbineStatus = "BROKEN! REPAIRMAN CALLED!";
                 this.callTurbineRepairman();
             }
         }
 
-        return this.turbineWorking;
+        return self.turbineWorking;
     }
 
     generateProduction(windSpeed) {    
+        let self = this.prosumer;
         if(this.randomizeTurbineBreaking()) {
-            this.wind = windSpeed;
-            this.production = windSpeed * 250;
-            let prodDiff = this.production - this.consumption;
+            self.wind = windSpeed;
+            self.production = windSpeed * 250;
+            let prodDiff = self.production - self.consumption;
 
             // Check if there is an excessive production of power
             if(prodDiff > 0) {
-                this.chargeBattery(this.fillBatteryRatio * prodDiff);
-                this.sellToMarket((1 - this.fillBatteryRatio) * prodDiff);
+                this.chargeBattery(self.fillBatteryRatio * prodDiff);
+                this.sellToMarket((1 - self.fillBatteryRatio) * prodDiff);
             }
     
         } 
     }
 
     generateConsumption() {
+        let self = this.prosumer;
         // Yearly consumption 25,000 kWh around 70 kWh a day/ 3 kWh an hour
-        let consumption = this.consumption / 100;
+        let consumption = self.consumption / 100;
         let arr;
 
         // Threshold of 4 kWh. If it reaches over that point the distribution will favor smaller wind speeds.
@@ -63,74 +78,102 @@ class Prosumer {
                 arr = [0.8 * consumption, 0.9 * consumption, 0.95 * consumption, 1.1 * consumption];
             }
 
-            this.consumption = gauss.gaussLimit(arr, 4, 0.05, 0, 60) * 100;   
-            let cons_diff = this.consumption - this.production;
+            self.consumption = gauss.gaussLimit(arr, 4, 0.05, 0, 60) * 100;   
+            let cons_diff = self.consumption - self.production;
 
             // Check if household's demand exceeds production
             if(cons_diff > 0) {
-                this.useBattery(this.useBatteryRatio * cons_diff);
-                this.buyFromMarket((1 - this.useBatteryRatio) * cons_diff);
+                this.useBattery(self.useBatteryRatio * cons_diff);
+                this.buyFromMarket((1 - self.useBatteryRatio) * cons_diff);
             } 
         }
     }
 
     callTurbineRepairman() {
-        tools.sleep(2 * this.timeMultiplier * 1000).then(() => {
-            this.turbineStatus = "REPAIRMAN ON THE WAY...";
+        let self = this.prosumer;
+        tools.sleep(2 * self.timeMultiplier * 1000).then(() => {
+            self.turbineStatus = "REPAIRMAN ON THE WAY...";
         });
         tools.sleep(this.timeMultiplier * 1000).then(() => {
-            this.turbineStatus = "REPAIRING...";
+            self.turbineStatus = "REPAIRING...";
         });
         tools.sleep(2 * this.timeMultiplier * 1000).then(() => {
-            this.turbineWorking = true;
-            this.turbineStatus = "WORKING!";
+            self.turbineWorking = true;
+            self.turbineStatus = "WORKING!";
         });
     }
 
     chargeBattery(energy) {
-        if(this.currBatteryCap + energy >= this.maxBatteryCap) {
-            this.currBatteryCap = this.maxBatteryCap;
-            this.sellToMarket(this.currBatteryCap + energy - this.maxBatteryCap);
+        let self = this.prosumer;
+        if(self.currBatteryCap + energy >= self.maxBatteryCap) {
+            self.currBatteryCap = self.maxBatteryCap;
+            this.sellToMarket(self.currBatteryCap + energy - self.maxBatteryCap);
         } else {
-            this.currBatteryCap += energy;
+            self.currBatteryCap += energy;
         }
     }
 
     useBattery(energy) {
-        if(this.currBatteryCap - energy < 0) {
-            let buyEnergy = energy - this.currBatteryCap;
+        let self = this.prosumer;
+        if(self.currBatteryCap - energy < 0) {
+            let buyEnergy = energy - self.currBatteryCap;
             this.buyFromMarket(buyEnergy);
-            this.currBatteryCap = 0;
+            self.currBatteryCap = 0;
         } else {
-            this.currBatteryCap -= energy;
+            self.currBatteryCap -= energy;
         }
     }
 
     buyFromMarket(energy) {
-        let boughtEnergy = this.market.buy(energy); 
-        this.bought = boughtEnergy;
+        let self = this.prosumer;
+        let boughtEnergy = self.market.buy(energy); 
+        self.bought = boughtEnergy;
         if(boughtEnergy < energy) {
-            this.consumption -= (energy - boughtEnergy);
+            self.consumption -= (energy - boughtEnergy);
         }
     }
 
     sellToMarket(energy) {
-        this.market.sell(energy);
+        let self = this.prosumer;
+        self.market.sell(energy);
     }
 
-    display() {
-        console.log(this.name + " is connected to " + this.market.name +
-        "\n Time: " + Date(this.time).toString() + 
-        "\n Wind: " + this.wind + " m/s" +
-        "\n Producing: " + this.production + " Wh" +
-        "\n Consuming: " + this.consumption + " Wh" +
-        "\n Bought energy: " + this.bought + " Wh" +
-        "\n Price per Wh is: " + this.market.price + " SEK" +
-        "\n Battery: " + this.currBatteryCap + " Wh" +
-        "\n Blackout: " + this.blackout + 
-        "\n Turbine status: " + this.turbineStatus 
-        );
+    update() {
+        let self = this.prosumer;
+
+        self = new Prosumer( {
+            name: self.name,
+            wind: self.wind,
+            market: self.market,
+            timeMultiplier: self.timeMultiplier,
+            timestamp: Date.now(),
+            production: self.production,
+            consumption: self.consumption,
+            currBatteryCap: self.currBatteryCap,
+            maxBatteryCap: self.batterySize,
+            fillBatteryRatio: self.fillBatteryRatio,
+            useBatteryRatio: self.useBatteryRatio,
+            bought: self.bought,
+            blackout: self.blackout,
+            turbineStatus: self.turbineStatus,
+            turbineWorking: self.turbineWorking,
+            turbineBreakPercent: self.turbineBreakagePercent,
+        });
+
+        self.save((err) => {
+            if(err) throw err;
+            console.log(self.name + " is connected to " + self.market.market.name +
+            "\n Time: " + self.timestamp.toString() + 
+            "\n Wind: " + self.wind + " m/s" +
+            "\n Producing: " + self.production + " Wh" +
+            "\n Consuming: " + self.consumption + " Wh" +
+            "\n Bought energy: " + self.bought + " Wh" +
+            "\n Price per Wh is: " + self.market.market.price + " SEK" +
+            "\n Battery: " + self.currBatteryCap + " Wh" +
+            "\n Blackout: " + self.blackout + 
+            "\n Turbine status: " + self.turbineStatus 
+        )});
     }
 }
 
-module.exports = Prosumer;
+module.exports = ProsumerSim;
