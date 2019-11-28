@@ -1,36 +1,48 @@
 const gauss = require('../../helper/gauss');
+const Market = require('../../db/model/market');
 
 
-class Market {
+class MarketSim {
     constructor(name, price, production, maxBatteryCap) {
-        this.name = name;
-        this.status = "";
-        this.startUp = true;
-        this.price = price;
-        this.production = production;
-        this.consumption = production / 10;
-        this.currBatteryCap = 0;
-        this.maxBatteryCap = maxBatteryCap;
+
+        this.market = new Market( {
+            name: name,
+            timestamp: Date.now(),
+            status: "built",
+            startUp: true,
+            price: price,
+            production: production,
+            consumption: production / 10,
+            currBatteryCap: 0,
+            maxBatteryCap: maxBatteryCap
+        });
+
+        this.market.save((err) => {
+            if(err) throw err;
+            console.log("Market " + this.market.name + " created and saved to db!");
+
+        });
     }
 
    buy(demand) {
-       let currBatt = this.currBatteryCap - demand;
-        if ( currBatt > 0  && !this.startUp) {
+       let self = this.market;
+       let currBatt = self.currBatteryCap - demand;
+        if ( currBatt > 0  && !self.startUp) {
             /**
              * if current battery is less than 2/3 of max battery capacity
              * increase price by 1/3
              */
-            if ( currBatt < 2 * this.maxBatteryCap / 3 ) { 
-                this.price += this.price / 3;
+            if ( currBatt < 2 * self.maxBatteryCap / 3 ) { 
+                self.price += self.price / 3;
             }
             /**
              * if current battery is less than 1/3 of max battery capacity
              * increase price AGAIN by 1/2
              */
-            if ( currBatt < this.maxBatteryCap / 3) {
-                this.price += this.price / 2;
+            if ( currBatt < self.maxBatteryCap / 3) {
+                self.price += self.price / 2;
             }
-            this.currBatteryCap -= demand;
+            self.currBatteryCap -= demand;
             return demand;
         }
 
@@ -39,23 +51,24 @@ class Market {
    }
 
    sell(demand) {
-       let currBatt = this.currBatteryCap + demand;
-       if ( currBatt <= this.maxBatteryCap ) {
+       let self = this.market;
+       let currBatt = self.currBatteryCap + demand;
+       if ( currBatt <= self.maxBatteryCap ) {
               /**
              * if current battery is greater than 2/3 of max battery capacity
              * decrease price by 1/3
              */
-            if ( currBatt > 2 * this.maxBatteryCap / 3 ) { 
-                this.price -= this.price / 3;
+            if ( currBatt > 2 * self.maxBatteryCap / 3 ) { 
+                self.price -= self.price / 3;
             }
             /**
              * if current battery is less than 1/3 of max battery capacity
              * decrease price AGAIN by 1/2
              */
-            if ( currBatt > this.maxBatteryCap / 3) {
-                this.price -= this.price / 2;
+            if ( currBatt > self.maxBatteryCap / 3) {
+                self.price -= self.price / 2;
             }
-            this.currBatteryCap += demand;
+            self.currBatteryCap += demand;
         }
         return 0;
    }
@@ -63,36 +76,56 @@ class Market {
 
 
    generateProduction() {
-        if (this.startUp) {
-            this.status = "starting up...";
+       let self = this.market;
+        if (self.startUp) {
+            self.status = "starting up...";
             setTimeout(() => {
-                this.startUp = false;
+                self.startUp = false;
             }, 10000);
 
         } else {
-            this.status = "running!";
-            if ( ( this.currBatteryCap += this.production ) < this.maxBatteryCap) {
-                this.currBatteryCap += this.production;
+            self.status = "running!";
+            if ( ( self.currBatteryCap += self.production ) < self.maxBatteryCap) {
+                self.currBatteryCap += self.production;
             }
         
         }
 
-        if ( this.currBatteryCap <= 0 ) {
-            console.log("Market BLACK OUT!!!!!")
-            this.startUp = true;
+        if ( self.currBatteryCap <= 0 ) {
+            self.status = "Market BLACK OUT!!!!!";
+            self.startUp = true;
         } 
        
    }
 
-    display() {
-        console.log("Market is " + this.status +
-            "\n Time: " + Date(this.time).toString() + 
-            "\n Producing: " + this.production + " Wh" +
-            "\n Consuming: " + this.consumption + " Wh" +
-            "\n Price per Wh is: " + this.price + " SEK" +
-            "\n CurrentBatteryCap: " + this.currBatteryCap + " Wh" +
-            "\n MaxBatteryCap: " + this.maxBatteryCap + " Wh"
-        );
+    update() {
+        let self = this.market;
+
+        self = new Market( {
+            name: self.name,
+            timestamp: Date.now(),
+            status: self.status,
+            startUp: self.startUp,
+            price: self.price,
+            production: self.production,
+            consumption: self.production,
+            currBatteryCap: self.currBatteryCap,
+            maxBatteryCap: self.maxBatteryCap
+        });
+        
+        self.save((err) => {
+            if(err) throw err;
+            console.log("Market " + self.name,
+                "\n status: " + self.status +
+                "\n startup: " + self.startUp +
+                "\n Time: " + self.timestamp.toString() + 
+                "\n Producing: " + self.production + " Wh" +
+                "\n Consuming: " + self.consumption + " Wh" +
+                "\n Price per Wh is: " + self.price + " SEK" +
+                "\n CurrentBatteryCap: " + self.currBatteryCap + " Wh" +
+                "\n MaxBatteryCap: " + self.maxBatteryCap + " Wh"
+            )
+        });
     }
 
     
@@ -100,4 +133,4 @@ class Market {
 
 
 
-module.exports = Market;
+module.exports = MarketSim;

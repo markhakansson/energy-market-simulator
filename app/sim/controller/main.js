@@ -1,47 +1,46 @@
-const Consumer = require('../model/consumer');
-const Market = require('../model/market');
-const Prosumer = require('../model/prosumer');
-const Weather = require('../model/weather');
+const ConsumerSim = require('../model/consumer');
+const MarketSim = require('../model/market');
+const ProsumerSim = require('../model/prosumer');
+const WeatherSim = require('../model/weather');
 
 
 
 console.log("Simulator now running... ");
-const market = new Market("Sweden", 2, 5000, 100000);
+const market = new MarketSim("Sweden", 2, 5000, 100000);
 
-let weather = new Weather();
+// let weather = new WeatherSim("test", 10, 20);
 
-let consumer1 = new Consumer("Hakansson", market, Date.now());
-let consumer2 = new Consumer("Strandberg", market, Date.now());
-
-let prosumer1 = new Prosumer("elon", market, Date.now(), 0.5, 0.5, 1000);
+let consumer1 = new ConsumerSim("Hakansson", market);
+// let consumer2 = new Consumer("Strandberg", market, Date.now());
+// name, market, wind, fillBattRatio, useBattRatio, batterySize
+// let prosumer1 = new ProsumerSim("elon", market, Date.now(), 0.5, 0.5, 1000);
 
 function main() {
     setTimeout(function() {
-        weather.generateWind();
+        // weather.update();
+        // market.generateProduction();
 
-        market.generateProduction();
-
-        prosumer1.generateProduction(weather.wind_speed);
-        prosumer1.generateConsumption();
+        // prosumer1.generateProduction(weather.wind_speed);
+        // prosumer1.generateConsumption();
 
 
-        consumer1.generateConsumption();
-        consumer2.generateConsumption();
+        // consumer1.generateConsumption();
+        // consumer2.generateConsumption();
 
         console.log("------------------------------------------------------------------------------");
-        prosumer1.display();
+        // prosumer1.update();
         console.log("------------------------------------------------------------------------------");
-        consumer1.display();
-        console.log("------------------------------------------------------------------------------");
-        consumer2.display();
-        console.log("------------------------------------------------------------------------------");
-        market.display();
+        consumer1.update();
+        // console.log("------------------------------------------------------------------------------");
+        // consumer2.display();
+        // console.log("------------------------------------------------------------------------------");
+        // market.update();
 
 
 
         main();
 
-    }, 5000);
+    }, 2000);
 }     
  
 module.exports = main();

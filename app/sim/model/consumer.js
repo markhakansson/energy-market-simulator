@@ -1,24 +1,38 @@
 var gauss = require('../../helper/gauss')
 var tools = require('../../helper/tools');
+var Consumer = require('../../db/model/consumer');
 
-class Consumer {
+class ConsumerSim {
+
     constructor(name, market) {
-        this.name = name;
-        this.market = market;
-        this.consumption = 3000; // in Wh
-        this.bought = 0;
-        this.timeMultiplier = 5;
-        this.blackout = false;
-        this.retrying = false;
+        this.consumer = new Consumer({
+            name: name,
+            market: market,
+            timestamp: Date.now(),
+            consumption: 3000,
+            bought: 0,
+            timeMultiplier: 5,
+            blackout: false,
+            retrying: false
+        });
+
+        this.consumer.save((err) => {
+            if(err) throw err;
+            console.log("Consumer " + this.consumer.name + " created and saved to db!");
+
+        });
     }
 
+
     setConsumption(consumption) {
-        this.consumption = consumption; // should be gauss distribution
+        let self = this.consumer;
+        self.consumption = consumption; // should be gauss distribution
     }
 
     generateConsumption() {
+        let self = this.consumer;
         // Yearly consumption 25,000 kWh around 70 kWh a day/ 3 kWh an hour
-        let consumption = this.consumption / 1000;
+        let consumption = self.consumption / 1000;
         let arr;
 
         // Threshold of 4 kWh. If it reaches over that point the distribution will favor smaller consumptions.
@@ -33,48 +47,66 @@ class Consumer {
             this.buyFromMarket(consumption);
         
         // If blackout has occured, try to buy from market in the future
-        } else if(this.blackout && !this.retrying) {
-            this.retrying = true;
+        } else if(self.blackout && !self.retrying) {
+            self.retrying = true;
 
-            tools.sleep(2 * this.timeMultiplier * 1000).then(() => {
+            tools.sleep(2 * self.timeMultiplier * 1000).then(() => {
                 arr = [0.8 * 3, 3, 1.2 * 3];
                 consumption = gauss.gauss(arr, 4, 0.05) * 1000;
                 this.buyFromMarket(consumption);
-                this.retrying = this.blackout;
+                self.retrying = self.blackout;
             });
         }
     }
 
     buyFromMarket(energy) {
-        let boughtEnergy = this.market.buy(energy); 
-        this.bought = boughtEnergy;
+        let self = this.consumer;
+        let boughtEnergy = self.market.buy(energy); 
+        self.bought = boughtEnergy;
         
         if(boughtEnergy == 0) {
-            this.consumption = 0;
-            this.blackout = true;
+            self.consumption = 0;
+            self.blackout = true;
 
         } else if(boughtEnergy < energy) {
-            this.consumption -= (energy - boughtEnergy);
-            this.blackout = false;
+            self.consumption -= (energy - boughtEnergy);
+            self.blackout = false;
 
         } else {
-            this.consumption = energy;
-            this.blackout = false;
+            self.consumption = energy;
+            self.blackout = false;
         }
     }
 
-    display() {
-        console.log("Consumer " + this.name + " is connected to " + this.market.name + 
-        "\n Time: " + Date(this.time).toString() + 
-        "\n Consuming: " + this.consumption + " Wh" + 
-        "\n Bought energy: " + this.bought + " Wh" +
-        "\n Price per Wh is: " + this.market.price +" SEK" +
-        "\n Blackout: " + this.blackout
-        );
+    update() {
+        let self = this.consumer;
+        self = new Consumer( {
+            name: self.name,
+            market: self.market,
+            timestamp: Date.now(),
+            consumption: self.consumption,
+            bought: self.bought,
+            timeMultiplier: self.timeMultiplier,
+            blackout: self.blackout,
+            retrying: self.retrying
+        });
+
+        self.save((err) => {
+            if(err) throw err;
+            console.log("Consumer " + self.name + " is connected to " + self.market.market.name + 
+                "\n Time: " + self.timestamp.toString() + 
+                "\n Consuming: " + self.consumption + " Wh" + 
+                "\n Bought energy: " + self.bought + " Wh" +
+                "\n TimeMultiplier: " + self.timeMultiplier +
+                "\n Price per Wh is: " + self.market.market.price +" SEK" +
+                "\n Blackout: " + self.blackout + 
+                "\n Retrying: " + self.retrying
+            )
+        });
 
     }
     
 
 }
 
-module.exports = Consumer;
+module.exports = ConsumerSim;

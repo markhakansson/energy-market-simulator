@@ -1,5 +1,5 @@
 const graphql = require('graphql');
-const Prosumer = require('../../model/prosumer');
+const Prosumer = require('../../db/model/prosumer');
 const graphqlIsoDate = require('graphql-iso-date');
 
 const { 

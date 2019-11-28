@@ -1,41 +1,57 @@
-var gauss = require('../../helper/gauss')
+var gauss = require('../../helper/gauss');
+var Weather = require('../../db/model/weather');
 
-class Weather {
-    constructor() {
-        // var weather = new Weather({
-        //     name: 'test',
-        //     timestamp: Date.now(),
-        //     wind_speed: this.generateWind(),
-        //     temperature: this.temperature(),
+class WeatherSim {
+    constructor(name, wind_speed, temperature) {
+                
+        this.weather = new Weather( {
+            name: name,    
+            timestamp: Date.now(),
+            wind_speed: wind_speed,
+            temperature: temperature
+        });
         
-        // });
-        this.wind_speed = 10;
-        this.temperature = 20;
-        // weather.save(function(err){
-        //     if (err) throw err;
-        //     console.log("Weather saved to db!")
+        this.weather.save((err) => {
+            if(err) throw err;
+            console.log("Weather " + this.weather.name + " created and saved to db!");
+
+        });
+
+
         // })
+        // Weather.findOneAndUpdate( { name: name }, this.update, { new: true, upsert: true }, (err, weather) => {
+        //     if(err) throw err;
+        //     this.weather = weather;
+
+        // });
+       
     }
 
-    setWeather(wind_speed) {
-        this.wind_speed = wind_speed;
-    }
-
-    generateWind() {
+    update() {
         var arr;
+        let self = this.weather;
         // Threshold of 20 m/s. If it reaches over that point the distribution will favor smaller wind speeds.
-        if(this.wind_speed < 15) {
-            arr = [0.5 * this.wind_speed, this.wind_speed, 1.5 * this.wind_speed];
+        if(self.wind_speed < 15) {
+            arr = [0.5 * self.wind_speed, self.wind_speed, 1.5 * self.wind_speed];
         } else {
-            arr = [0.8 * this.wind_speed, 0.9 * this.wind_speed, 0.95 * this.wind_speed, 1.1 * this.wind_speed];
-        }
-        this.wind_speed = gauss.gaussLimit(arr, 2, 0.1, 1, 40);        
-    }
+            arr = [0.8 * self.wind_speed, 0.9 * self.wind_speed, 0.95 * self.wind_speed, 1.1 * self.wind_speed];
+        } 
+        
+        this.weather = new Weather( {
+            name: self.name,    
+            timestamp: Date.now(),
+            wind_speed: gauss.gaussLimit(arr, 2, 0.1, 1, 40),
+            temperature: self.temperature
+        });
 
-    getWindSpeed() {
-        return this.wind_speed;
+        this.weather.save((err) => {
+            if(err) throw err;
+            console.log("Weather " + self.name + " windspeed has been updated to " + self.wind_speed);
+        });
+        
+
     }
 
 }
 
-module.exports = Weather;
+module.exports = WeatherSim;

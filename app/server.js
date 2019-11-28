@@ -2,12 +2,12 @@ const express = require('express');
 const express_graphql = require('express-graphql');
 const schema = require('./api/schema');
 
-// const simulator = require('.')
+//const main = require('./sim/controller/main');
+
+const simulator = require('.')
 
 const mongoose = require('mongoose');
 
-// mongoose.connect('mongodb://<dbuser>:<dbpassword>@<MongoDB URI>')
-// mongoose.connect('mongodb://test:test@127.0.0.1:27017') 
 mongoose.connect('mongodb://127.0.0.1:27017/test', { useNewUrlParser: true }); 
 
 mongoose.connection.once('open', () => {

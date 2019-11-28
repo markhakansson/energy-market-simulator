@@ -1,5 +1,5 @@
 const graphql = require('graphql');
-const Weather = require('../../model/weather');
+const Weather = require('../../db/model/weather');
 const graphqlIsoDate = require('graphql-iso-date');
 
 const { 
