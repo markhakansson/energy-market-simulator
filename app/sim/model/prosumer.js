@@ -4,11 +4,10 @@ var Prosumer = require('../../db/model/prosumer');
 
 
 class ProsumerSim {
-    constructor(name, market, wind, fillBattRatio, useBattRatio, batterySize) {
+    constructor(name, market, fillBattRatio, useBattRatio, batterySize) {
     
         this.prosumer = new Prosumer( {
             name: name,
-            wind: wind,
             market: market,
             timeMultiplier: 5,
             timestamp: Date.now(),
@@ -28,7 +27,6 @@ class ProsumerSim {
 
         this.prosumer.save((err) => {
             if(err) throw err;
-            console.log("Prosumer " + this.prosumer.name + " created and saved to db!");
 
         });
     }
@@ -51,7 +49,6 @@ class ProsumerSim {
     generateProduction(windSpeed) {    
         let self = this.prosumer;
         if(this.randomizeTurbineBreaking()) {
-            self.wind = windSpeed;
             self.production = windSpeed * 250;
             let prodDiff = self.production - self.consumption;
 
@@ -143,7 +140,6 @@ class ProsumerSim {
 
         self = new Prosumer( {
             name: self.name,
-            wind: self.wind,
             market: self.market,
             timeMultiplier: self.timeMultiplier,
             timestamp: Date.now(),
@@ -164,7 +160,6 @@ class ProsumerSim {
             if(err) throw err;
             console.log(self.name + " is connected to " + self.market.market.name +
             "\n Time: " + self.timestamp.toString() + 
-            "\n Wind: " + self.wind + " m/s" +
             "\n Producing: " + self.production + " Wh" +
             "\n Consuming: " + self.consumption + " Wh" +
             "\n Bought energy: " + self.bought + " Wh" +
