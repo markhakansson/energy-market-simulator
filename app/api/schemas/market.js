@@ -19,9 +19,11 @@ const MarketType = new GraphQLObjectType({
         name: { type: GraphQLString },
         timestamp: { type: GraphQLDateTime },
         price: { type: GraphQLFloat },
-        battery: { type: GraphQLInt },
-        consumption: { type: GraphQLInt },
-        demand: { type: GraphQLInt },
+        battery: { type: GraphQLFloat },
+        consumption: { type: GraphQLFloat },
+        demand: { type: GraphQLFloat },
+        currBatteryCap: { type: GraphQLFloat },
+        maxBatteryCap: { type: GraphQLFloat },
     })
 });
 
@@ -30,7 +32,7 @@ const MarketQueries = ({
         type: MarketType,
         args: { name: { type: GraphQLString } },
         resolve(parent, args) {
-            return Market.findOne({name: args.name});
+            return Market.findOne({name: args.name}).sort({timestamp: -1});
         }
     },
     markets: {
@@ -47,21 +49,49 @@ const MarketMutations = {
         args: {
             name: { type: new GraphQLNonNull(GraphQLString) },
             price: { type: new GraphQLNonNull(GraphQLFloat) },
-            battery: { type: new GraphQLNonNull(GraphQLInt) }, 
-            consumption: { type: new GraphQLNonNull(GraphQLInt) },
-            demand: { type: new GraphQLNonNull(GraphQLInt) },
+            maxBatteryCap: { type: new GraphQLNonNull(GraphQLFloat) },
         },
         resolve(parent, args) {
             let market = new Market({
                 name: args.name,
                 price: args.price,
                 battery: args.battery,
-                consumption: args.consumption,
-                demand: args.demand
+                consumption: 0,
+                demand: 0,
+                maxBatteryCap: args.maxBatteryCap,
+                currBatteryCap: 0,
             });
             return market.save();
         }
     },
+    updatePrice: {
+        type: MarketType,
+        args: {
+            name: { type: new GraphQLNonNull(GraphQLString) },
+            price: { type: new GraphQLNonNull(GraphQLString) },
+        },
+        resolve(parent, args) {
+            let filter = { name: args.name };
+            let data = Market.findOne(filter).sort({timestamp: -1}).exec();
+            data.then(
+                function(doc) {
+                    let market = new Market({
+                        name: doc.name,
+                        price: args.price,
+                        battery: doc.battery,
+                        consumption: doc.consumption,
+                        demand: doc.demand,
+                        currBatteryCap: doc.currBatteryCap,
+                        maxBatteryCap: doc.maxBatteryCap,
+                    });
+                    market.save();
+                },
+                function(err) {
+                    console.error(err);
+                }
+            );
+        }
+    }
 };
 
 module.exports = {MarketType, MarketQueries, MarketMutations};
