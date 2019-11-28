@@ -23,10 +23,7 @@
     "fast-stats": "*",
     "gaussian": "*",
     "graphql": "^14.5.8",
-<<<<<<< Updated upstream
     "mocha": "^6.2.2",
-=======
->>>>>>> Stashed changes
     "graphql-iso-date": "^3.6.1",
     "mongoose": "^5.7.8"
   }
