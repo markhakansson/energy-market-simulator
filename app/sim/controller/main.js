@@ -6,35 +6,35 @@ const WeatherSim = require('../model/weather');
 
 
 console.log("Simulator now running... ");
-// const market = new MarketSim("Sweden", 2, 5000, 100000);
-
+// name, price, production, maxBatteryCap
+let market = new MarketSim("Sweden", 2, 5000, 100000);
+// name, wind_speed, temperature
 let weather = new WeatherSim("sun", 10, 20);
 
-// let consumer1 = new ConsumerSim("Hakansson", market);
-// let consumer2 = new Consumer("Strandberg", market, Date.now());
-// name, market, wind, fillBattRatio, useBattRatio, batterySize
-// let prosumer1 = new ProsumerSim("elon", market, Date.now(), 0.5, 0.5, 1000);
+// name, market
+let consumer1 = new ConsumerSim("Hakansson", market);
+let consumer2 = new ConsumerSim("Strandberg", market);
+
+// name, market, fillBattRatio, useBattRatio, batterySize
+let prosumer1 = new ProsumerSim("elon", market, 0.5, 0.5, 1000);
 
 function main() {
     setTimeout(function() {
         weather.update();
-        // market.generateProduction();
+        market.generateProduction();
 
-        // prosumer1.generateProduction(weather.wind_speed);
-        // prosumer1.generateConsumption();
+        prosumer1.generateProduction(weather.weather.wind_speed);
+        prosumer1.generateConsumption();
 
 
-        // consumer1.generateConsumption();
-        // consumer2.generateConsumption();
+        consumer1.generateConsumption();
+        consumer2.generateConsumption();
 
-        // console.log("------------------------------------------------------------------------------");
-        // prosumer1.update();
-        // console.log("------------------------------------------------------------------------------");
-        // consumer1.update();
-        // console.log("------------------------------------------------------------------------------");
-        // consumer2.display();
-        // console.log("------------------------------------------------------------------------------");
-        // market.update();
+        prosumer1.update();
+        consumer1.update();
+        consumer2.update();
+        market.update();
+        console.log(weather.weather.wind_speed);
 
 
 

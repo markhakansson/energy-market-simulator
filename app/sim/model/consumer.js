@@ -18,7 +18,6 @@ class ConsumerSim {
 
         this.consumer.save((err) => {
             if(err) throw err;
-            console.log("Consumer " + this.consumer.name + " created and saved to db!");
 
         });
     }

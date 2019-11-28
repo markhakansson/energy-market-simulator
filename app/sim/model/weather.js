@@ -24,17 +24,8 @@ class WeatherSim {
         
         this.weather.save((err) => {
             if(err) throw err;
-            console.log("Weather " + this.weather.name + " created and saved to db!");
 
         });
-
-
-        // })
-        // Weather.findOneAndUpdate( { name: name }, this.update, { new: true, upsert: true }, (err, weather) => {
-        //     if(err) throw err;
-        //     this.weather = weather;
-
-        // });
        
     }
 
@@ -57,7 +48,6 @@ class WeatherSim {
 
         this.weather.save((err) => {
             if(err) throw err;
-            console.log("Weather " + self.name + " windspeed has been updated to " + self.wind_speed);
         });
         
 

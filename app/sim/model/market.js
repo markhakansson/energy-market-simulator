@@ -8,6 +8,7 @@ class MarketSim {
         this.market = new Market( {
             name: name,
             timestamp: Date.now(),
+            demand: 0,
             status: "built",
             startUp: true,
             price: price,
@@ -19,13 +20,13 @@ class MarketSim {
 
         this.market.save((err) => {
             if(err) throw err;
-            console.log("Market " + this.market.name + " created and saved to db!");
 
         });
     }
 
    buy(demand) {
        let self = this.market;
+       self.demand += demand;
        let currBatt = self.currBatteryCap - demand;
         if ( currBatt > 0  && !self.startUp) {
             /**
@@ -52,6 +53,7 @@ class MarketSim {
 
    sell(demand) {
        let self = this.market;
+       self.demand -= demand;
        let currBatt = self.currBatteryCap + demand;
        if ( currBatt <= self.maxBatteryCap ) {
               /**
@@ -104,18 +106,20 @@ class MarketSim {
         self = new Market( {
             name: self.name,
             timestamp: Date.now(),
+            demand: self.demand,
             status: self.status,
             startUp: self.startUp,
             price: self.price,
             production: self.production,
-            consumption: self.production,
+            consumption: self.production / 10,
             currBatteryCap: self.currBatteryCap,
             maxBatteryCap: self.maxBatteryCap
         });
         
         self.save((err) => {
             if(err) throw err;
-            console.log("Market " + self.name,
+            console.log("Market " + self.name +
+                "\n current demand: " + self.demand +
                 "\n status: " + self.status +
                 "\n startup: " + self.startUp +
                 "\n Time: " + self.timestamp.toString() + 

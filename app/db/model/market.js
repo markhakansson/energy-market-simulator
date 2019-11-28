@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const market = new Schema({
     name: String,
     timestamp: { type: Date, default: Date.now() },
+    demand: Number,
     status: String,
     startUp: Boolean,
     price: Number,
