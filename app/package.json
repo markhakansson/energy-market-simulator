@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha sim/tests/**/*.test.js"
   },
   "repository": {
     "type": "git",
@@ -17,12 +17,14 @@
   },
   "homepage": "https://github.com/markhakansson/m7011e-dynamic-web-systems#readme",
   "dependencies": {
+    "chai": "^4.2.0",
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
-    "graphql": "^14.5.8",
-    "mongoose": "^5.7.8",
-    "gaussian": "*",
     "fast-stats": "*",
-    "graphql-iso-date": "*"
+    "gaussian": "*",
+    "graphql": "^14.5.8",
+    "mocha": "^6.2.2",
+    "graphql-iso-date": "^3.6.1",
+    "mongoose": "^5.7.8"
   }
 }

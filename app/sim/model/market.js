@@ -91,8 +91,8 @@ class MarketSim {
         
         }
 
-        if ( self.currBatteryCap <= 0 ) {
-            self.status = "Market BLACK OUT!!!!!";
+        if ( self.currBatteryCap < 0 ) {
+            self.status = "BLACK OUT!!!!!";
             self.startUp = true;
         } 
        
