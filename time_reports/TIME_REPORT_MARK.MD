@@ -12,3 +12,4 @@
 | 2019-11-25 | 7 | Start working on the GraphQL API. Read about authorization/authentication with GraphQL |
 | 2019-11-26 | 5 | Refactor the old GraphQL implementation. Add more API functionality. |
 | 2019-11-27 | 3 | Bug fixing in the GraphQL implementation |
+| 2019-11-28 | 5 | More bug fixing in the GraphQL impl. Finish the last parts of the basic GraphQL API |
