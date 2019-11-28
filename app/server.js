@@ -1,8 +1,7 @@
 const express = require('express');
 const express_graphql = require('express-graphql');
 const schema = require('./api/schema');
-
-//const main = require('./sim/controller/main');
+const main = require('./sim/controller/main')
 
 const simulator = require('.')
 

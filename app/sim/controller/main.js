@@ -4,7 +4,6 @@ const ProsumerSim = require('../model/prosumer');
 const WeatherSim = require('../model/weather');
 
 
-
 console.log("Simulator now running... ");
 // name, price, production, maxBatteryCap
 let market = new MarketSim("Sweden", 2, 5000, 100000);
