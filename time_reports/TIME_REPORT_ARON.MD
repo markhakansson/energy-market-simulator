@@ -10,3 +10,4 @@
 |    2019-11-20|   3      Simulator implementation and API structure
 |    2019-11-25|   7      db handling and storing simulated values to db instead of print out, need to fix unique name in mongodb
 |    2019-11-26|   7      now storing weather in db and only handling variables between sim and db
+|    2019-11-27|   5      tests for simulator values using mocha and chai
