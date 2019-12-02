@@ -12,3 +12,5 @@
 |    2019-11-26|   7      now storing weather in db and only handling variables between sim and db
 |    2019-11-27|   5      tests for simulator values using mocha and chai
 |    2019-11-28|   7      simulator fixes and start of front-end implementation
+|    2019-12-01|   1      Authentication and API research
+|    2019-12-02|   3      Try to implement authentication (with middlewear) in GraphQL

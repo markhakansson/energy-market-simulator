@@ -1,10 +1,11 @@
 const express = require('express');
-const session = require('express-session');
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 const express_graphql = require('express-graphql');
 const mongoose = require('mongoose');
 const schema = require('./api/schema');
-const jwt = require('jsonwebtoken')
+const jwt = require('express-jwt')
+const User = require('../../db/model/user');
+
 // const main = require('./sim/controller/main')
 
 mongoose.connect('mongodb://127.0.0.1:27017/test', { useNewUrlParser: true }); 
@@ -16,7 +17,37 @@ mongoose.connection.once('open', () => {
 /**
  * Express
  */
-var app = express();
+const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(express.static('public'));
+
+
+// authentication middleware
+const auth = jwt({secret: 'somesuperdupersecret'})
+
+
+app.get('/user', (req, res) => {
+  req.json('test')
+});
+
+
+app.post('/user/register', auth, (req, res) => {
+  if(!req.user) {
+    return res.status(401).send('User does not exists!');
+  }
+
+  // const user = new User( {
+  //   user
+  // })
+
+  res.json( {
+    message: 'User created',
+  
+  })
+})
 /**
  * GraphQl
  */
@@ -28,52 +59,7 @@ app.listen(4000, () => console.log('Express GraphQL Server Now Running On localh
 /**
  * Authentication
  */
-app.use(bodyParser.json());
-app.use(express.static('public'));
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
 
-app.get('/login', (req, res) => {
-    let username = req.body.username;
-    let password = req.body.password;
-
-    let data = {
-        "username": username,
-        "password": password
-    };
-
-    mongoose.connection.collection('secrets').find(data, (err, res) => {
-        if(err) throw err;
-        console.log("Logged in!")
-    });
-
-    return res.redirect('prosumer.html');
-});
-
-app.post('/sign_up', (req, res) => {
-    let username = req.body.username;
-    let password = req.body.password;
-
-    let data = {
-        "username": username,
-        "password": password
-    };
-
-    mongoose.connection.collection('secrets').insertOne(data, (err, res) => {
-        if(err) throw err;
-        console.log(res + " inserted!")
-    });
-
-    return res.redirect('signup_success.html');
-});
-
-app.get('/', (req, res) => {
-    res.set({
-        'Access-control-Allow-Origin': '*'
-    });
-    return res.redirect('index.html');
-}).listen(3000, () => console.log('Server listening on port 3000'));
 
 
 
