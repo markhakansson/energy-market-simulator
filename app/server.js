@@ -1,10 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const express_graphql = require('express-graphql');
+const session = require('express-session');
 const mongoose = require('mongoose');
 const schema = require('./api/schema');
-const jwt = require('express-jwt')
-const User = require('../../db/model/user');
+const User = require('./db/model/user');
+const passport = require('passport');
+const { local } = require('./api/auth/local');
 
 // const main = require('./sim/controller/main')
 
@@ -23,65 +25,27 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(express.static('public'));
+app.use(require('body-parser').urlencoded({ extended: true }));
+app.use(
+  session( { secret: 'test', resave: true, saveUninitialized: true } )
+);
 
+app.use(passport.initialize());
+app.use(passport.session());
 
-// authentication middleware
-const auth = jwt({secret: 'somesuperdupersecret'})
-
-
-app.get('/user', (req, res) => {
-  req.json('test')
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findbyId(id);
+    done(null, user);
+  } catch (err) {
+    done(err);
+  }
 });
 
-
-app.post('/user/register', auth, (req, res) => {
-  if(!req.user) {
-    return res.status(401).send('User does not exists!');
-  }
-
-  // const user = new User( {
-  //   user
-  // })
-
-  res.json( {
-    message: 'User created',
-  
-  })
-})
-/**
- * GraphQl
- */
+app.use('/local', local);
 app.use('/graphql', express_graphql({
     schema,
     graphiql: true
 })); 
 app.listen(4000, () => console.log('Express GraphQL Server Now Running On localhost:4000/graphql'));
-/**
- * Authentication
- */
-
-
-
-
-const signToken = str => {
-    return new Promise(resolve => {
-      resolve(jwt.sign({ apiKey: str }, process.env.JWT_KEY))
-    })
-  };
-  
-  const verifyJwt = req => {
-    let token
-    if (req.query && req.query.hasOwnProperty('access_token')) {
-      token = req.query.access_token
-    } else if (req.headers.authorization && req.headers.authorization.includes('Bearer')) {
-      token = req.headers.authorization.split(' ')[1]
-    }
-    
-    return new Promise((resolve, reject) => {
-      jwt.verify(token, process.env.JWT_KEY, (error, decoded) => {
-        if (error) reject('401: User is not authenticated')
-     
-        resolve(decoded)
-      })
-    })
-  };

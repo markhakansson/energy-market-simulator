@@ -14,3 +14,4 @@
 |    2019-11-28|   7      simulator fixes and start of front-end implementation
 |    2019-12-01|   1      Authentication and API research
 |    2019-12-02|   3      Try to implement authentication (with middlewear) in GraphQL
+|    2019-12-03|   3      Implementation of GraphQL Auth, sessions and passport
