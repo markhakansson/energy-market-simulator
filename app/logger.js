@@ -16,7 +16,7 @@ const options = {
                 format: 'YYYY-MM-DD HH:mm:ss'
             }),
             format.printf(error => `${error.timestamp} ${error.level}: ${error.message}`)
-        ),
+        )
     },
     debug: {
         level: 'debug',
