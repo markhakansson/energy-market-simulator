@@ -4,11 +4,13 @@ const ConsumerQueries = require('./schemas/consumer').ConsumerQueries;
 const MarketQueries = require('./schemas/market').MarketQueries;
 const ProsumerQueries = require('./schemas/prosumer').ProsumerQueries;
 const WeatherQueries = require('./schemas/weather').WeatherQueries;
+const UserQueries = require('./schemas/user').UserQueries;
 
 const ConsumerMutations = require('./schemas/consumer').ConsumerMutations;
 const MarketMutations = require('./schemas/market').MarketMutations;
 const ProsumerMutations = require('./schemas/prosumer').ProsumerMutations;
 const WeatherMutations = require('./schemas/weather').WeatherMutations;
+const UserMutations = require('./schemas/user').UserMutations;
 
 const { 
     GraphQLObjectType,
@@ -22,6 +24,7 @@ const RootQuery = new GraphQLObjectType({
         ...ProsumerQueries,
         ...MarketQueries,
         ...WeatherQueries,
+        ...UserQueries,
     }
 });
 
@@ -32,6 +35,7 @@ const Mutation = new GraphQLObjectType({
         ...ProsumerMutations,
         ...MarketMutations,
         ...WeatherMutations,
+        ...UserMutations,
     }
 });
 

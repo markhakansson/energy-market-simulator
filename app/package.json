@@ -17,17 +17,32 @@
   },
   "homepage": "https://github.com/markhakansson/m7011e-dynamic-web-systems#readme",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "chai": "^4.2.0",
+    "ejs": "^3.0.1",
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
+    "express-session": "^1.17.0",
     "fast-stats": "*",
     "gaussian": "*",
     "graphql": "^14.5.8",
     "graphql-iso-date": "^3.6.1",
+    "install": "^0.13.0",
+    "jsonwebtoken": "^8.5.1",
     "mocha": "^6.2.2",
-    "mongoose": "^5.7.8",
+    "mongoose": "^5.7.12",
+    "npm": "^6.13.1",
+    "path": "^0.12.7",
     "morgan": "^1.9.1",
     "winston": "^3.2.1",
     "winston-daily-rotate-file": "^4.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.7.2",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
   }
 }
