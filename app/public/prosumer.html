@@ -1,9 +1,72 @@
 <!DOCTYPE html>
 <html>
+
   <head>
-    <!-- Metadata goes here -->
+    <meta charset="UTF-8" />
+    <title>Prosumer Page</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css"> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
   </head>
+ 
   <body>
-    <!-- Content goes here -->
+    <canvas id="chart"></canvas>
+
+
+    <div id = "useBatteryRatio" style="width: 100%" display="table";>
+      <p>Use battery ratio</p>
+      <div class="slidecontainer">
+        <input type="range" min="0" max="100" value="50" step="0.5" class="slider" id="useBatteryRatioSlider">
+        <p>Value: <span id="useBatteryRatioValue"></span>%</p>
+      </div>
+
+      <script>
+        var slider = document.getElementById("useBatteryRatioSlider");
+        var output = document.getElementById("useBatteryRatioValue");
+        output.innerHTML = slider.value; // Display the default slider value
+
+        // Update the current slider value (each time you drag the slider handle)
+        slider.oninput = function() {
+          output.innerHTML = this.value;
+        }
+      </script>
+
+      <script>
+        var ctx = document.getElementById('chart').getContext('2d');
+        var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
+
+            // The data for our dataset
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                datasets: [{
+                    label: 'My First dataset',
+                    //backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: [0, 10, 5, 2, 20, 30, 45]
+                }]
+            },
+
+            // Configuration options go here
+            options: {
+              scales: {
+                xAxes: [{
+                    gridLines: {
+                        display:false
+                    }
+                }],
+                yAxes: [{
+                    gridLines: {
+                        display:false
+                    }   
+                }]
+              }
+            }
+        });        
+      </script>
+
+    </div>
+
   </body>
 </html>
