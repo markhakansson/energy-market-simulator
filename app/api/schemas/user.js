@@ -4,11 +4,10 @@ const Consumer = require('../../db/model/consumer');
 const Prosumer = require('../../db/model/prosumer');
 const Market = require('../../db/model/market');
 
+
 const { ConsumerType } = require('../../api/schemas/consumer');
 const { ProsumerType } = require('../../api/schemas/prosumer');
 const { MarketType } = require('../../api/schemas/market');
-
-
 
 
 const {
@@ -48,6 +47,8 @@ const UserType = new GraphQLObjectType({
     }
   })
 });
+
+
 
 const UserMutations = {
   loginUser: {

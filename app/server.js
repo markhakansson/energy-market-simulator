@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const schema = require('./api/schema');
 const User = require('./db/model/user');
 const passport = require('passport');
-const { local } = require('./api/auth/local');
+const auth = require('./api/auth/auth');
 
 // const main = require('./sim/controller/main')
 
@@ -42,10 +42,9 @@ passport.deserializeUser(async (id, done) => {
     done(err);
   }
 });
-
-app.use('/local', local);
+app.use('/auth', auth);
 app.use('/graphql', express_graphql({
     schema,
-    graphiql: true
+    graphiql: true,
 })); 
 app.listen(4000, () => console.log('Express GraphQL Server Now Running On localhost:4000/graphql'));

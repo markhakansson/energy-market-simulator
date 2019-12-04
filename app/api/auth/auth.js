@@ -1,5 +1,5 @@
 // http://www.passportjs.org/packages/passport-local/
-const local = require('express').Router();
+const auth = require('express').Router();
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('../../db/model/user');
@@ -22,6 +22,6 @@ passport.use(new LocalStrategy(
     }
 ));
 
-local.get('/login', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' }));
+auth.get('/login', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' }));
 
-module.exports = local;
+module.exports = auth;
