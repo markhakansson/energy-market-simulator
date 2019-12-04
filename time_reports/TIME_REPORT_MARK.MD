@@ -13,3 +13,5 @@
 | 2019-11-26 | 5 | Refactor the old GraphQL implementation. Add more API functionality. |
 | 2019-11-27 | 3 | Bug fixing in the GraphQL implementation |
 | 2019-11-28 | 5 | More bug fixing in the GraphQL impl. Finish the last parts of the basic GraphQL API |
+| 2019-11-29 | 4 | Fix logger and setup CI |
+| 2019-12-03 | 4 | Start on prosumer front-end, contemplated on what tools to use |
