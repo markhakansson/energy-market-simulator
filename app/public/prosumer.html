@@ -35,43 +35,80 @@
         <div class="col-md" id="useBatteryRatio" style="width: 100%" display="table">
           <h2>Battery settings</h2>
           
-          <!-- These sliders should only update after the user no longer clicks on the slider -->
+          <!-- TODO: These sliders should only update after the user no longer clicks on the slider -->
           <p>Use battery ratio</p>
           <input type="range" min="0" max="100" value="50" step="0.5" class="slider" id="useBatteryRatioSlider">
           <p>Value: <span id="useBatteryRatioValue"></span>%</p>
-          <script>
-            updateSliderVal("useBatteryRatioSlider", "useBatteryRatioValue");
-          </script>
+          <script>updateSliderVal("useBatteryRatioSlider", "useBatteryRatioValue");</script>
 
           <p>Fill battery ratio</p>
           <input type="range" min="0" max="100" value="50" step="0.5" class="slider" id="fillBatteryRatioSlider">
           <p>Value: <span id="fillBatteryRatioValue"></span>%</p>
-          <script>
-            updateSliderVal("fillBatteryRatioSlider", "fillBatteryRatioValue");
-          </script>
+          <script>updateSliderVal("fillBatteryRatioSlider", "fillBatteryRatioValue");</script>
  
         </div>
 
         <div class="col-lg">
           <h2>Production</h2>
           <canvas id="chart"></canvas>
-
-          <script>
-            productionChart();
-          </script>
+          <script>productionChart();</script>
         </div>
+
       </div>
 
+      <h2>Information</h2>
       <div class="row">
-        <h2>Information</h2>
-        <!-- Display wind, production etc. as values! -->
-      </div>
+        <!-- Display wind, production etc. as values! -->  
+        <div class="col-md">
+          <ul>
+            <li>Current wind speed:</li>
+            <li>Current production:</li>
+            <li>Current consumption:</li>
+          </ul>
+        </div>
 
+        <div class="col-md">
+          <ul>
+            <li>Net production:</li>
+            <li>Battery capacity:</li>
+            <li>Market price:</li>
+          </ul>
+        </div>
+
+      </div>
     </div>
 
     <div class="container" id="profile" style="display:none">
       <h2>Profile</h2>
-      <p>This is the profile page test. Just a simple paragraph.</p>
+
+      <div class="row">
+
+        <div class="col-md">
+          <form>
+            <div class="form-group">
+              <label for="exampleInputEmail1">Email address</label>
+              <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+              <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Password</label>
+              <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+            </div>
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" id="exampleCheck1">
+              <label class="form-check-label" for="exampleCheck1">Check me out</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+
+        <div class="col-sm">
+          <img src="images/blank-profile.webp" class="img-fluid" alt="Profile picture">
+        </div>
+
+
+      </div>  
+
     </div>
 
   </body>
