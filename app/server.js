@@ -30,6 +30,7 @@ app.use(
   session( { secret: 'test', resave: true, saveUninitialized: true } )
 );
 
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -48,3 +49,24 @@ app.use('/graphql', express_graphql({
     graphiql: true,
 })); 
 app.listen(4000, () => console.log('Express GraphQL Server Now Running On localhost:4000/graphql'));
+
+// var testUser = new User({
+//   username: "test",
+//   password: "test123",
+// });
+
+// testUser.save();
+
+// User.findOne( {username: 'test'}, function(err, user) {
+//   if(err) throw err;
+
+//   user.comparePassword('test123', function(err, isMatch) {
+//     if(err) throw err;
+//     console.log('test123: ', isMatch);
+//   });
+
+//   user.comparePassword('hora', function(err, isMatch) {
+//     if(err) throw err;
+//     console.log('test123: ', isMatch);
+//   });
+// });

@@ -58,15 +58,22 @@ const UserMutations = {
       password: { type: new GraphQLNonNull(GraphQLString) }
     },
     resolve(parent, args, req) {
-      const user = User.findOne( { username: args.username });
-      if (!user) {
-        throw new Error('Could not find user: ' + args.username);
-      } else if (!user.correctPassword(args.password)) {
-        throw new Error('Incorrect password for user: ' + args.username);
-      } else {
-        req.login(user, error => (error ? error : user));
-        return true;
-      }
+      User.findOne( { username: args.username }, function(err, user) {
+        if (err) throw err;
+
+        if(!user) {
+          throw new Error('Could not find user: ' + args.username);
+        } 
+        user.comparePassword(args.password, function(err, isMatch) {
+          if(err) throw new Error('Incorrect password for user: ' + args.username);
+
+          if(isMatch) {
+            req.login(user, error => (error ? error : user));
+            return true;
+          }
+
+        });
+      });
     }
   }
 };
