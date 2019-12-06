@@ -4,68 +4,74 @@
   <head>
     <meta charset="UTF-8" />
     <title>Prosumer Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="css/style.css"> 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="js/slider.js"></script>  
+    <script src="js/charts.js"></script>
+    <script src="js/scripts.js"></script>
   </head>
  
   <body>
-    <canvas id="chart"></canvas>
+    <div class="container" id="navbar">      
+      <h1>Prosumer's Dashboard</h1>
+      <ul class="nav nav-tabs">
+        <li class="nav-item" id="nav-monitor">
+          <a class="nav-link active" href="#">Monitor</a>
+        </li>
+        <li class="nav-item" id="nav-profile">
+          <a class="nav-link" href="#">Profile</a>
+        </li>
+      </ul>
+      <br>
+    </div>
 
+    <div class="container" id="monitor">
+      <div class="row">
 
-    <div id = "useBatteryRatio" style="width: 100%" display="table";>
-      <p>Use battery ratio</p>
-      <div class="slidecontainer">
-        <input type="range" min="0" max="100" value="50" step="0.5" class="slider" id="useBatteryRatioSlider">
-        <p>Value: <span id="useBatteryRatioValue"></span>%</p>
+        <div class="col-md" id="useBatteryRatio" style="width: 100%" display="table">
+          <h2>Battery settings</h2>
+          
+          <!-- These sliders should only update after the user no longer clicks on the slider -->
+          <p>Use battery ratio</p>
+          <input type="range" min="0" max="100" value="50" step="0.5" class="slider" id="useBatteryRatioSlider">
+          <p>Value: <span id="useBatteryRatioValue"></span>%</p>
+          <script>
+            updateSliderVal("useBatteryRatioSlider", "useBatteryRatioValue");
+          </script>
+
+          <p>Fill battery ratio</p>
+          <input type="range" min="0" max="100" value="50" step="0.5" class="slider" id="fillBatteryRatioSlider">
+          <p>Value: <span id="fillBatteryRatioValue"></span>%</p>
+          <script>
+            updateSliderVal("fillBatteryRatioSlider", "fillBatteryRatioValue");
+          </script>
+ 
+        </div>
+
+        <div class="col-lg">
+          <h2>Production</h2>
+          <canvas id="chart"></canvas>
+
+          <script>
+            productionChart();
+          </script>
+        </div>
       </div>
 
-      <script>
-        var slider = document.getElementById("useBatteryRatioSlider");
-        var output = document.getElementById("useBatteryRatioValue");
-        output.innerHTML = slider.value; // Display the default slider value
+      <div class="row">
+        <h2>Information</h2>
+        <!-- Display wind, production etc. as values! -->
+      </div>
 
-        // Update the current slider value (each time you drag the slider handle)
-        slider.oninput = function() {
-          output.innerHTML = this.value;
-        }
-      </script>
+    </div>
 
-      <script>
-        var ctx = document.getElementById('chart').getContext('2d');
-        var chart = new Chart(ctx, {
-            // The type of chart we want to create
-            type: 'line',
-
-            // The data for our dataset
-            data: {
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                datasets: [{
-                    label: 'My First dataset',
-                    //backgroundColor: 'rgb(255, 99, 132)',
-                    borderColor: 'rgb(255, 99, 132)',
-                    data: [0, 10, 5, 2, 20, 30, 45]
-                }]
-            },
-
-            // Configuration options go here
-            options: {
-              scales: {
-                xAxes: [{
-                    gridLines: {
-                        display:false
-                    }
-                }],
-                yAxes: [{
-                    gridLines: {
-                        display:false
-                    }   
-                }]
-              }
-            }
-        });        
-      </script>
-
+    <div class="container" id="profile" style="display:none">
+      <h2>Profile</h2>
+      <p>This is the profile page test. Just a simple paragraph.</p>
     </div>
 
   </body>

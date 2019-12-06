@@ -1,0 +1,49 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es6": true,
+        "node": true,
+        "mongo": true,
+        "mocha": true
+    },
+    "extends": [
+        "standard"
+    ],
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018
+    },
+    "rules": {
+        "semi": "off",
+        "no-unused-vars": "warn",
+        "camelcase": "warn",
+        "indent": ["warn", 4],
+        "no-trailing-spaces": "warn",
+        "no-multiple-empty-lines": "warn",
+        "quotes": "warn",
+        "prefer-const": "warn",
+        "quote-props": "warn",
+        "keyword-spacing": "warn",
+        "no-prototype-builtins": "warn",
+        "prefer-promise-reject-errors": "warn",
+        "eol-last": "warn",
+        "comma-dangle": "warn",
+        "space-before-function-paren": "warn",
+        "eqeqeq": "warn",
+        "space-in-parens": "warn",
+        "padded-blocks": "warn",
+        "no-multi-spaces": "warn",
+        "object-curly-spacing": "warn",
+        "space-before-blocks": "warn",
+        "no-undef": "warn",
+        "no-useless-constructor": "warn",
+        "space-unary-ops": "warn",
+        "comma-spacing": "warn",
+        "object-curly-newline": "warn",
+        "key-spacing": "warn"
+    }
+}
