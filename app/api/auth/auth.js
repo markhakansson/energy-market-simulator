@@ -6,22 +6,38 @@ const User = require('../../db/model/user');
 
 passport.use(new LocalStrategy(
     
-    (username, password, done) => {
-        User.findOne( {username: username }, (err, user) => {
+    (username, done) => {
+        User.findOne( {username: username }, function(err, user) {
             if (err) { 
                 return done(err); 
             }
             if (!user) { 
                 return done(null, false); 
             }
-            if (!user.verifyPassword(password)) { 
-                return done(null, false); 
-            }
-            return done(null, user);
+            user.comparePassword(args.password, function(err, isMatch) {
+                if(err) throw new Error('Incorrect password for user: ' + args.username);
+      
+                if(isMatch) {
+                  return done(null, user);
+                }
+
+                return done(null, false);
+      
+            });
         })
     }
 ));
 
-auth.get('/login', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' }));
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findbyId(id);
+    done(null, user);
+  } catch (err) {
+    done(err);
+  }
+});
+
+auth.post('/login', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' , failureFlash: true } ));
 
 module.exports = auth;

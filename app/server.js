@@ -7,6 +7,13 @@ const schema = require('./api/schema');
 const User = require('./db/model/user');
 const passport = require('passport');
 const auth = require('./api/auth/auth');
+const bcrypt = require('bcrypt');
+
+
+/**
+ * resolve(parent, args, request) {
+        if (!request.user) throw new Error('Only users can create favorites.');
+ */
 
 // const main = require('./sim/controller/main')
 
@@ -30,20 +37,11 @@ app.use(
   session( { secret: 'test', resave: true, saveUninitialized: true } )
 );
 
-
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findbyId(id);
-    done(null, user);
-  } catch (err) {
-    done(err);
-  }
-});
 app.use('/auth', auth);
+
 app.use('/graphql', express_graphql({
     schema,
     graphiql: true,

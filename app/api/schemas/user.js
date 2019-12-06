@@ -59,16 +59,18 @@ const UserMutations = {
     },
     resolve(parent, args, req) {
       User.findOne( { username: args.username }, function(err, user) {
-        if (err) throw err;
+        // Removed to avoid throwing error with possible sensetive data, see OWASP
+        // if (err) throw err;
 
         if(!user) {
           throw new Error('Could not find user: ' + args.username);
         } 
-        user.comparePassword(args.password, function(err, isMatch) {
-          if(err) throw new Error('Incorrect password for user: ' + args.username);
+        user.comparePassword(args.password, function(err, isMatch) { // Avoiding to throw errors here
+          if(!isMatch) throw new Error('Incorrect password for user: ' + args.username);
 
           if(isMatch) {
-            req.login(user, error => (error ? error : user));
+            req.login(user, error => (error ? error : user)); // Passport login
+            console.log(args.username + " is now logged in!");
             return true;
           }
 
