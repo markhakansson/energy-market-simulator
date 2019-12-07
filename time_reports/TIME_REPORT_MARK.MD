@@ -15,3 +15,6 @@
 | 2019-11-28 | 5 | More bug fixing in the GraphQL impl. Finish the last parts of the basic GraphQL API |
 | 2019-11-29 | 4 | Fix logger and setup CI |
 | 2019-12-03 | 4 | Start on prosumer front-end, contemplated on what tools to use |
+| 2019-12-04 | 3 | Meeting with Karvonen. Discuss about the GraphQL tools for auth. |
+| 2019-12-05 | 4 | Look into GraphQL context and authentication + authorization. Toying around with it. |
+| 2019-12-06 | 4 | Add more placeholders for future features on the prosumer page. Will update it when the API is complete.|
