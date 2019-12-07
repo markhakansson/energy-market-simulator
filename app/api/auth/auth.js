@@ -6,7 +6,7 @@ const User = require('../../db/model/user');
 
 passport.use(new LocalStrategy(
     
-    (username, done) => {
+    (username, password, done) => {
         User.findOne( {username: username }, function(err, user) {
             if (err) { 
                 return done(err); 
@@ -14,8 +14,8 @@ passport.use(new LocalStrategy(
             if (!user) { 
                 return done(null, false); 
             }
-            user.comparePassword(args.password, function(err, isMatch) {
-                if(err) throw new Error('Incorrect password for user: ' + args.username);
+            user.comparePassword(password, function(err, isMatch) {
+                if(err) throw new Error('Incorrect password for user: ' + username);
       
                 if(isMatch) {
                   return done(null, user);
@@ -28,16 +28,18 @@ passport.use(new LocalStrategy(
     }
 ));
 
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findbyId(id);
-    done(null, user);
-  } catch (err) {
-    done(err);
-  }
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+ 
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user) {
+    done(err, user);
+  });
 });
 
-auth.post('/login', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' , failureFlash: true } ));
+auth.post('/', passport.authenticate('local', { failureRedirect: '/error'}), function(req, res) {
+  res.redirect('/success?username=' + req.user.username);
+});
 
 module.exports = auth;

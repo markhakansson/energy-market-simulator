@@ -31,7 +31,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-app.use(express.static('public'));
+app.get('/', (req, res) => res.sendFile('index.html', { root : __dirname + '/public'}));
+// app.use(express.static('public'));
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(
   session( { secret: 'test', resave: true, saveUninitialized: true } )
@@ -40,12 +41,16 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/auth', auth);
+app.get('/success', (req, res) => res.send("Welcome " + req.query.username+ "!!"));
+app.get('/error', (req, res) => res.send("error logging in"));
+
+app.use('/', auth);
 
 app.use('/graphql', express_graphql({
     schema,
     graphiql: true,
 })); 
+
 app.listen(4000, () => console.log('Express GraphQL Server Now Running On localhost:4000/graphql'));
 
 // var testUser = new User({
