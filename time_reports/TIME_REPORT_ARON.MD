@@ -17,3 +17,4 @@
 |    2019-12-03|   3      Implementation of GraphQL Auth, sessions and passport
 |    2019-12-04|   4      Auth implementation and bcrypt hashing of passwords in document (db)
 |    2019-12-06|   3      Grapql query user in resolver db with hashed password (bcrypt), next is to get login page working with graphql
+|    2019-12-07|   2      Login page using Rest in express instead of a grapqhl query
