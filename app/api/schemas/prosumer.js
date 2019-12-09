@@ -18,7 +18,7 @@ const ProsumerType = new GraphQLObjectType({
         name: { type: GraphQLString },
         market: { type: GraphQLString },
         currBatteryCap: { type: GraphQLFloat },
-        comsumption: { type: GraphQLFloat },
+        consumption: { type: GraphQLFloat },
         timestamp: { type: GraphQLDateTime },
         production: { type: GraphQLFloat },
         maxBatteryCap: { type: GraphQLFloat },
