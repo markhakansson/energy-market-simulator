@@ -45,6 +45,7 @@
         "space-unary-ops": "warn",
         "comma-spacing": "warn",
         "object-curly-newline": "warn",
-        "key-spacing": "warn"
+        "key-spacing": "warn",
+        "spaced-comment": "warn"
     }
 }
