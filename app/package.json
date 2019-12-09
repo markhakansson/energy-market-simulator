@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "mocha sim/tests/**/*.test.js",
-    "serve": "nodemon server.js"
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
