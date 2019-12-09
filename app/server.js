@@ -8,6 +8,8 @@ const User = require('./db/model/user');
 const passport = require('passport');
 const auth = require('./api/auth/auth');
 const bcrypt = require('bcrypt');
+const flash    = require('connect-flash');
+
 
 
 /**
@@ -27,12 +29,13 @@ mongoose.connection.once('open', () => {
  * Express
  */
 const app = express();
+app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-app.get('/', (req, res) => res.sendFile('index.html', { root : __dirname + '/public'}));
-// app.use(express.static('public'));
+
+app.use(express.static('public'));
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(
   session( { secret: 'test', resave: true, saveUninitialized: true } )
@@ -40,10 +43,7 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.get('/success', (req, res) => res.send("Welcome " + req.query.username+ "!!"));
-app.get('/error', (req, res) => res.send("error logging in"));
-
+app.use(flash());
 app.use('/', auth);
 
 app.use('/graphql', express_graphql({
