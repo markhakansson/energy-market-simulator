@@ -9,6 +9,7 @@ const passport = require('passport');
 const auth = require('./api/auth/auth');
 const bcrypt = require('bcrypt');
 const flash    = require('connect-flash');
+const routes = require('./routes/index');
 
 /**
  * resolve(parent, args, request) {
@@ -48,5 +49,7 @@ app.use('/graphql', express_graphql({
     schema,
     graphiql: true,
 })); 
+
+app.use(routes);
 
 app.listen(4000, () => console.log('Express GraphQL Server Now Running On localhost:4000/graphql'));
