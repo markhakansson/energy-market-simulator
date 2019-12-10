@@ -19,8 +19,8 @@ const flash    = require('connect-flash');
 
 // const main = require('./sim/controller/main')
 
-mongoose.connect('mongodb://127.0.0.1:27017/test', { useNewUrlParser: true }); 
-mongoose.connection.on('error', console.log.bind(console, "CONNECTION ERROR!"));
+mongoose.connect('mongodb://127.0.0.1:27017/test', { useNewUrlParser: true });
+mongoose.connection.on('error', console.log.bind(console, 'CONNECTION ERROR!'));
 mongoose.connection.once('open', () => {
     console.log('conneted to database');
 });

@@ -2,9 +2,9 @@ const graphql = require('graphql');
 const Prosumer = require('../../db/model/prosumer');
 const graphqlIsoDate = require('graphql-iso-date');
 
-const { 
+const {
     GraphQLObjectType, GraphQLString, GraphQLFloat,
-    GraphQLID, GraphQLInt, GraphQLNonNull 
+    GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLBoolean
 } = graphql;
 
 const {
@@ -14,11 +14,11 @@ const {
 const ProsumerType = new GraphQLObjectType({
     name: 'Prosumer',
     fields: () => ({
-        id: { type: GraphQLID  },
+        id: { type: GraphQLID },
         name: { type: GraphQLString },
         market: { type: GraphQLString },
-        currBatteryCap: { type: GraphQLFloat},
-        comsumption: { type: GraphQLFloat },
+        currBatteryCap: { type: GraphQLFloat },
+        consumption: { type: GraphQLFloat },
         timestamp: { type: GraphQLDateTime },
         production: { type: GraphQLFloat },
         maxBatteryCap: { type: GraphQLFloat },
@@ -33,8 +33,8 @@ const ProsumerQueries = {
     prosumer: {
         type: ProsumerType,
         args: { name: { type: GraphQLString } },
-        resolve(parent, args) {
-            return Prosumer.findOne({name: args.name}).sort({timestamp: -1});
+        resolve (parent, args) {
+            return Prosumer.findOne({ name: args.name }).sort({ timestamp: -1 });
         }
     },
 };
@@ -45,10 +45,10 @@ const ProsumerMutations = {
         args: {
             name: { type: new GraphQLNonNull(GraphQLString) },
             market: { type: new GraphQLNonNull(GraphQLString) },
-            maxBatteryCap: { type: new GraphQLNonNull(GraphQLInt) }, 
+            maxBatteryCap: { type: new GraphQLNonNull(GraphQLInt) }
         },
-        resolve(parent, args) {
-            let prosumer = new Prosumer({
+        resolve (parent, args) {
+            const prosumer = new Prosumer({
                 name: args.name,
                 market: args.market,
                 consumption: 0,
@@ -57,22 +57,24 @@ const ProsumerMutations = {
                 useBatteryRatio: 0,
                 currBatteryCap: 0,
                 maxBatteryCap: args.maxBatteryCap,
+                timestamp: Date.now()
             });
-            return prosumer.save();
+            prosumer.save();
+            return prosumer;
         }
     },
     updateFillBatteryRatio: {
-        type: ProsumerType,
+        type: GraphQLBoolean,
         args: {
             name: { type: new GraphQLNonNull(GraphQLFloat) },
-            fillBatteryRatio: { type: new GraphQLNonNull(GraphQLFloat) },
+            fillBatteryRatio: { type: new GraphQLNonNull(GraphQLFloat) }
         },
-        resolve(parent, args) {
-            let filter = {name: args.name };
-            let data = Prosumer.findOne(filter).sort({timestamp: -1}).exec();
-            data.then(
-                function(doc) {
-                    let prosumer = new Prosumer({
+        resolve (parent, args) {
+            const filter = { name: args.name };
+            const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
+            return data.then(
+                doc => {
+                    const prosumer = new Prosumer({
                         name: doc.name,
                         market: doc.market,
                         production: doc.production,
@@ -81,27 +83,30 @@ const ProsumerMutations = {
                         maxBatteryCap: doc.maxBatteryCap,
                         fillBatteryRatio: args.fillBatteryRatio,
                         useBatteryRatio: doc.useBatteryRatio,
+                        timestamp: Date.now()
                     });
                     prosumer.save();
+                    return true;
                 },
-                function(err) {
+                err => {
                     console.error(err);
+                    return false;
                 }
             );
         }
     },
     updateUseBatteryRatio: {
-        type: ProsumerType,
+        type: GraphQLBoolean,
         args: {
             name: { type: new GraphQLNonNull(GraphQLFloat) },
-            useBatteryRatio: { type: new GraphQLNonNull(GraphQLFloat)},
+            useBatteryRatio: { type: new GraphQLNonNull(GraphQLFloat) }
         },
-        resolve(parent, args) {
-            let filter = {name: args.name };
-            let data = Prosumer.findOne(filter).sort({timestamp: -1}).exec();
-            data.then(
-                function(doc) {
-                    let prosumer = new Prosumer({
+        resolve (parent, args) {
+            const filter = { name: args.name };
+            const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
+            return data.then(
+                doc => {
+                    const prosumer = new Prosumer({
                         name: doc.name,
                         market: doc.market,
                         production: doc.production,
@@ -110,27 +115,30 @@ const ProsumerMutations = {
                         maxBatteryCap: doc.maxBatteryCap,
                         fillBatteryRatio: doc.fillBatteryRatio,
                         useBatteryRatio: args.useBatteryRatio,
+                        timestamp: Date.now()
                     });
                     prosumer.save();
+                    return true;
                 },
-                function(err) {
+                err => {
                     console.error(err);
+                    return false;
                 }
             );
         }
     },
     updateProsumerProduction: {
-        type: ProsumerType,
+        type: GraphQLBoolean,
         args: {
             name: { type: new GraphQLNonNull(GraphQLString) },
-            production: { type: new GraphQLNonNull(GraphQLFloat) },
+            production: { type: new GraphQLNonNull(GraphQLFloat) }
         },
-        resolve(parent, args) {
-            let filter = { name: args.name };
-            let data = Prosumer.findOne(filter).sort({timestamp: -1}).exec();
-            data.then(
-                function(doc) {
-                    let prosumer = new Prosumer({
+        resolve (parent, args) {
+            const filter = { name: args.name };
+            const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
+            return data.then(
+                doc => {
+                    const prosumer = new Prosumer({
                         name: doc.name,
                         market: doc.market,
                         production: args.production,
@@ -139,27 +147,30 @@ const ProsumerMutations = {
                         maxBatteryCap: doc.maxBatteryCap,
                         fillBatteryRatio: doc.fillBatteryRatio,
                         useBatteryRatio: doc.useBatteryRatio,
+                        timestamp: Date.now()
                     });
                     prosumer.save();
+                    return true;
                 },
-                function(err){
+                err => {
                     console.error(err);
+                    return false;
                 }
             );
         }
     },
     updateProsumerConsumption: {
-        type: ProsumerType,
+        type: GraphQLBoolean,
         args: {
             name: { type: new GraphQLNonNull(GraphQLString) },
-            consumption: { type: new GraphQLNonNull(GraphQLFloat) },
+            consumption: { type: new GraphQLNonNull(GraphQLFloat) }
         },
-        resolve(parent, args) {
-            let filter = { name: args.name };
-            let data = Prosumer.findOne(filter).sort({timestamp: -1}).exec();
-            data.then(
-                function(doc) {
-                    let prosumer = new Prosumer({
+        resolve (parent, args) {
+            const filter = { name: args.name };
+            const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
+            return data.then(
+                doc => {
+                    const prosumer = new Prosumer({
                         name: doc.name,
                         market: doc.market,
                         production: doc.production,
@@ -168,15 +179,18 @@ const ProsumerMutations = {
                         maxBatteryCap: doc.maxBatteryCap,
                         fillBatteryRatio: doc.fillBatteryRatio,
                         useBatteryRatio: doc.useBatteryRatio,
+                        timestamp: Date.now()
                     });
                     prosumer.save();
+                    return true;
                 },
-                function(err) {
+                err => {
                     console.error(err);
+                    return false;
                 }
             );
         }
     }
 };
 
-module.exports = {ProsumerType, ProsumerQueries, ProsumerMutations};
+module.exports = { ProsumerType, ProsumerQueries, ProsumerMutations };

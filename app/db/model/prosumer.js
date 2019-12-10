@@ -6,7 +6,7 @@ const prosumer = new Schema({
     wind: Number,
     market: Object,
     timeMultiplier: Number,
-    timestamp: { type: Date, default: Date.now() },
+    timestamp: { type: Date, default: new Date() },
     production: Number,
     consumption: Number,
     currBatteryCap: Number,
