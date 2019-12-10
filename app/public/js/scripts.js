@@ -22,7 +22,8 @@ $(document).ready(function () {
     setInterval(updateInformation, 100);
 });
 
-function updateInformation() {
+// should be run server-side to get session data
+function updateInformation () {
     $.ajax({
         url: 'http://localhost:4000/graphql',
         contentType: 'application/json',

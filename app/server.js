@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const schema = require('./api/schema');
 // const main = require('./sim/controller/main')
 
-mongoose.connect('mongodb://127.0.0.1:27017/test', { useNewUrlParser: true });
+mongoose.connect('mongodb://127.0.0.1:27017/test', { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connection.on('error', console.log.bind(console, 'CONNECTION ERROR!'));
 mongoose.connection.once('open', () => {
     console.log('conneted to database');
