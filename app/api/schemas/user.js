@@ -1,50 +1,85 @@
 const graphql = require('graphql');
 const User = require('../../db/model/user');
+const Consumer = require('../../db/model/consumer');
+const Prosumer = require('../../db/model/prosumer');
+const Market = require('../../db/model/market');
 
-const { 
-    GraphQLObjectType, GraphQLString, GraphQLID, GraphQLNonNull, 
-} = graphql;
+
+const { ConsumerType } = require('../../api/schemas/consumer');
+const { ProsumerType } = require('../../api/schemas/prosumer');
+const { MarketType } = require('../../api/schemas/market');
+
+
+const {
+    GraphQLObjectType,
+    GraphQLString,
+    GraphQLList,
+    GraphQLID,
+    GraphQLNonNull,
+    GraphQLSchema,
+    GraphQLBoolean
+  } = graphql;
+
 
 const UserType = new GraphQLObjectType({
-    name: 'User',
-    description: 'User type definition.',
-    fields: () => ({
-        id: { type: GraphQLNonNull(GraphQLID)  },
-        username: { type: GraphQLNonNull(GraphQLString) },
-        apiKey: { type: GraphQLNonNull(GraphQLString) }
-    })
+  name: 'User',
+  fields: () => ({
+    id: { type: GraphQLNonNull(GraphQLID) },
+    username: { type: GraphQLNonNull(GraphQLString) },
+    password: { type: GraphQLNonNull(GraphQLString) },
+    consumer: {
+      type: new GraphQLList(ConsumerType),
+      resolve(parent, args) {
+        return Consumer.find( { name: parent.username } );
+      }
+    },
+    prosumer: {
+      type: new GraphQLList(ProsumerType),
+      resolve(parent, args) {
+        return Prosumer.find( { name: parent.username } );
+      }
+    },
+    market: {
+      type: new GraphQLList(MarketType),
+      resolve(parent, args) {
+        return Market.find( { name: parent.username });
+      }
+    }
+  })
 });
 
-const UserQueries = {
-    user: {
-        type: UserType,
-        args: { name: { type: GraphQLString },
-                password: { type: GraphQLString }
-    },
-        resolve(parent, args) {
-            return User.findOne({name: args.name, password: args.password});
-        }
-    }
-};
+
 
 const UserMutations = {
-    addUser: {
-        type: UserType,
-        args: {
-            name: { type: new GraphQLNonNull(GraphQLString)},
-            password: { type: new GraphQLNonNull(GraphQLString) },
-        },
-        resolve(parent, args) {
-            let user = new Consumer({
-                name: args.name,
-                password: args.password,
-                timestamp: Date.now(),
-            });
-            return user.save();
-        }
-    }
+  loginUser: {
+    type: GraphQLBoolean,
+    args: {
+      username: { type: new GraphQLNonNull(GraphQLString) },
+      password: { type: new GraphQLNonNull(GraphQLString) }
+    },
+    resolve(parent, args, req) {
+      User.findOne( { username: args.username }, function(err, user) {
+        // Removed to avoid throwing error with possible sensetive data, see OWASP
+        // if (err) throw err;
 
+        if(!user) {
+          throw new Error('Could not find user: ' + args.username);
+        } 
+        user.comparePassword(args.password, function(err, isMatch) { // Avoiding to throw errors here
+          if(!isMatch) throw new Error('Incorrect password for user: ' + args.username);
+
+          if(isMatch) {
+            req.login(user, error => (error ? error : user)); // Passport login
+            console.log(args.username + " is now logged in!");
+            return true;
+          }
+
+        });
+      });
+    }
+  }
 };
 
-module.exports = {UserType, UserQueries, UserMutations};
+module.exports = { UserType, UserMutations };
 
+ 

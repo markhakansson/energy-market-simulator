@@ -1,10 +1,22 @@
 const express = require('express');
-const session = require('express-session');
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 const express_graphql = require('express-graphql');
+const session = require('express-session');
 const mongoose = require('mongoose');
 const schema = require('./api/schema');
-const jwt = require('jsonwebtoken')
+const User = require('./db/model/user');
+const passport = require('passport');
+const auth = require('./api/auth/auth');
+const bcrypt = require('bcrypt');
+const flash    = require('connect-flash');
+
+
+
+/**
+ * resolve(parent, args, request) {
+        if (!request.user) throw new Error('Only users can create favorites.');
+ */
+
 // const main = require('./sim/controller/main')
 
 mongoose.connect('mongodb://127.0.0.1:27017/test', { useNewUrlParser: true }); 
@@ -16,86 +28,48 @@ mongoose.connection.once('open', () => {
 /**
  * Express
  */
-var app = express();
-/**
- * GraphQl
- */
-app.use('/graphql', express_graphql({
-    schema,
-    graphiql: true
-})); 
-app.listen(4000, () => console.log('Express GraphQL Server Now Running On localhost:4000/graphql'));
-/**
- * Authentication
- */
+const app = express();
+app.set('view engine', 'ejs');
 app.use(bodyParser.json());
-app.use(express.static('public'));
 app.use(bodyParser.urlencoded({
-    extended: true
+  extended: true
 }));
 
-app.get('/login', (req, res) => {
-    let username = req.body.username;
-    let password = req.body.password;
+app.use(express.static('public'));
+app.use(require('body-parser').urlencoded({ extended: true }));
+app.use(
+  session( { secret: 'test', resave: true, saveUninitialized: true } )
+);
 
-    let data = {
-        "username": username,
-        "password": password
-    };
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+app.use('/', auth);
 
-    mongoose.connection.collection('secrets').find(data, (err, res) => {
-        if(err) throw err;
-        console.log("Logged in!")
-    });
+app.use('/graphql', express_graphql({
+    schema,
+    graphiql: true,
+})); 
 
-    return res.redirect('prosumer.html');
-});
+app.listen(4000, () => console.log('Express GraphQL Server Now Running On localhost:4000/graphql'));
 
-app.post('/sign_up', (req, res) => {
-    let username = req.body.username;
-    let password = req.body.password;
+// var testUser = new User({
+//   username: "test",
+//   password: "test123",
+// });
 
-    let data = {
-        "username": username,
-        "password": password
-    };
+// testUser.save();
 
-    mongoose.connection.collection('secrets').insertOne(data, (err, res) => {
-        if(err) throw err;
-        console.log(res + " inserted!")
-    });
+// User.findOne( {username: 'test'}, function(err, user) {
+//   if(err) throw err;
 
-    return res.redirect('signup_success.html');
-});
+//   user.comparePassword('test123', function(err, isMatch) {
+//     if(err) throw err;
+//     console.log('test123: ', isMatch);
+//   });
 
-app.get('/', (req, res) => {
-    res.set({
-        'Access-control-Allow-Origin': '*'
-    });
-    return res.redirect('index.html');
-}).listen(3000, () => console.log('Server listening on port 3000'));
-
-
-
-const signToken = str => {
-    return new Promise(resolve => {
-      resolve(jwt.sign({ apiKey: str }, process.env.JWT_KEY))
-    })
-  };
-  
-  const verifyJwt = req => {
-    let token
-    if (req.query && req.query.hasOwnProperty('access_token')) {
-      token = req.query.access_token
-    } else if (req.headers.authorization && req.headers.authorization.includes('Bearer')) {
-      token = req.headers.authorization.split(' ')[1]
-    }
-    
-    return new Promise((resolve, reject) => {
-      jwt.verify(token, process.env.JWT_KEY, (error, decoded) => {
-        if (error) reject('401: User is not authenticated')
-     
-        resolve(decoded)
-      })
-    })
-  };
+//   user.comparePassword('hora', function(err, isMatch) {
+//     if(err) throw err;
+//     console.log('test123: ', isMatch);
+//   });
+// });
