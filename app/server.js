@@ -1,9 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const express_graphql = require('express-graphql');
 const session = require('express-session');
 const mongoose = require('mongoose');
-const schema = require('./api/schema');
 const User = require('./db/model/user');
 const passport = require('passport');
 const auth = require('./api/auth/auth');
@@ -35,7 +33,8 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-app.use(express.static('public'));
+app.use(express.static(__dirname + '/public'));
+
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(
   session( { secret: 'test', resave: true, saveUninitialized: true } )
@@ -46,30 +45,11 @@ app.use(passport.session());
 app.use(flash());
 app.use('/', auth);
 
-app.use('/graphql', express_graphql({
-    schema,
-    graphiql: true,
-})); 
-
 app.listen(4000, () => console.log('Express GraphQL Server Now Running On localhost:4000/graphql'));
 
-// var testUser = new User({
-//   username: "test",
-//   password: "test123",
+// let admin = new User({
+//     role: 'admin',
+//     username: 'admin',
+//     password: 'admin'
 // });
-
-// testUser.save();
-
-// User.findOne( {username: 'test'}, function(err, user) {
-//   if(err) throw err;
-
-//   user.comparePassword('test123', function(err, isMatch) {
-//     if(err) throw err;
-//     console.log('test123: ', isMatch);
-//   });
-
-//   user.comparePassword('hora', function(err, isMatch) {
-//     if(err) throw err;
-//     console.log('test123: ', isMatch);
-//   });
-// });
+// admin.save();

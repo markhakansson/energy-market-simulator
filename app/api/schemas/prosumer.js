@@ -33,8 +33,17 @@ const ProsumerQueries = {
     prosumer: {
         type: ProsumerType,
         args: { name: { type: GraphQLString } },
-        resolve (parent, args) {
-            return Prosumer.findOne({ name: args.name }).sort({ timestamp: -1 });
+        resolve (parent, args, req) {
+            if(req.isAuthenticated()) {
+                if(req.user.role === 'admin') {
+                    return Prosumer.findOne({ name: args.name });
+                }
+                if(req.user.username === args.name) {
+                    return Prosumer.findOne({ name: args.name }).sort({ timestamp: -1 });
+
+                }
+
+            }
         }
     },
 };

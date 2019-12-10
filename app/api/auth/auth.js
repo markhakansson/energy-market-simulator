@@ -1,5 +1,7 @@
 // http://www.passportjs.org/packages/passport-local/
 const auth = require('express').Router();
+const express_graphql = require('express-graphql');
+const schema = require('../schema');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('../../db/model/user');
@@ -40,6 +42,7 @@ passport.use('local-signup', new LocalStrategy(
       }
       if(!user) {
         let user = new User({
+          role: 'normal',
           username: username,
           password: password
         });
@@ -75,8 +78,9 @@ auth.post('/login', passport.authenticate('local-login', { failureRedirect: '/lo
 });
 
 auth.get('/success', isLoggedIn, function (req, res, next) {
-  res.send("Welcome " + req.query.username+ "!!")
+  res.redirect('/graphql');
 });
+
 
 auth.get('/signup', function(req, res, next) {
   res.render('signup.ejs', {message: req.flash('signupMessage')});
@@ -89,12 +93,20 @@ auth.post('/signup', passport.authenticate('local-signup', { failureRedirect: '/
 auth.get('/logout', function(req, res, next) {
   req.logout();
   res.redirect('/');
-})
+});
+
+auth.use('/graphql', isLoggedIn, express_graphql(req => ({
+  schema,
+  graphiql: true,
+  context: req
+}))); 
+
 
 function isLoggedIn(req, res, next) {
   if(req.isAuthenticated()) {
     return next();
   }
+  req.logout();
   res.redirect('/');
 }
 

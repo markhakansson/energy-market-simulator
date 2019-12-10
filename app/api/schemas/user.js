@@ -25,26 +25,10 @@ const UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
     id: { type: GraphQLNonNull(GraphQLID) },
+    role: { type: GraphQLNonNull(GraphQLString)},
     username: { type: GraphQLNonNull(GraphQLString) },
     password: { type: GraphQLNonNull(GraphQLString) },
-    consumer: {
-      type: new GraphQLList(ConsumerType),
-      resolve(parent, args) {
-        return Consumer.find( { name: parent.username } );
-      }
-    },
-    prosumer: {
-      type: new GraphQLList(ProsumerType),
-      resolve(parent, args) {
-        return Prosumer.find( { name: parent.username } );
-      }
-    },
-    market: {
-      type: new GraphQLList(MarketType),
-      resolve(parent, args) {
-        return Market.find( { name: parent.username });
-      }
-    }
+    
   })
 });
 
