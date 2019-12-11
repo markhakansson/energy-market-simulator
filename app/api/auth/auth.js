@@ -21,6 +21,7 @@ passport.use('local-login', new LocalStrategy(
             user.comparePassword(password, function(err, isMatch) {
       
                 if(isMatch) {
+                  req.session.username = username;
                   return done(null, user);
                 }
 

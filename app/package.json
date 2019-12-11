@@ -38,11 +38,9 @@
     "mocha": "^6.2.2",
     "mongoose": "^5.7.12",
     "morgan": "^1.9.1",
-    "nodemon": "^2.0.1",
     "npm": "^6.13.2",
+    "passport": "^0.4.1",
     "path": "^0.12.7",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
     "winston": "^3.2.1",
     "winston-daily-rotate-file": "^4.3.0"
   },
