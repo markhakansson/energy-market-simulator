@@ -1,7 +1,4 @@
 // http://www.passportjs.org/packages/passport-local/
-const auth = require('express').Router();
-const express_graphql = require('express-graphql');
-const schema = require('../schema');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('../../db/model/user');
@@ -66,42 +63,6 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
-auth.get('/', function(req, res, next) {
-  res.redirect('/login');
-});
-
-auth.get('/login', function(req, res, next) {
-  res.render('login.ejs', {message: req.flash('loginMessage')});
-});
-
-auth.post('/login', passport.authenticate('local-login', { failureRedirect: '/login', failureFlash: true }), function(req, res) {
-  res.redirect('/success?username=' + req.user.username);
-});
-
-auth.get('/success', isLoggedIn, function (req, res, next) {
-  res.redirect('/graphql');
-});
-
-
-auth.get('/signup', function(req, res, next) {
-  res.render('signup.ejs', {message: req.flash('signupMessage')});
-})
-
-auth.post('/signup', passport.authenticate('local-signup', { failureRedirect: '/signup', failureFlash: true }), function(req, res) {
-  res.redirect('/success?username=' + req.user.username);
-});
-
-auth.get('/logout', function(req, res, next) {
-  req.logout();
-  res.redirect('/');
-});
-
-auth.use('/graphql', isLoggedIn, express_graphql(req => ({
-  schema,
-  graphiql: true,
-  context: req
-}))); 
-
 
 function isLoggedIn(req, res, next) {
   if(req.isAuthenticated()) {
@@ -111,4 +72,4 @@ function isLoggedIn(req, res, next) {
   res.redirect('/');
 }
 
-module.exports = auth;
+module.exports = isLoggedIn;

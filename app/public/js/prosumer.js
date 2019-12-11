@@ -19,7 +19,8 @@ $(document).ready(function () {
         let value = $('#fillBatteryRatioValue').text();
         console.log("Fill ratio: " + value.toString());
     });
-    setInterval(updateInformation, 100);
+    // setInterval(updateInformation, 100);
+    updateInformation();
 });
 
 // should be run server-side to get session data
@@ -43,7 +44,7 @@ function updateInformation () {
         type: 'POST',
         data: JSON.stringify({
             query: `{
-                prosumer(name:"Test"){production,consumption,currBatteryCap}
+                prosumer {production,consumption,currBatteryCap}
             }`
         }),
         success: function (result) {
@@ -51,6 +52,9 @@ function updateInformation () {
             $('#consumption').html(result.data.prosumer.consumption);
             $('#netproduction').html(Number(result.data.prosumer.production) - Number(result.data.prosumer.consumption));
             $('#batterycap').html(result.data.prosumer.currBatteryCap);
+        },
+        error: function (err) {
+            console.log(err);
         }
     });
 }

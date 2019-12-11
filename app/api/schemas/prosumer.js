@@ -30,7 +30,7 @@ const ProsumerType = new GraphQLObjectType({
 });
 
 const ProsumerQueries = {
-    prosumer: {
+    adminProsumer: {
         type: ProsumerType,
         args: { name: { type: GraphQLString } },
         resolve (parent, args, req) {
@@ -38,14 +38,15 @@ const ProsumerQueries = {
                 if(req.user.role === 'admin') {
                     return Prosumer.findOne({ name: args.name });
                 }
-                if(req.user.username === args.name) {
-                    return Prosumer.findOne({ name: args.name }).sort({ timestamp: -1 });
-
-                }
-
             }
         }
     },
+    prosumer: {
+        type: ProsumerType,
+        resolve (parent, args, req) {
+            return Prosumer.findOne( {name: req.user.username }).sort({ timestamp: -1 });
+        }
+    }
 };
 
 const ProsumerMutations = {

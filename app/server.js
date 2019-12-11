@@ -2,11 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const mongoose = require('mongoose');
-const schema = require('./api/schema');
-const User = require('./db/model/user');
 const passport = require('passport');
-const auth = require('./api/auth/auth');
-const bcrypt = require('bcrypt');
 const flash    = require('connect-flash');
 const routes = require('./routes/index');
 
@@ -42,13 +38,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
-app.use('/', auth);
-
-app.use('/graphql', express_graphql({
-    schema,
-    graphiql: true,
-})); 
-
-app.use(routes);
+app.use('/', routes);
 
 app.listen(4000, () => console.log('Express GraphQL Server Now Running On localhost:4000/graphql'));
