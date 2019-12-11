@@ -19,3 +19,4 @@
 |    2019-12-06|   3      Grapql query user in resolver db with hashed password (bcrypt), next is to get login page working with graphql
 |    2019-12-07|   2      Login page (to db) using routes in express instead of a grapqhl query
 |    2019-12-09|   4      Sign up page (to db) using routes in express instead of a grapql query
+|    2019-12-10|   4      Some authroization added to grapqhl query
