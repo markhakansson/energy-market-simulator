@@ -1,6 +1,7 @@
 const graphql = require('graphql');
 const Prosumer = require('../../db/model/prosumer');
 const graphqlIsoDate = require('graphql-iso-date');
+const cookieParser = require('cookie-parser');
 
 const {
     GraphQLObjectType, GraphQLString, GraphQLFloat,
@@ -32,9 +33,9 @@ const ProsumerType = new GraphQLObjectType({
 const ProsumerQueries = {
     prosumer: {
         type: ProsumerType,
-        args: { name: { type: GraphQLString } },
-        resolve (parent, args) {
-            return Prosumer.findOne({ name: args.name }).sort({ timestamp: -1 });
+        resolve (parent, args, req) {
+            console.log(req.session);
+            return Prosumer.findOne({ name: req.session.username }).sort({ timestamp: -1 });
         }
     },
 };

@@ -10,6 +10,7 @@ const auth = require('./api/auth/auth');
 const bcrypt = require('bcrypt');
 const flash    = require('connect-flash');
 const routes = require('./routes/index');
+const cookieParser = require('cookie-parser');
 
 /**
  * resolve(parent, args, request) {
@@ -36,9 +37,14 @@ app.use(bodyParser.urlencoded({
 
 app.use(express.static('public'));
 app.use(require('body-parser').urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(
-  session( { secret: 'test', resave: true, saveUninitialized: true } )
-);
+  session({ 
+    secret: 'test', 
+    resave: true, 
+    saveUninitialized: true,
+    cookie: { maxAge: 600000 } 
+}));
 
 app.use(passport.initialize());
 app.use(passport.session());
