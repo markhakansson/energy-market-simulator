@@ -1,10 +1,21 @@
 var express = require('express');
 var router = express.Router();
-var passport = require('../api/auth/auth').passport;
+var Prosumer = require('../db/model/prosumer');
 
 router.get('/prosumer', function (req, res) {
     console.log(req.session);
-    res.render('prosumer', {message: req.session.username});
+    const query = Prosumer.findOne({ name: req.session.username }).sort({ timestamp: -1 });
+    query.exec(function (err, prosumer) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render('prosumer', {
+                message: prosumer.name,
+                useBatteryRatioDefault: prosumer.useBatteryRatio,
+                fillBatteryRatioDefault: prosumer.fillBatteryRatio
+            });
+        }
+    });
 });
 
 module.exports = router;

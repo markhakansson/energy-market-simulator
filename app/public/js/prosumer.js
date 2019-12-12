@@ -12,14 +12,32 @@ $(document).ready(function () {
         $('#profile').show();
     });
     $('#useBatteryRatioSlider').click(function () {
-        let value = $('#useBatteryRatioValue').text();
-        console.log("Use ratio: " + value);
+        const value = $('#useBatteryRatioValue').text();
+        $.ajax({
+            url: 'http://localhost:4000/graphql',
+            contentType: 'application/json',
+            type: 'POST',
+            data: JSON.stringify({
+                query: `mutation {
+                    updateUseBatteryRatio(useBatteryRatio: ${value})
+                }`
+            })
+        });
     });
     $('#fillBatteryRatioSlider').click(function () {
-        let value = $('#fillBatteryRatioValue').text();
-        console.log("Fill ratio: " + value.toString());
+        const value = $('#fillBatteryRatioValue').text();
+        $.ajax({
+            url: 'http://localhost:4000/graphql',
+            contentType: 'application/json',
+            type: 'POST',
+            data: JSON.stringify({
+                query: `mutation {
+                    updateFillBatteryRatio(fillBatteryRatio: ${value})
+                }`
+            })
+        });
     });
-    setInterval(updateInformation, 100);
+    setInterval(updateInformation, 5000);
 });
 
 // should be run server-side to get session data
@@ -43,7 +61,7 @@ function updateInformation () {
         type: 'POST',
         data: JSON.stringify({
             query: `{
-                prosumer(name:"Test"){production,consumption,currBatteryCap}
+                prosumer{production,consumption,currBatteryCap}
             }`
         }),
         success: function (result) {

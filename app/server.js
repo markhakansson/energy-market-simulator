@@ -8,7 +8,7 @@ const User = require('./db/model/user');
 const passport = require('passport');
 const auth = require('./api/auth/auth');
 const bcrypt = require('bcrypt');
-const flash    = require('connect-flash');
+const flash = require('connect-flash');
 const routes = require('./routes/index');
 const cookieParser = require('cookie-parser');
 
@@ -32,19 +32,19 @@ const app = express();
 app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
-  extended: true
+    extended: true
 }));
 
 app.use(express.static('public'));
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
-  session({ 
-    secret: 'test', 
-    resave: true, 
-    saveUninitialized: true,
-    cookie: { maxAge: 600000 } 
-}));
+    session({
+        secret: 'test',
+        resave: true,
+        saveUninitialized: true,
+        cookie: { maxAge: 600000 }
+    }));
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -53,8 +53,8 @@ app.use('/', auth);
 
 app.use('/graphql', express_graphql({
     schema,
-    graphiql: true,
-})); 
+    graphiql: true
+}));
 
 app.use(routes);
 

@@ -1,7 +1,6 @@
 const graphql = require('graphql');
 const Prosumer = require('../../db/model/prosumer');
 const graphqlIsoDate = require('graphql-iso-date');
-const cookieParser = require('cookie-parser');
 
 const {
     GraphQLObjectType, GraphQLString, GraphQLFloat,
@@ -26,7 +25,7 @@ const ProsumerType = new GraphQLObjectType({
         fillBatteryRatio: { type: GraphQLFloat },
         useBatteryRatio: { type: GraphQLFloat },
         bought: { type: GraphQLFloat },
-        blackout: { type: GraphQLFloat },
+        blackout: { type: GraphQLFloat }
     })
 });
 
@@ -37,7 +36,7 @@ const ProsumerQueries = {
             console.log(req.session);
             return Prosumer.findOne({ name: req.session.username }).sort({ timestamp: -1 });
         }
-    },
+    }
 };
 
 const ProsumerMutations = {
@@ -60,18 +59,16 @@ const ProsumerMutations = {
                 maxBatteryCap: args.maxBatteryCap,
                 timestamp: Date.now()
             });
-            prosumer.save();
-            return prosumer;
+            return prosumer.save();
         }
     },
     updateFillBatteryRatio: {
         type: GraphQLBoolean,
         args: {
-            name: { type: new GraphQLNonNull(GraphQLFloat) },
             fillBatteryRatio: { type: new GraphQLNonNull(GraphQLFloat) }
         },
-        resolve (parent, args) {
-            const filter = { name: args.name };
+        resolve (parent, args, req) {
+            const filter = { name: req.session.username };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
             return data.then(
                 doc => {
@@ -99,11 +96,10 @@ const ProsumerMutations = {
     updateUseBatteryRatio: {
         type: GraphQLBoolean,
         args: {
-            name: { type: new GraphQLNonNull(GraphQLFloat) },
             useBatteryRatio: { type: new GraphQLNonNull(GraphQLFloat) }
         },
-        resolve (parent, args) {
-            const filter = { name: args.name };
+        resolve (parent, args, req) {
+            const filter = { name: req.session.username };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
             return data.then(
                 doc => {
@@ -131,11 +127,10 @@ const ProsumerMutations = {
     updateProsumerProduction: {
         type: GraphQLBoolean,
         args: {
-            name: { type: new GraphQLNonNull(GraphQLString) },
             production: { type: new GraphQLNonNull(GraphQLFloat) }
         },
-        resolve (parent, args) {
-            const filter = { name: args.name };
+        resolve (parent, args, req) {
+            const filter = { name: req.session.username };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
             return data.then(
                 doc => {
@@ -163,11 +158,10 @@ const ProsumerMutations = {
     updateProsumerConsumption: {
         type: GraphQLBoolean,
         args: {
-            name: { type: new GraphQLNonNull(GraphQLString) },
             consumption: { type: new GraphQLNonNull(GraphQLFloat) }
         },
-        resolve (parent, args) {
-            const filter = { name: args.name };
+        resolve (parent, args, req) {
+            const filter = { name: req.session.username };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
             return data.then(
                 doc => {
