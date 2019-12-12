@@ -19,11 +19,23 @@ $(document).ready(function () {
         let value = $('#fillBatteryRatioValue').text();
         console.log("Fill ratio: " + value.toString());
     });
+    $('#update').submit(function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: 'http://localhost:4000/update',
+            contentType: 'application/json',
+            type: 'POST',
+            data: JSON.stringify( { updatePassword: $(this).find('input[name="updatePassword"]').val(), password: $(this).find('input[name="password"]').val() } ),
+            success: function(res) {
+                $('#updateMessage').html(res);
+            }
+        });
+       
+    })
     // setInterval(updateInformation, 100);
     updateInformation();
 });
 
-// should be run server-side to get session data
 function updateInformation () {
     $.ajax({
         url: 'http://localhost:4000/graphql',
@@ -31,7 +43,7 @@ function updateInformation () {
         type: 'POST',
         data: JSON.stringify({
             query: `{
-                weather(name:"Rain"){wind_speed}
+                weather {wind_speed}
             }`
         }),
         success: function (result) {
@@ -44,10 +56,12 @@ function updateInformation () {
         type: 'POST',
         data: JSON.stringify({
             query: `{
-                prosumer {production,consumption,currBatteryCap}
+                prosumer {timeMultiplier,timestamp,production,consumption,currBatteryCap,maxBatteryCap,bought,blackout,turbineStatus}
             }`
         }),
         success: function (result) {
+            console.log(result);
+            $('#timestamp').html(result.data.prosumer.timestamp);
             $('#production').html(result.data.prosumer.production);
             $('#consumption').html(result.data.prosumer.consumption);
             $('#netproduction').html(Number(result.data.prosumer.production) - Number(result.data.prosumer.consumption));
@@ -58,3 +72,22 @@ function updateInformation () {
         }
     });
 }
+
+
+
+// name: String,
+// wind: Number,
+// market: Object,
+// timeMultiplier: Number,
+// timestamp: { type: Date, default: new Date() },
+// production: Number,
+// consumption: Number,
+// currBatteryCap: Number,
+// maxBatteryCap: Number,
+// fillBatteryRatio: Number,
+// useBatteryRatio: Number,
+// bought: Number,
+// blackout: Boolean,
+// turbineStatus: String,
+// turbineWorking: Boolean,
+// turbineBreakPercent: Number,

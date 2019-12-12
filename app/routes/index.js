@@ -3,12 +3,9 @@ const router = express.Router();
 const express_graphql = require('express-graphql');
 const schema = require('../api/schema');
 const passport = require('passport');
-const isLoggedIn = require('../api/auth/auth');
-const query = require('graphql').graphql;
+const isLoggedIn = require('../api/auth/auth').isLoggedIn;
+const updatePassword = require('../api/auth/auth').updatePassword;
 
-router.get('/prosumer', function (req, res) {
-    res.render('prosumer', {message: req.session.username});
-});
 
 router.get('/', function(req, res, next) {
     res.redirect('/login');
@@ -23,20 +20,7 @@ router.post('/login', passport.authenticate('local-login', { failureRedirect: '/
 });
 
 router.get('/success', isLoggedIn, function (req, res, next) {
-    // let q = `{
-    //     prosumer(name:"${req.session.username}"){production,consumption,currBatteryCap}
-    // }`;
- 
-    // query(schema, q, null, req).then(result => {
-    //     res.render('prosumer',  {
-    //         message: req.session.username,
-    //         production: result.data.prosumer.production,
-    //         consumption: result.data.prosumer.consumption
-    //     });
-    // });
-    res.render('prosumer', { message: req.session.username });
-    
-    // res.redirect('/graphql');
+    res.render('prosumer', { message: req.session.username, updateMessage: "" });
 });
 
 router.get('/signup', function(req, res, next) {
@@ -46,6 +30,9 @@ router.get('/signup', function(req, res, next) {
 router.post('/signup', passport.authenticate('local-signup', { failureRedirect: '/signup', failureFlash: true }), function(req, res) {
     res.redirect('/success?username=' + req.user.username);
 });
+
+router.post('/update', isLoggedIn, updatePassword);
+
 
 router.get('/logout', function(req, res, next) {
     req.logout();

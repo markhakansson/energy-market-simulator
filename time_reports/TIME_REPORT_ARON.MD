@@ -20,3 +20,5 @@
 |    2019-12-07|   2      Login page (to db) using routes in express instead of a grapqhl query
 |    2019-12-09|   4      Sign up page (to db) using routes in express instead of a grapql query
 |    2019-12-10|   4      Some authroization added to grapqhl query
+|    2019-12-11|   5      Grapql query logic
+|    2019-12-12|   8      Update password functionality and prosumer data from db

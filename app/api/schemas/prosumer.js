@@ -16,7 +16,7 @@ const ProsumerType = new GraphQLObjectType({
     fields: () => ({
         id: { type: GraphQLID },
         name: { type: GraphQLString },
-        market: { type: GraphQLString },
+        timestamp: { type: GraphQLString },
         currBatteryCap: { type: GraphQLFloat },
         consumption: { type: GraphQLFloat },
         timestamp: { type: GraphQLDateTime },
@@ -26,6 +26,8 @@ const ProsumerType = new GraphQLObjectType({
         useBatteryRatio: { type: GraphQLFloat },
         bought: { type: GraphQLFloat },
         blackout: { type: GraphQLFloat },
+        turbineStatus: { type: GraphQLString },
+        timeMultiplier: { type: GraphQLFloat }
     })
 });
 
@@ -44,7 +46,9 @@ const ProsumerQueries = {
     prosumer: {
         type: ProsumerType,
         resolve (parent, args, req) {
-            return Prosumer.findOne( {name: req.user.username }).sort({ timestamp: -1 });
+            if(req.isAuthenticated()) {
+                return Prosumer.findOne( {name: req.user.username }).sort({ timestamp: -1 });
+            }
         }
     }
 };

@@ -16,8 +16,8 @@ passport.use('local-login', new LocalStrategy(
                 return done(null, false, req.flash('loginMessage', 'Incorrect username or password!')); 
             }
             user.comparePassword(password, function(err, isMatch) {
-      
-                if(isMatch) {
+
+              if(isMatch) {
                   req.session.username = username;
                   return done(null, user);
                 }
@@ -52,7 +52,6 @@ passport.use('local-signup', new LocalStrategy(
   }
 ));
 
-
 passport.serializeUser(function(user, done) {
   done(null, user.id);
 });
@@ -63,6 +62,24 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
+function updatePassword(req, res, done) {
+  User.findOne( { username: req.user.username }, function(err, user) {
+    if(err) {
+      return done(err);
+    }
+    if(user) {
+      user.comparePassword(req.body.password, function(err, isMatch) {
+        if(isMatch) {
+          user.password = req.body.updatePassword;
+          user.save();
+          return res.send('Password updated!');
+        }
+        return res.send('Failed to update password!');
+      })
+    }
+  });
+
+}
 
 function isLoggedIn(req, res, next) {
   if(req.isAuthenticated()) {
@@ -72,4 +89,4 @@ function isLoggedIn(req, res, next) {
   res.redirect('/');
 }
 
-module.exports = isLoggedIn;
+module.exports = { isLoggedIn, updatePassword };
