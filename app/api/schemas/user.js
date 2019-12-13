@@ -32,8 +32,6 @@ const UserType = new GraphQLObjectType({
   })
 });
 
-
-
 const UserMutations = {
   loginUser: {
     type: GraphQLBoolean,
@@ -59,6 +57,28 @@ const UserMutations = {
           }
 
         });
+      });
+    }
+  },
+
+  updateUser: {
+    type: GraphQLString,
+    args: {
+      updatePassword: { type: new GraphQLNonNull(GraphQLString) },
+      password: { type: new GraphQLNonNull(GraphQLString) },
+    },
+    async resolve(parent, args, req) {
+      const user = await User.findOne( { username: req.user.username } );
+      if(!user) { 
+        return "user not found!";       
+      }
+      user.comparePassword(args.password, function(err, isMatch) { 
+      if(isMatch) {
+          user.password = args.updatePassword;
+          user.save();
+          return 'Password updated!';
+        }
+        return 'Failed to update password!';;
       });
     }
   }

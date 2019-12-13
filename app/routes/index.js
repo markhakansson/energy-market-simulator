@@ -42,7 +42,7 @@ router.get('/logout', function(req, res, next) {
 router.use('/graphql', isLoggedIn, express_graphql(req => ({
     schema,
     graphiql: true,
-    context: req
+    context: req,
 }))); 
   
   

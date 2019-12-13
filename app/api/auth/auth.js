@@ -18,11 +18,11 @@ passport.use('local-login', new LocalStrategy(
             user.comparePassword(password, function(err, isMatch) {
 
               if(isMatch) {
-                  req.session.username = username;
-                  return done(null, user);
-                }
+                req.session.username = username;
+                return done(null, user);
+              }
 
-                return done(null, false, req.flash('loginMessage', 'Incorrect username or password!'));
+              return done(null, false, req.flash('loginMessage', 'Incorrect username or password!'));
       
             });
         })
