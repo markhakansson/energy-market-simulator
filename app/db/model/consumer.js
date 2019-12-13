@@ -11,7 +11,6 @@ const consumer = new Schema({
     blackout: Boolean,
     retrying: Boolean
 
-
 });
 
 module.exports = mongoose.model('Consumer', consumer);

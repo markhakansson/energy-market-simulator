@@ -16,7 +16,6 @@ const ProsumerType = new GraphQLObjectType({
     fields: () => ({
         id: { type: GraphQLID },
         name: { type: GraphQLString },
-        market: { type: GraphQLString },
         currBatteryCap: { type: GraphQLFloat },
         consumption: { type: GraphQLFloat },
         timestamp: { type: GraphQLDateTime },
@@ -25,16 +24,30 @@ const ProsumerType = new GraphQLObjectType({
         fillBatteryRatio: { type: GraphQLFloat },
         useBatteryRatio: { type: GraphQLFloat },
         bought: { type: GraphQLFloat },
-        blackout: { type: GraphQLFloat }
+        blackout: { type: GraphQLFloat },
+        turbineStatus: { type: GraphQLString },
+        timeMultiplier: { type: GraphQLFloat }
     })
 });
 
 const ProsumerQueries = {
+    adminProsumer: {
+        type: ProsumerType,
+        args: { name: { type: GraphQLString } },
+        resolve (parent, args, req) {
+            if (req.isAuthenticated()) {
+                if (req.user.role === 'admin') {
+                    return Prosumer.findOne({ name: args.name });
+                }
+            }
+        }
+    },
     prosumer: {
         type: ProsumerType,
         resolve (parent, args, req) {
-            console.log(req.session);
-            return Prosumer.findOne({ name: req.session.username }).sort({ timestamp: -1 });
+            if (req.isAuthenticated()) {
+                return Prosumer.findOne({ name: req.user.username }).sort({ timestamp: -1 });
+            }
         }
     }
 };

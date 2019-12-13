@@ -16,13 +16,13 @@
  
   <body>
     <div class="container" id="navbar">      
-      <h1><%= message %>'s Dashboard</h1>
+      <h1><%= message %>'s Dashboard <span id="timestamp"></span></h1>
       <ul class="nav nav-tabs">
         <li class="nav-item" id="nav-monitor">
-          <a class="nav-link active" href="#">Monitor</a>
+          <a class="nav-link active" >Monitor</a>
         </li>
         <li class="nav-item" id="nav-profile">
-          <a class="nav-link" href="#">Profile</a>
+          <a class="nav-link" >Profile</a>
         </li>
       </ul>
       <br>
@@ -68,7 +68,7 @@
 
         <div class="col-md">
           <ul>
-            <li>Net production:</li><spand id="netproduction"></spand>
+            <li>Net production:</li><span id="netproduction"></span>
             <li>Battery capacity:</li><span id="batterycap"></span>
             <li>Market price:</li><span id="marketprice"></span>
           </ul>
@@ -83,23 +83,20 @@
       <div class="row">
 
         <div class="col-md">
-          <form>
-            <div class="form-group">
-              <label for="udateEmail">Update email address</label>
-              <input type="email" class="form-control" id="updateEmail" aria-describedby="emailHelp" placeholder="Enter email">
-              <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-            </div>
+          <form id="update">
             <div class="form-group">
               <label for="updatePassword">New password</label>
-              <input type="password" class="form-control" id="updatePassword" placeholder="Enter new password">
+              <input type="password" class="form-control" name="updatePassword" placeholder="Enter new password">
+
             </div>
 
             <div class="form-group">
-              <label for="currentPassword">Enter current password</label>
-              <input type="password" class="form-control" id="currentPassword" placeholder="Current password">
+              <label for="password">Enter current password</label>
+              <input type="password" class="form-control" name="password" placeholder="Current password">
             </div>
 
             <button type="submit" class="btn btn-primary">Update</button>
+            <span id="updateMessage"></span>
           </form>
         </div>
 
@@ -112,6 +109,9 @@
       </div>  
 
     </div>
-
+    <!-- Log out -->
+    <form action="/logout" method="get">
+      <input type="submit" value="Log Out"/>
+    </form>
   </body>
 </html>

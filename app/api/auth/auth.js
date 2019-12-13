@@ -1,5 +1,4 @@
 // http://www.passportjs.org/packages/passport-local/
-const auth = require('express').Router();
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('../../db/model/user');
@@ -17,8 +16,8 @@ passport.use('local-login', new LocalStrategy(
                 return done(null, false, req.flash('loginMessage', 'Incorrect username or password!')); 
             }
             user.comparePassword(password, function(err, isMatch) {
-      
-                if(isMatch) {
+
+              if(isMatch) {
                   req.session.username = username;
                   return done(null, user);
                 }
@@ -41,6 +40,7 @@ passport.use('local-signup', new LocalStrategy(
       }
       if(!user) {
         let user = new User({
+          role: 'normal',
           username: username,
           password: password
         });
@@ -52,7 +52,6 @@ passport.use('local-signup', new LocalStrategy(
   }
 ));
 
-
 passport.serializeUser(function(user, done) {
   done(null, user.id);
 });
@@ -63,40 +62,31 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
-auth.get('/', function(req, res, next) {
-  res.redirect('/login');
-});
+function updatePassword(req, res, done) {
+  User.findOne( { username: req.user.username }, function(err, user) {
+    if(err) {
+      return done(err);
+    }
+    if(user) {
+      user.comparePassword(req.body.password, function(err, isMatch) {
+        if(isMatch) {
+          user.password = req.body.updatePassword;
+          user.save();
+          return res.send('Password updated!');
+        }
+        return res.send('Failed to update password!');
+      })
+    }
+  });
 
-auth.get('/login', function(req, res, next) {
-  res.render('login.ejs', {message: req.flash('loginMessage')});
-});
-
-auth.post('/login', passport.authenticate('local-login', { failureRedirect: '/login', failureFlash: true }), function(req, res) {
-  res.redirect('/success?username=' + req.user.username);
-});
-
-auth.get('/success', isLoggedIn, function (req, res, next) {
-  res.send("Welcome " + req.query.username+ "!!")
-});
-
-auth.get('/signup', function(req, res, next) {
-  res.render('signup.ejs', {message: req.flash('signupMessage')});
-})
-
-auth.post('/signup', passport.authenticate('local-signup', { failureRedirect: '/signup', failureFlash: true }), function(req, res) {
-  res.redirect('/success?username=' + req.user.username);
-});
-
-auth.get('/logout', function(req, res, next) {
-  req.logout();
-  res.redirect('/');
-})
+}
 
 function isLoggedIn(req, res, next) {
   if(req.isAuthenticated()) {
     return next();
   }
+  req.logout();
   res.redirect('/');
 }
 
-module.exports = auth;
+module.exports = { isLoggedIn, updatePassword };

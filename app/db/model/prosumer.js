@@ -17,8 +17,7 @@ const prosumer = new Schema({
     blackout: Boolean,
     turbineStatus: String,
     turbineWorking: Boolean,
-    turbineBreakPercent: Number,
-
+    turbineBreakPercent: Number
 
 });
 
