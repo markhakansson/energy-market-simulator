@@ -2,57 +2,52 @@ var gauss = require('../../helper/gauss');
 var Weather = require('../../db/model/weather');
 
 class WeatherSim {
-    constructor(name, wind_speed, temperature) {
-        if( name == null || name == "" || wind_speed == null || temperature == null) {
+    constructor (name, wind_speed, temperature) {
+        if (name == null || name == '' || wind_speed == null || temperature == null) {
             throw new Error('Constructor arguments must be defined!');
         }
 
         if (wind_speed < 1 || wind_speed > 40) {
             throw new Error('Illegal wind speed');
         }
-        
+
         if (temperature < -100 || temperature > 100) {
             throw new Error('Illegal temperature');
         }
 
-        this.weather = new Weather( {
-            name: name,    
+        this.weather = new Weather({
+            name: name,
             timestamp: Date.now(),
             wind_speed: wind_speed,
             temperature: temperature
         });
-        
-        this.weather.save((err) => {
-            if(err) throw err;
 
+        this.weather.save((err) => {
+            if (err) throw err;
         });
-       
     }
 
-    update() {
+    update () {
         var arr;
-        let self = this.weather;
+        const self = this.weather;
         // Threshold of 20 m/s. If it reaches over that point the distribution will favor smaller wind speeds.
-        if(self.wind_speed < 15) {
+        if (self.wind_speed < 15) {
             arr = [0.5 * self.wind_speed, self.wind_speed, 1.5 * self.wind_speed];
         } else {
             arr = [0.8 * self.wind_speed, 0.9 * self.wind_speed, 0.95 * self.wind_speed, 1.1 * self.wind_speed];
-        } 
-        
-        this.weather = new Weather( {
-            name: self.name,    
+        }
+
+        this.weather = new Weather({
+            name: self.name,
             timestamp: Date.now(),
             wind_speed: gauss.gaussLimit(arr, 2, 0.1, 1, 40),
             temperature: self.temperature
         });
 
         this.weather.save((err) => {
-            if(err) throw err;
+            if (err) throw err;
         });
-        
-
     }
-
 }
 
 module.exports = WeatherSim;
