@@ -10,7 +10,7 @@ const cookieParser = require('cookie-parser');
 // Loads the '.env' file in root to process.env.
 require('dotenv').config();
 
-// const main = require('./sim/controller/main');
+const main = require('./sim/controller/main');
 
 mongoose.connect(process.env.DB_HOST, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connection.on('error', console.log.bind(console, 'CONNECTION ERROR!'));

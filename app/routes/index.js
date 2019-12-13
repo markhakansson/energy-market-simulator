@@ -16,11 +16,13 @@ router.get('/login', function (req, res, next) {
 });
 
 router.post('/login', passport.authenticate('local-login', { failureRedirect: '/login', failureFlash: true }), function (req, res) {
+    req.session.username = req.user.username;
     res.redirect('/success?username=' + req.user.username);
 });
 
 router.get('/success', isLoggedIn, function (req, res, next) {
-    res.render('prosumer', { message: req.session.username, updateMessage: '' });
+    // res.render('prosumer', { message: req.session.username, updateMessage: '' });
+    res.redirect('/prosumer');
 });
 
 router.get('/signup', function (req, res, next) {
@@ -39,20 +41,29 @@ router.get('/logout', function (req, res, next) {
 });
 
 router.get('/prosumer', function (req, res) {
-    console.log(req.session);
-    const query = Prosumer.findOne({ name: req.session.username }).sort({ timestamp: -1 });
-    query.exec(function (err, prosumer) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.render('prosumer', {
-                message: prosumer.name,
-                useBatteryRatioDefault: prosumer.useBatteryRatio,
-                fillBatteryRatioDefault: prosumer.fillBatteryRatio
-            });
-        }
-    });
+    if (req.session.username != null) {
+        console.log('Session:\n' + req.session);
+
+        const query = Prosumer.findOne({ name: req.session.username }).sort({ timestamp: -1 });
+        query.exec(function (err, prosumer) {
+            if (err) {
+                console.log(err);
+            } else {
+                res.render('prosumer', {
+                    message: prosumer.name,
+                    useBatteryRatioDefault: prosumer.useBatteryRatio,
+                    fillBatteryRatioDefault: prosumer.fillBatteryRatio
+                });
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
 });
+
+router.get('*', function (req, res) {
+    res.render('404');
+})
 
 router.use('/graphql', isLoggedIn, expressGraphql(req => ({
     schema,
