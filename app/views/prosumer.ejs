@@ -102,8 +102,10 @@
         </div>
 
         <div class="col-sm">
-          <img src="images/blank-profile.webp" class="img-thumbnail" alt="Profile picture" id="upload-picture">
-          <button type="button" class="btn btn-primary">Upload picture</button>
+            <!-- <img src="images/blank-profile.webp" class="img-thumbnail" alt="Profile picture" id="upload-picture"> -->
+            <input type="file" id="fileImg" accept="image/*" onchange="readUrl(this)"/>
+            <textarea id="base"></textarea>
+            <!-- <button type="submit" class="btn btn-primary">Upload picture</button> -->
         </div>
 
 

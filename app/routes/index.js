@@ -33,6 +33,8 @@ router.post('/signup', passport.authenticate('local-signup', { failureRedirect: 
 
 router.post('/update', isLoggedIn, updatePassword);
 
+// router.post('/upload', isLoggedIn);
+
 
 router.get('/logout', function(req, res, next) {
     req.logout();

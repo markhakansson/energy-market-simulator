@@ -28,11 +28,28 @@ const UserType = new GraphQLObjectType({
     role: { type: GraphQLNonNull(GraphQLString)},
     username: { type: GraphQLNonNull(GraphQLString) },
     password: { type: GraphQLNonNull(GraphQLString) },
+    image: { type: GraphQLString },
     
   })
 });
 
 const UserMutations = {
+  uploadImg: {
+    type: GraphQLBoolean,
+    args: {
+      image: { type: new GraphQLNonNull(GraphQLString) }, 
+    },
+    async resolve(parent, args, req) {
+      const user = await User.findOne( { username: req.user.username });
+      if(!user) { 
+        return false;       
+      }
+      user.image = args.image;
+      user.save();
+      return true;
+    }
+  },
+
   loginUser: {
     type: GraphQLBoolean,
     args: {

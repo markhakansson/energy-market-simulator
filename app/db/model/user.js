@@ -7,6 +7,7 @@ const user = new Schema({
     username: { type: String, required: true, index: { unique: true } },
     password: { type: String, required: true },
     timestamp: { type: Date, default: Date.now() },
+    image: { data: Buffer, type: String },
 });
 
 user.pre('save', function(next) {

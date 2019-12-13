@@ -30,11 +30,59 @@ $(document).ready(function () {
                 $('#updateMessage').html(res);
             }
         });
+    });
+    $('#profileImg').submit(function(e) {
+        e.preventDefault();
+        let reader = new FileReader();
+        reader.onload = function (e) {
+            $('#fileImg').attr('src', e.target.result);
+
+        }
+        console.log(reader.readAsDataURL(e));
+        // form.append('file', file);
+        // $.ajax({
+        //     url: 'http://localhost:4000/upload',
+        //     contentType: 'application/json',
+        //     type: 'POST',
+        //     data: JSON.stringify({ image: file }),
+        //     processData: false,
+        //     success: function(res) {
+        //         console.log(res);
+        //     }
+        // });
        
     })
+ 
     // setInterval(updateInformation, 100);
     updateInformation();
 });
+
+function readUrl(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $('#falseinput').attr('src', e.target.result);
+            $('#base').val(e.target.result);
+
+            $.ajax({
+                url: 'http://localhost:4000/graphql',
+                contentType: 'application/json',
+                type: 'POST',
+                data: JSON.stringify({ query: `mutation {
+                    uploadImg(image:"${e.target.result}")
+                  }` } ),
+                processData: false,
+                success: function(res) {
+                    console.log(res);
+                }
+            });
+        };
+        reader.readAsDataURL(input.files[0]);
+
+        
+       
+    }
+}
 
 function updateInformation () {
     $.ajax({

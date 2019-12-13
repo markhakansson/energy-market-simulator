@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const flash    = require('connect-flash');
 const routes = require('./routes/index');
+const fs = require('fs');
 
 /**
  * resolve(parent, args, request) {
