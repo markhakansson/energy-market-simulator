@@ -12,17 +12,15 @@ const flash = require('connect-flash');
 const routes = require('./routes/index');
 const cookieParser = require('cookie-parser');
 
-/**
- * resolve(parent, args, request) {
-        if (!request.user) throw new Error('Only users can create favorites.');
- */
+// Loads the '.env' file in root to process.env.
+require('dotenv').config();
 
 // const main = require('./sim/controller/main')
 
-mongoose.connect('mongodb://127.0.0.1:27017/test', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.DB_HOST, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connection.on('error', console.log.bind(console, 'CONNECTION ERROR!'));
 mongoose.connection.once('open', () => {
-    console.log('conneted to database');
+    console.log('connected to database');
 });
 
 /**
@@ -40,7 +38,7 @@ app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
     session({
-        secret: 'test',
+        secret: process.env.SESSION_SECRET,
         resave: true,
         saveUninitialized: true,
         cookie: { maxAge: 600000 }
