@@ -32,21 +32,35 @@ const UserType = new GraphQLObjectType({
     
   })
 });
+const UserQueries = {
+  image: {
+    type: GraphQLString,
+    async resolve(parent, args, req) {
+      if(req.isAuthenticated()) {
+        const user = await User.findOne( { username: req.user.username });
+        if(!user) {
+          return "Failed to get user image";
+        }
+        return user.image;
+      }
+    }
+  }
+}
 
 const UserMutations = {
   uploadImg: {
-    type: GraphQLBoolean,
+    type: GraphQLString,
     args: {
       image: { type: new GraphQLNonNull(GraphQLString) }, 
     },
     async resolve(parent, args, req) {
       const user = await User.findOne( { username: req.user.username });
       if(!user) { 
-        return false;       
+        return "Image failed to upload!";       
       }
       user.image = args.image;
       user.save();
-      return true;
+      return "Image uploaded!";
     }
   },
 
@@ -101,6 +115,6 @@ const UserMutations = {
   }
 };
 
-module.exports = { UserType, UserMutations };
+module.exports = { UserType, UserQueries, UserMutations };
 
  
