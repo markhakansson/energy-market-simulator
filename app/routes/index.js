@@ -71,14 +71,9 @@ router.get('*', function (req, res) {
 router.use('/graphql', isLoggedIn, expressGraphql(req => ({
     schema,
     graphiql: true,
-<<<<<<< HEAD
     context: req,
 }))); 
   
   
-=======
-    context: req
-})));
->>>>>>> origin/prosumer-frontend
 
 module.exports = router;
