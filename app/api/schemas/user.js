@@ -4,22 +4,17 @@ const Consumer = require('../../db/model/consumer');
 const Prosumer = require('../../db/model/prosumer');
 const Market = require('../../db/model/market');
 
-
 const { ConsumerType } = require('../../api/schemas/consumer');
 const { ProsumerType } = require('../../api/schemas/prosumer');
 const { MarketType } = require('../../api/schemas/market');
 
-
 const {
     GraphQLObjectType,
     GraphQLString,
-    GraphQLList,
     GraphQLID,
     GraphQLNonNull,
-    GraphQLSchema,
     GraphQLBoolean
-  } = graphql;
-
+} = graphql;
 
 const UserType = new GraphQLObjectType({
   name: 'User',
@@ -62,9 +57,12 @@ const UserMutations = {
       user.save();
       return "Image uploaded!";
     }
-  }
 };
 
+<<<<<<< HEAD
 module.exports = { UserType, UserQueries, UserMutations };
 
  
+=======
+module.exports = { UserType, UserMutations };
+>>>>>>> origin/prosumer-frontend

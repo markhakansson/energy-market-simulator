@@ -16,7 +16,6 @@ const ProsumerType = new GraphQLObjectType({
     fields: () => ({
         id: { type: GraphQLID },
         name: { type: GraphQLString },
-        timestamp: { type: GraphQLString },
         currBatteryCap: { type: GraphQLFloat },
         consumption: { type: GraphQLFloat },
         timestamp: { type: GraphQLDateTime },
@@ -36,8 +35,8 @@ const ProsumerQueries = {
         type: ProsumerType,
         args: { name: { type: GraphQLString } },
         resolve (parent, args, req) {
-            if(req.isAuthenticated()) {
-                if(req.user.role === 'admin') {
+            if (req.isAuthenticated()) {
+                if (req.user.role === 'admin') {
                     return Prosumer.findOne({ name: args.name });
                 }
             }
@@ -46,8 +45,8 @@ const ProsumerQueries = {
     prosumer: {
         type: ProsumerType,
         resolve (parent, args, req) {
-            if(req.isAuthenticated()) {
-                return Prosumer.findOne( {name: req.user.username }).sort({ timestamp: -1 });
+            if (req.isAuthenticated()) {
+                return Prosumer.findOne({ name: req.user.username }).sort({ timestamp: -1 });
             }
         }
     }
@@ -73,18 +72,16 @@ const ProsumerMutations = {
                 maxBatteryCap: args.maxBatteryCap,
                 timestamp: Date.now()
             });
-            prosumer.save();
-            return prosumer;
+            return prosumer.save();
         }
     },
     updateFillBatteryRatio: {
         type: GraphQLBoolean,
         args: {
-            name: { type: new GraphQLNonNull(GraphQLFloat) },
             fillBatteryRatio: { type: new GraphQLNonNull(GraphQLFloat) }
         },
-        resolve (parent, args) {
-            const filter = { name: args.name };
+        resolve (parent, args, req) {
+            const filter = { name: req.session.username };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
             return data.then(
                 doc => {
@@ -112,11 +109,10 @@ const ProsumerMutations = {
     updateUseBatteryRatio: {
         type: GraphQLBoolean,
         args: {
-            name: { type: new GraphQLNonNull(GraphQLFloat) },
             useBatteryRatio: { type: new GraphQLNonNull(GraphQLFloat) }
         },
-        resolve (parent, args) {
-            const filter = { name: args.name };
+        resolve (parent, args, req) {
+            const filter = { name: req.session.username };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
             return data.then(
                 doc => {
@@ -144,11 +140,10 @@ const ProsumerMutations = {
     updateProsumerProduction: {
         type: GraphQLBoolean,
         args: {
-            name: { type: new GraphQLNonNull(GraphQLString) },
             production: { type: new GraphQLNonNull(GraphQLFloat) }
         },
-        resolve (parent, args) {
-            const filter = { name: args.name };
+        resolve (parent, args, req) {
+            const filter = { name: req.session.username };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
             return data.then(
                 doc => {
@@ -176,11 +171,10 @@ const ProsumerMutations = {
     updateProsumerConsumption: {
         type: GraphQLBoolean,
         args: {
-            name: { type: new GraphQLNonNull(GraphQLString) },
             consumption: { type: new GraphQLNonNull(GraphQLFloat) }
         },
-        resolve (parent, args) {
-            const filter = { name: args.name };
+        resolve (parent, args, req) {
+            const filter = { name: req.session.username };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
             return data.then(
                 doc => {

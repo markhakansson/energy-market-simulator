@@ -12,13 +12,32 @@ $(document).ready(function () {
         $('#profile').show();
     });
     $('#useBatteryRatioSlider').click(function () {
-        let value = $('#useBatteryRatioValue').text();
-        console.log("Use ratio: " + value);
+        const value = $('#useBatteryRatioValue').text();
+        $.ajax({
+            url: 'http://localhost:4000/graphql',
+            contentType: 'application/json',
+            type: 'POST',
+            data: JSON.stringify({
+                query: `mutation {
+                    updateUseBatteryRatio(useBatteryRatio: ${value})
+                }`
+            })
+        });
     });
     $('#fillBatteryRatioSlider').click(function () {
-        let value = $('#fillBatteryRatioValue').text();
-        console.log("Fill ratio: " + value.toString());
+        const value = $('#fillBatteryRatioValue').text();
+        $.ajax({
+            url: 'http://localhost:4000/graphql',
+            contentType: 'application/json',
+            type: 'POST',
+            data: JSON.stringify({
+                query: `mutation {
+                    updateFillBatteryRatio(fillBatteryRatio: ${value})
+                }`
+            })
+        });
     });
+    setInterval(updateInformation, 5000);
     $('#update').submit(function(e) {
         e.preventDefault();
         $.ajax({
@@ -96,7 +115,7 @@ function updateInformation () {
         type: 'POST',
         data: JSON.stringify({
             query: `{
-                prosumer {timeMultiplier,timestamp,production,consumption,currBatteryCap,maxBatteryCap,bought,blackout,turbineStatus}
+                prosumer{production,consumption,currBatteryCap}
             }`
         }),
         success: function (result) {

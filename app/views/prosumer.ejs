@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
   <head>
     <meta charset="UTF-8" />
     <title>Prosumer Page</title>
@@ -37,12 +36,12 @@
           
           <!-- TODO: These sliders should only update after the user no longer clicks on the slider -->
           <p>Use battery ratio</p>
-          <input type="range" min="0" max="100" value="50" step="0.5" class="slider" id="useBatteryRatioSlider">
+          <input type="range" min="0" max="100" value=<%= useBatteryRatioDefault %> step="0.5" class="slider" id="useBatteryRatioSlider">
           <p>Value: <span id="useBatteryRatioValue"></span>%</p>
           <script>updateSliderVal("useBatteryRatioSlider", "useBatteryRatioValue");</script>
 
           <p>Fill battery ratio</p>
-          <input type="range" min="0" max="100" value="50" step="0.5" class="slider" id="fillBatteryRatioSlider">
+          <input type="range" min="0" max="100" value=<%= fillBatteryRatioDefault %> step="0.5" class="slider" id="fillBatteryRatioSlider">
           <p>Value: <span id="fillBatteryRatioValue"></span>%</p>
           <script>updateSliderVal("fillBatteryRatioSlider", "fillBatteryRatioValue");</script>
  

@@ -26,9 +26,9 @@ const WeatherQueries = {
     adminWeather: {
         type: WeatherType,
         args: { name: { type: GraphQLString } },
-        resolve(parent, args) {
-            if(req.isAuthenticated()) {
-                if(req.user.role === 'admin') {
+        resolve (parent, args, req) {
+            if (req.isAuthenticated()) {
+                if (req.user.role === 'admin') {
                     return Weather.findOne({ name: args.name }).sort({ timestamp: -1 });
                 }
             }
@@ -36,7 +36,7 @@ const WeatherQueries = {
     },
     weather: {
         type: WeatherType,
-        resolve(parent, args) {
+        resolve (parent, args, req) {
             return Weather.findOne({ name: req.user.username }).sort({ timestamp: -1 });
         }
     }
