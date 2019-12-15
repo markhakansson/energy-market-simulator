@@ -40,7 +40,7 @@ const UserQueries = {
       }
     }
   }
-}
+};
 
 const UserMutations = {
   uploadImg: {
@@ -57,12 +57,9 @@ const UserMutations = {
       user.save();
       return "Image uploaded!";
     }
+  }
 };
 
-<<<<<<< HEAD
 module.exports = { UserType, UserQueries, UserMutations };
 
  
-=======
-module.exports = { UserType, UserMutations };
->>>>>>> origin/prosumer-frontend
