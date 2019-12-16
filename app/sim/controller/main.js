@@ -6,6 +6,8 @@ const WeatherSim = require('../model/weather');
 const Prosumer = require('../../db/model/prosumer');
 const Consumer = require('../../db/model/consumer');
 
+const timeMultiplier = 5000;
+
 const market = new MarketSim('Lulea', 2, 5000, 100000);
 const weather = new WeatherSim('Lulea', 10, 20);
 
@@ -37,11 +39,11 @@ async function init () {
 
     // Create new sim models
     for (const name of prosumerNames) {
-        prosumerList.push(new ProsumerSim(name, market));
+        prosumerList.push(new ProsumerSim(name, market, timeMultiplier));
     }
 
     for (const name of consumerNames) {
-        consumerList.push(new ConsumerSim(name, market));
+        consumerList.push(new ConsumerSim(name, market, timeMultiplier));
     }
 
     console.log('Prosumers: ' + prosumerNames);
@@ -76,7 +78,7 @@ function simLoop () {
         console.log('Wind speed: ' + weather.weather.wind_speed);
 
         simLoop();
-    }, 5000);
+    }, timeMultiplier);
 }
 
 async function main () {

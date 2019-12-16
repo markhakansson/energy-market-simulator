@@ -3,11 +3,11 @@ var tools = require('../../helper/tools');
 var Consumer = require('../../db/model/consumer');
 
 class ConsumerSim {
-    constructor (name, market) {
+    constructor (name, market, timeMultiplier) {
         this.consumer = { name: name };
 
         this.market = market;
-        this.timeMultiplier = 5;
+        this.timeMultiplier = timeMultiplier;
     }
 
     async fetchData () {
@@ -47,7 +47,7 @@ class ConsumerSim {
         } else if (self.blackout && !self.retrying) {
             self.retrying = true;
 
-            tools.sleep(2 * this.timeMultiplier * 1000).then(() => {
+            tools.sleep(2 * this.timeMultiplier).then(() => {
                 arr = [0.8 * 3, 3, 1.2 * 3];
                 consumption = gauss.gauss(arr, 4, 0.05) * 1000;
                 this.buyFromMarket(consumption);
@@ -61,7 +61,7 @@ class ConsumerSim {
         const boughtEnergy = this.market.buy(energy);
         self.bought = boughtEnergy;
 
-        if (boughtEnergy == 0) {
+        if (boughtEnergy === 0) {
             self.consumption = 0;
             self.blackout = true;
         } else if (boughtEnergy < energy) {
@@ -91,7 +91,6 @@ class ConsumerSim {
                 '\n Time: ' + self.timestamp.toString() +
                 '\n Consuming: ' + self.consumption + ' Wh' +
                 '\n Bought energy: ' + self.bought + ' Wh' +
-                '\n TimeMultiplier: ' + this.timeMultiplier +
                 '\n Price per Wh is: ' + this.market.price + ' SEK' +
                 '\n Blackout: ' + self.blackout +
                 '\n Retrying: ' + self.retrying
