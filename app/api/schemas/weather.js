@@ -36,8 +36,9 @@ const WeatherQueries = {
     },
     weather: {
         type: WeatherType,
+        args: { location: { type: GraphQLString } },
         resolve (parent, args, req) {
-            return Weather.findOne({ name: req.user.username }).sort({ timestamp: -1 });
+            return Weather.findOne({ name: args.location }).sort({ timestamp: -1 });
         }
     }
 }
