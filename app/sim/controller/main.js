@@ -5,6 +5,8 @@ const WeatherSim = require('../model/weather');
 
 const Prosumer = require('../../db/model/prosumer');
 const Consumer = require('../../db/model/consumer');
+const User = require('../../db/model/user');
+
 
 const market = new MarketSim('Lulea', 2, 5000, 100000);
 const weather = new WeatherSim('Lulea', 10, 20);
@@ -85,4 +87,4 @@ async function main () {
     simLoop();
 }
 
-module.exports = main();
+module.exports = { main, init };

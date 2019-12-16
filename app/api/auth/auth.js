@@ -3,6 +3,8 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('../../db/model/user');
 const Prosumer = require('../../db/model/prosumer');
+const init = require('../../sim/controller/main').init;
+
 
 passport.use('local-login', new LocalStrategy(
     {
@@ -34,7 +36,7 @@ passport.use('local-signup', new LocalStrategy(
         passReqToCallback: true
     },
     function (req, username, password, done) {
-        User.findOne({ username: username }, function (err, user) {
+        User.findOne({ username: username }, async function (err, user) {
             if (err) {
                 return done(err);
             }
@@ -44,7 +46,12 @@ passport.use('local-signup', new LocalStrategy(
                     username: username,
                     password: password
                 });
-                user.save();
+                const prosumer = new Prosumer({
+                    name: username,
+                });
+                await user.save();
+                await prosumer.save();
+                await init();
                 return done(null, user);
             }
             return done(null, false, req.flash('signupMessage', 'User already exists!'));

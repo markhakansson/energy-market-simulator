@@ -21,8 +21,8 @@ router.post('/login', passport.authenticate('local-login', { failureRedirect: '/
 });
 
 router.get('/success', isLoggedIn, function (req, res, next) {
-    res.render('prosumer', { message: req.session.username, updateMessage: '' });
-    // res.redirect('/prosumer');
+    // res.render('prosumer', { message: req.session.username, updateMessage: '' });
+    res.redirect('/prosumer');
 });
 
 router.get('/signup', function (req, res, next) {
