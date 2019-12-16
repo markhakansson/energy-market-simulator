@@ -100,31 +100,22 @@ function updateInformation () {
         type: 'POST',
         data: JSON.stringify({
             query: `{
-                weather {wind_speed}
+                prosumer{production,consumption,currBatteryCap, market, timestamp}
             }`
         }),
         success: function (result) {
-            $('#windspeed').html(result.data.weather.wind_speed);
-        }
-    });
-    $.ajax({
-        url: 'http://localhost:4000/graphql',
-        contentType: 'application/json',
-        type: 'POST',
-        data: JSON.stringify({
-            query: `{
-                prosumer{production,consumption,currBatteryCap, market}
-            }`
-        }),
-        success: function (result) {
-            const market = String(result.data.prosumer.market);
-            $('#timestamp').html(result.data.prosumer.timestamp);
-            $('#production').html(result.data.prosumer.production);
-            $('#consumption').html(result.data.prosumer.consumption);
-            $('#netproduction').html(Number(result.data.prosumer.production) - Number(result.data.prosumer.consumption));
-            $('#batterycap').html(result.data.prosumer.currBatteryCap);
+            const prosumer = result.data.prosumer;
+            const market = String(prosumer.market);
+            $('#timestamp').html(prosumer.timestamp);
+            $('#production').html(prosumer.production.toFixed(2));
+            $('#consumption').html(prosumer.consumption.toFixed(2));
+            $('#netproduction').html((Number(prosumer.production) - Number(prosumer.consumption)).toFixed(2));
+            $('#batterycap').html(prosumer.currBatteryCap.toFixed(2));
             updateMarketInformation(market);
             updateWindspeed(market);
+            if(productionChart !== null) {
+                productionChart.addData(prosumer.production.toFixed(2), prosumer.timestamp);
+            }
         },
         error: function (err) {
             console.log(err);
@@ -144,7 +135,7 @@ function updateMarketInformation (name) {
         }),
         success: function (result) {
             console.log(result);
-            $('#marketprice').html(result.data.market.price);
+            $('#marketprice').html(result.data.market.price.toFixed(2));
         },
         error: function (err) {
             console.log(err);
@@ -164,7 +155,7 @@ function updateWindspeed (location) {
         }),
         success: function (result) {
             console.log(result);
-            $('#windspeed').html(result.data.weather.wind_speed);
+            $('#windspeed').html(result.data.weather.wind_speed.toFixed(2));
         },
         error: function (err) {
             console.log(err);
