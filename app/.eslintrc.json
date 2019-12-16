@@ -47,6 +47,7 @@
         "object-curly-newline": "warn",
         "key-spacing": "warn",
         "spaced-comment": "warn",
-        "no-new": "warn"
+        "no-new": "warn",
+        "no-global-assign": "warn"
     }
 }
