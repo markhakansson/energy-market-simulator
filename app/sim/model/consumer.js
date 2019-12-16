@@ -4,19 +4,20 @@ var Consumer = require('../../db/model/consumer');
 
 class ConsumerSim {
     constructor (name, market) {
-        this.consumer = new Consumer({
-            name: name,
-            market: market,
-            timestamp: Date.now(),
-            consumption: 3000,
-            bought: 0,
-            timeMultiplier: 5,
-            blackout: false,
-            retrying: false
-        });
+        this.consumer = { name: name };
 
-        this.consumer.save((err) => {
-            if (err) throw err;
+        this.market = market;
+        this.timeMultiplier = 5;
+    }
+
+    async fetchData () {
+        const self = this;
+        await Consumer.findOne({ name: this.consumer.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
+            if (err) {
+                throw err;
+            } else {
+                self.consumer = doc;
+            }
         });
     }
 
@@ -46,7 +47,7 @@ class ConsumerSim {
         } else if (self.blackout && !self.retrying) {
             self.retrying = true;
 
-            tools.sleep(2 * self.timeMultiplier * 1000).then(() => {
+            tools.sleep(2 * this.timeMultiplier * 1000).then(() => {
                 arr = [0.8 * 3, 3, 1.2 * 3];
                 consumption = gauss.gauss(arr, 4, 0.05) * 1000;
                 this.buyFromMarket(consumption);
@@ -57,7 +58,7 @@ class ConsumerSim {
 
     buyFromMarket (energy) {
         const self = this.consumer;
-        const boughtEnergy = self.market.buy(energy);
+        const boughtEnergy = this.market.buy(energy);
         self.bought = boughtEnergy;
 
         if (boughtEnergy == 0) {
@@ -80,19 +81,18 @@ class ConsumerSim {
             timestamp: Date.now(),
             consumption: self.consumption,
             bought: self.bought,
-            timeMultiplier: self.timeMultiplier,
             blackout: self.blackout,
             retrying: self.retrying
         });
 
         self.save((err) => {
             if (err) throw err;
-            console.log('Consumer ' + self.name + ' is connected to ' + self.market.market.name +
+            console.log('Consumer ' + self.name + ' is connected to ' + self.market +
                 '\n Time: ' + self.timestamp.toString() +
                 '\n Consuming: ' + self.consumption + ' Wh' +
                 '\n Bought energy: ' + self.bought + ' Wh' +
-                '\n TimeMultiplier: ' + self.timeMultiplier +
-                '\n Price per Wh is: ' + self.market.market.price + ' SEK' +
+                '\n TimeMultiplier: ' + this.timeMultiplier +
+                '\n Price per Wh is: ' + this.market.price + ' SEK' +
                 '\n Blackout: ' + self.blackout +
                 '\n Retrying: ' + self.retrying
             )
