@@ -38,18 +38,17 @@ $(document).ready(function () {
         });
     });
     setInterval(updateInformation, 5000);
-    $('#update').submit(function(e) {
+    $('#update').submit(function (e) {
         e.preventDefault();
         $.ajax({
             url: 'http://localhost:4000/update',
             contentType: 'application/json',
             type: 'POST',
-            data: JSON.stringify( { updatePassword: $(this).find('input[name="updatePassword"]').val(), password: $(this).find('input[name="password"]').val() } ),
-            success: function(res) {
+            data: JSON.stringify({ updatePassword: $(this).find('input[name="updatePassword"]').val(), password: $(this).find('input[name="password"]').val() }),
+            success: function (res) {
                 $('#updateMessage').html(res);
             }
         });
-       
     })
     // setInterval(updateInformation, 100);
     updateInformation();
@@ -75,7 +74,7 @@ function updateInformation () {
         type: 'POST',
         data: JSON.stringify({
             query: `{
-                prosumer{production,consumption,currBatteryCap}
+                prosumer{production,consumption,currBatteryCap, market}
             }`
         }),
         success: function (result) {
@@ -85,14 +84,14 @@ function updateInformation () {
             $('#consumption').html(result.data.prosumer.consumption);
             $('#netproduction').html(Number(result.data.prosumer.production) - Number(result.data.prosumer.consumption));
             $('#batterycap').html(result.data.prosumer.currBatteryCap);
+            // $('#windspeed').html(result.data.prosumer.wind);
+            // $('#marketprice').html(result.data.prosumer.market.price);
         },
         error: function (err) {
             console.log(err);
         }
     });
 }
-
-
 
 // name: String,
 // wind: Number,

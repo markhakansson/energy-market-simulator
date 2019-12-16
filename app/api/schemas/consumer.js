@@ -21,7 +21,8 @@ const ConsumerType = new GraphQLObjectType({
         timestamp: { type: GraphQLDateTime },
         consumption: { type: GraphQLFloat },
         bought: { type: GraphQLFloat },
-        blackout: { type: GraphQLBoolean }
+        blackout: { type: GraphQLBoolean },
+        retrying: { type: GraphQLBoolean }
     })
 });
 
@@ -52,9 +53,11 @@ const ConsumerMutations = {
             const consumer = new Consumer({
                 name: args.name,
                 market: args.market,
+                timestamp: Date.now(),
                 consumption: 0,
                 bought: 0,
-                blackout: false
+                blackout: false,
+                retrying: false
             });
             return consumer.save();
         }
@@ -73,9 +76,11 @@ const ConsumerMutations = {
                     const consumer = new Consumer({
                         name: doc.name,
                         market: doc.market,
+                        timestamp: Date.now(),
                         consumption: args.consumption,
                         bought: doc.bought,
-                        blackout: doc.blackout
+                        blackout: doc.blackout,
+                        retrying: doc.retrying
                     });
                     consumer.save();
                 },

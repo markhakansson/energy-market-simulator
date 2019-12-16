@@ -3,28 +3,22 @@ var tools = require('../../helper/tools');
 var Prosumer = require('../../db/model/prosumer');
 
 class ProsumerSim {
-    constructor (name, market, fillBattRatio, useBattRatio, batterySize) {
-        this.prosumer = new Prosumer({
-            name: name,
-            market: market,
-            timeMultiplier: 5,
-            timestamp: Date.now(),
-            production: 1000,
-            consumption: 3000,
-            currBatteryCap: 0,
-            maxBatteryCap: batterySize,
-            fillBatteryRatio: fillBattRatio,
-            useBatteryRatio: useBattRatio,
-            bought: 0,
-            blackout: false,
-            turbineStatus: 'WORKING!',
-            turbineWorking: true,
-            turbineBreakPercent: 0.05
+    constructor (name, market) {
+        this.prosumer = { name: name };
 
-        });
+        this.market = market;
 
-        this.prosumer.save((err) => {
-            if (err) throw err;
+        this.timeMultiplier = 5;
+    }
+
+    async fetchData () {
+        const self = this;
+        await Prosumer.findOne({ name: this.prosumer.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
+            if (err) {
+                throw err;
+            } else {
+                self.prosumer = doc;
+            }
         });
     }
 
@@ -73,19 +67,21 @@ class ProsumerSim {
             }
 
             self.consumption = gauss.gaussLimit(arr, 4, 0.05, 0, 60) * 100;
-            const cons_diff = self.consumption - self.production;
+            const consDiff = self.consumption - self.production;
 
             // Check if household's demand exceeds production
-            if (cons_diff > 0) {
-                this.useBattery(self.useBatteryRatio * cons_diff);
-                this.buyFromMarket((1 - self.useBatteryRatio) * cons_diff);
+            if (consDiff > 0) {
+                this.useBattery(self.useBatteryRatio * consDiff);
+                this.buyFromMarket((1 - self.useBatteryRatio) * consDiff);
             }
+        } else {
+            self.consumption = Math.random() * Math.random() * 5000;
         }
     }
 
     callTurbineRepairman () {
         const self = this.prosumer;
-        tools.sleep(2 * self.timeMultiplier * 1000).then(() => {
+        tools.sleep(2 * this.timeMultiplier * 1000).then(() => {
             self.turbineStatus = 'REPAIRMAN ON THE WAY...';
         });
         tools.sleep(this.timeMultiplier * 1000).then(() => {
@@ -120,7 +116,7 @@ class ProsumerSim {
 
     buyFromMarket (energy) {
         const self = this.prosumer;
-        const boughtEnergy = self.market.buy(energy);
+        const boughtEnergy = this.market.buy(energy);
         self.bought = boughtEnergy;
         if (boughtEnergy < energy) {
             self.consumption -= (energy - boughtEnergy);
@@ -128,20 +124,20 @@ class ProsumerSim {
     }
 
     sellToMarket (energy) {
-        const self = this.prosumer;
-        self.market.sell(energy);
+        this.market.sell(energy);
     }
 
     update () {
         let self = this.prosumer;
 
+        console.log("Prosumer: \n" + this);
+
         self = new Prosumer({
             name: self.name,
             market: self.market,
-            timeMultiplier: self.timeMultiplier,
             timestamp: Date.now(),
-            production: self.production,
             consumption: self.consumption,
+            production: self.production,
             currBatteryCap: self.currBatteryCap,
             maxBatteryCap: self.batterySize,
             fillBatteryRatio: self.fillBatteryRatio,
@@ -154,18 +150,21 @@ class ProsumerSim {
         });
 
         self.save((err) => {
-            if (err) throw err;
-            console.log(self.name + ' is connected to ' + self.market.market.name +
-            '\n Time: ' + self.timestamp.toString() +
-            '\n Producing: ' + self.production + ' Wh' +
-            '\n Consuming: ' + self.consumption + ' Wh' +
-            '\n Bought energy: ' + self.bought + ' Wh' +
-            '\n Price per Wh is: ' + self.market.market.price + ' SEK' +
-            '\n Battery: ' + self.currBatteryCap + ' Wh' +
-            '\n Blackout: ' + self.blackout +
-            '\n Turbine status: ' + self.turbineStatus
-            ) 
-});
+            if (err) {
+                throw err;
+            } else {
+                console.log(self.name + ' is connected to ' + self.market +
+                '\n Time: ' + self.timestamp.toString() +
+                '\n Producing: ' + self.production + ' Wh' +
+                '\n Consuming: ' + self.consumption + ' Wh' +
+                '\n Bought energy: ' + self.bought + ' Wh' +
+                '\n Price per Wh is: ' + this.market.price + ' SEK' +
+                '\n Battery: ' + self.currBatteryCap + ' Wh' +
+                '\n Blackout: ' + self.blackout +
+                '\n Turbine status: ' + self.turbineStatus
+                )
+            }
+        });
     }
 }
 

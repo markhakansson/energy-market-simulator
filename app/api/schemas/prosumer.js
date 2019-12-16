@@ -16,17 +16,19 @@ const ProsumerType = new GraphQLObjectType({
     fields: () => ({
         id: { type: GraphQLID },
         name: { type: GraphQLString },
-        currBatteryCap: { type: GraphQLFloat },
-        consumption: { type: GraphQLFloat },
+        market: { type: GraphQLString },
         timestamp: { type: GraphQLDateTime },
-        production: { type: GraphQLFloat },
+        consumption: { type: GraphQLFloat },
+        production: { type: GraphQLFloat },        
+        currBatteryCap: { type: GraphQLFloat },
         maxBatteryCap: { type: GraphQLFloat },
         fillBatteryRatio: { type: GraphQLFloat },
         useBatteryRatio: { type: GraphQLFloat },
         bought: { type: GraphQLFloat },
         blackout: { type: GraphQLFloat },
         turbineStatus: { type: GraphQLString },
-        timeMultiplier: { type: GraphQLFloat }
+        turbineWorking: { type: GraphQLBoolean} ,
+        turbineBreakPercent: { type: GraphQLFloat }
     })
 });
 
@@ -64,13 +66,17 @@ const ProsumerMutations = {
             const prosumer = new Prosumer({
                 name: args.name,
                 market: args.market,
+                timestamp: Date.now(),
                 consumption: 0,
                 production: 0,
-                fillBatteryRatio: 0,
-                useBatteryRatio: 0,
                 currBatteryCap: 0,
                 maxBatteryCap: args.maxBatteryCap,
-                timestamp: Date.now()
+                fillBatteryRatio: 0,
+                useBatteryRatio: 0,
+                bought: 0,
+                turbineStatus: 'WORKING!',
+                turbineWorking: true,
+                turbineBreakPercent: 0.05 
             });
             return prosumer.save();
         }
@@ -88,13 +94,17 @@ const ProsumerMutations = {
                     const prosumer = new Prosumer({
                         name: doc.name,
                         market: doc.market,
+                        timestamp: Date.now(),
+                        cosnumption: doc.consumption,
                         production: doc.production,
-                        consumption: doc.consumption,
                         currBatteryCap: doc.currBatteryCap,
                         maxBatteryCap: doc.maxBatteryCap,
                         fillBatteryRatio: args.fillBatteryRatio,
                         useBatteryRatio: doc.useBatteryRatio,
-                        timestamp: Date.now()
+                        bought: doc.bought,
+                        turbineStatus: doc.turbineStatus,
+                        turbineWorking: doc.turbineWorking,
+                        turbineBreakPercent: doc.turbineBreakPercent
                     });
                     prosumer.save();
                     return true;
@@ -119,13 +129,17 @@ const ProsumerMutations = {
                     const prosumer = new Prosumer({
                         name: doc.name,
                         market: doc.market,
-                        production: doc.production,
+                        timestamp: Date.now(),
                         consumption: doc.consumption,
+                        production: doc.production,
                         currBatteryCap: doc.currBatteryCap,
                         maxBatteryCap: doc.maxBatteryCap,
                         fillBatteryRatio: doc.fillBatteryRatio,
                         useBatteryRatio: args.useBatteryRatio,
-                        timestamp: Date.now()
+                        bought: doc.bought,
+                        turbineStatus: doc.turbineStatus,
+                        turbineWorking: doc.turbineWorking,
+                        turbineBreakPercent: doc.turbineBreakPercent                        
                     });
                     prosumer.save();
                     return true;
@@ -150,13 +164,17 @@ const ProsumerMutations = {
                     const prosumer = new Prosumer({
                         name: doc.name,
                         market: doc.market,
-                        production: args.production,
+                        timestamp: Date.now(),
                         consumption: doc.consumption,
+                        production: args.production,
                         currBatteryCap: doc.currBatteryCap,
                         maxBatteryCap: doc.maxBatteryCap,
                         fillBatteryRatio: doc.fillBatteryRatio,
                         useBatteryRatio: doc.useBatteryRatio,
-                        timestamp: Date.now()
+                        bought: doc.bought,
+                        turbineStatus: doc.turbineStatus,
+                        turbineWorking: doc.turbineWorking,
+                        turbineBreakPercent: doc.turbineBreakPercent
                     });
                     prosumer.save();
                     return true;
@@ -181,13 +199,17 @@ const ProsumerMutations = {
                     const prosumer = new Prosumer({
                         name: doc.name,
                         market: doc.market,
-                        production: doc.production,
+                        timestamp: Date.now(),
                         consumption: args.consumption,
+                        production: doc.production,
                         currBatteryCap: doc.currBatteryCap,
                         maxBatteryCap: doc.maxBatteryCap,
                         fillBatteryRatio: doc.fillBatteryRatio,
                         useBatteryRatio: doc.useBatteryRatio,
-                        timestamp: Date.now()
+                        bought: doc.bought,
+                        turbineStatus: doc.turbineStatus,
+                        turbineWorking: doc.turbineWorking,
+                        turbineBreakPercent: doc.turbineBreakPercent                        
                     });
                     prosumer.save();
                     return true;
