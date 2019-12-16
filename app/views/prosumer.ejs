@@ -101,9 +101,13 @@
         </div>
 
         <div class="col-sm">
-          <img src="images/blank-profile.webp" class="img-thumbnail" alt="Profile picture" id="upload-picture">
-          <button type="button" class="btn btn-primary">Upload picture</button>
+          <div class = "img-thumbnail">
+            <img src="" class="img-thumbnail" alt="Profile picture" id="profileImg">
+          </div>
+          <input type="file" id="fileImg" accept="image/*" onchange="readUrl(this)"/>
+          <span id ="profileMessage"></span>
         </div>
+
 
 
       </div>  

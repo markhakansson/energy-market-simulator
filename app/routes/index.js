@@ -35,7 +35,7 @@ router.post('/signup', passport.authenticate('local-signup', { failureRedirect: 
 
 router.post('/update', isLoggedIn, updatePassword);
 
-router.get('/logout', function (req, res, next) {
+router.get('/logout', function(req, res, next) {
     req.logout();
     res.redirect('/');
 });
@@ -64,8 +64,10 @@ router.get('/prosumer', function (req, res) {
 router.use('/graphql', isLoggedIn, expressGraphql(req => ({
     schema,
     graphiql: true,
-    context: req
-})));
+    context: req,
+}))); 
+  
+  
 
 router.get('*', function (req, res) {
     res.render('404');

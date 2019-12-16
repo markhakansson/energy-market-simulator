@@ -22,3 +22,5 @@
 |    2019-12-10|   4      Some authroization added to grapqhl query
 |    2019-12-11|   5      Grapql query logic
 |    2019-12-12|   8      Update password functionality and prosumer data from db
+|    2019-12-13|   8      Tryied to use grapqhl to update user password, lets not, or lets try it again later ... AND upload image func
+|    2019-12-15|   4      Graphql WILL NOT handle login, sign-up and password updates

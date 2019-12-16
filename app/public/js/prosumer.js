@@ -49,10 +49,49 @@ $(document).ready(function () {
                 $('#updateMessage').html(res);
             }
         });
-    })
+    });
+    $.ajax({
+        url: 'http://localhost:4000/graphql',
+        contentType: 'application/json',
+        type: 'POST',
+        data: JSON.stringify({
+            query: `{
+                image
+            }`
+        }),
+        success: function (res) {
+            $('#profileImg').attr('src', res.data.image);
+        }
+    });
+
     // setInterval(updateInformation, 100);
     updateInformation();
 });
+
+function readUrl (input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $('#profileImg').attr('src', e.target.result);
+
+            $.ajax({
+                url: 'http://localhost:4000/graphql',
+                contentType: 'application/json',
+                type: 'POST',
+                data: JSON.stringify({
+                    query: `mutation {
+                    uploadImg(image:"${e.target.result}")
+                  }`
+                }),
+                processData: false,
+                success: function (res) {
+                    $('#profileMessage').html(res.data.uploadImg);
+                }
+            });
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
 
 function updateInformation () {
     $.ajax({

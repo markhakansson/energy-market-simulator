@@ -5,6 +5,8 @@ const WeatherSim = require('../model/weather');
 
 const Prosumer = require('../../db/model/prosumer');
 const Consumer = require('../../db/model/consumer');
+const User = require('../../db/model/user');
+
 
 const timeMultiplier = 5000;
 
@@ -87,4 +89,4 @@ async function main () {
     simLoop();
 }
 
-module.exports = main();
+module.exports = { main, init };

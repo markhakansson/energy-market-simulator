@@ -6,7 +6,8 @@ const user = new Schema({
     role: { type: String, required: true },
     username: { type: String, required: true, index: { unique: true } },
     password: { type: String, required: true },
-    timestamp: { type: Date, default: Date.now() }
+    timestamp: { type: Date, default: Date.now() },
+    image: { data: Buffer, type: String },
 });
 
 user.pre('save', function (next) {

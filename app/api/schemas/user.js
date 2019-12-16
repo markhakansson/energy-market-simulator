@@ -17,46 +17,49 @@ const {
 } = graphql;
 
 const UserType = new GraphQLObjectType({
-    name: 'User',
-    fields: () => ({
-        id: { type: GraphQLNonNull(GraphQLID) },
-        role: { type: GraphQLNonNull(GraphQLString) },
-        username: { type: GraphQLNonNull(GraphQLString) },
-        password: { type: GraphQLNonNull(GraphQLString) }
-
-    })
+  name: 'User',
+  fields: () => ({
+    id: { type: GraphQLNonNull(GraphQLID) },
+    role: { type: GraphQLNonNull(GraphQLString)},
+    username: { type: GraphQLNonNull(GraphQLString) },
+    password: { type: GraphQLNonNull(GraphQLString) },
+    image: { type: GraphQLString },
+    
+  })
 });
-
-const UserMutations = {
-    loginUser: {
-        type: GraphQLBoolean,
-        args: {
-            username: { type: new GraphQLNonNull(GraphQLString) },
-            password: { type: new GraphQLNonNull(GraphQLString) }
-        },
-        resolve (parent, args, req) {
-            User.findOne({ username: args.username }, function (err, user) {
-                // Removed to avoid throwing error with possible sensetive data, see OWASP
-                // if (err) throw err;
-                if (err) console.error(err);
-
-                if (!user) {
-                    throw new Error('Could not find user: ' + args.username);
-                }
-                user.comparePassword(args.password, function (err, isMatch) { // Avoiding to throw errors here
-                    if (err) console.error(err);
-
-                    if (!isMatch) throw new Error('Incorrect password for user: ' + args.username);
-
-                    if (isMatch) {
-                        req.login(user, error => (error || user)); // Passport login
-                        console.log(args.username + ' is now logged in!');
-                        return true;
-                    }
-                });
-            });
+const UserQueries = {
+  image: {
+    type: GraphQLString,
+    async resolve(parent, args, req) {
+      if(req.isAuthenticated()) {
+        const user = await User.findOne( { username: req.user.username });
+        if(!user) {
+          return "Failed to get user image";
         }
+        return user.image;
+      }
     }
+  }
 };
 
-module.exports = { UserType, UserMutations };
+const UserMutations = {
+  uploadImg: {
+    type: GraphQLString,
+    args: {
+      image: { type: new GraphQLNonNull(GraphQLString) }, 
+    },
+    async resolve(parent, args, req) {
+      const user = await User.findOne( { username: req.user.username });
+      if(!user) { 
+        return "Image failed to upload!";       
+      }
+      user.image = args.image;
+      user.save();
+      return "Image uploaded!";
+    }
+  }
+};
+
+module.exports = { UserType, UserQueries, UserMutations };
+
+ 
