@@ -158,7 +158,7 @@ class ProsumerSim {
                 '\n Producing: ' + self.production + ' Wh' +
                 '\n Consuming: ' + self.consumption + ' Wh' +
                 '\n Bought energy: ' + self.bought + ' Wh' +
-                '\n Price per Wh is: ' + this.market.price + ' SEK' +
+                '\n Price per Wh is: ' + this.market.market.price + ' SEK' +
                 '\n Battery: ' + self.currBatteryCap + ' Wh' +
                 '\n Blackout: ' + self.blackout +
                 '\n Turbine status: ' + self.turbineStatus

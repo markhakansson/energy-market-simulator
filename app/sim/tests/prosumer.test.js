@@ -5,8 +5,9 @@ const ProsumerSim = require('../model/prosumer');
 describe('#randomizeTurbineBreaking', function () {
     it('Turbine should break', () => {
         // name, market, wind, fillBattRatio, useBattRatio, batterySize
-        const ProsumerSimTest = new ProsumerSim('test', null, null, null, null, null);
+        const ProsumerSimTest = new ProsumerSim('test', null);
         ProsumerSimTest.prosumer.turbineBreakagePercent = 1;
+        ProsumerSimTest.prosumer.turbineWorking = true;
         ProsumerSimTest.randomizeTurbineBreaking();
         assert.strictEqual(ProsumerSimTest.prosumer.production, 0);
         assert.strictEqual(ProsumerSimTest.prosumer.turbineWorking, false);
