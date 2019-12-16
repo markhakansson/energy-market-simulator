@@ -4,7 +4,6 @@ const expressGraphql = require('express-graphql');
 const schema = require('../api/schema');
 const passport = require('passport');
 const isLoggedIn = require('../api/auth/auth').isLoggedIn;
-const updatePassword = require('../api/auth/auth').updatePassword;
 var Prosumer = require('../db/model/prosumer');
 
 router.get('/', function (req, res, next) {
@@ -32,8 +31,6 @@ router.get('/signup', function (req, res, next) {
 router.post('/signup', passport.authenticate('local-signup', { failureRedirect: '/signup', failureFlash: true }), function (req, res) {
     res.redirect('/success?username=' + req.user.username);
 });
-
-router.post('/update', isLoggedIn, updatePassword);
 
 router.get('/logout', function(req, res, next) {
     req.logout();

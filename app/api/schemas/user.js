@@ -43,6 +43,7 @@ const UserQueries = {
 };
 
 const UserMutations = {
+
   uploadImg: {
     type: GraphQLString,
     args: {
@@ -57,8 +58,32 @@ const UserMutations = {
       user.save();
       return "Image uploaded!";
     }
+  },
+  updatePassword: {
+    type: GraphQLString,
+    args: {
+      oldPassword: { type: new GraphQLNonNull(GraphQLString) },
+      newPassword: { type: new GraphQLNonNull(GraphQLString) }
+    },
+    async resolve(parent, args, req) {
+      if(!req.isAuthenticated()) return "Not authenticated!";
+
+      const user = await User.findOne( { username: req.user.username });
+      if(!user) {
+        return "Password failed to update!";
+      }
+      if(user.comparePassword(args.oldPassword)) {
+        user.password = args.newPassword;
+        user.save();
+        return "Password updated!"
+      }
+      return "Password failed to update!";
+
+    }
   }
 };
+
+
 
 module.exports = { UserType, UserQueries, UserMutations };
 

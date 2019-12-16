@@ -37,16 +37,21 @@ $(document).ready(function () {
             })
         });
     });
+    // mutation { updatePassword(oldPassword: "test", newPassword: "f") }
     setInterval(updateInformation, 5000);
     $('#update').submit(function (e) {
         e.preventDefault();
         $.ajax({
-            url: 'http://localhost:4000/update',
+            url: 'http://localhost:4000/graphql',
             contentType: 'application/json',
             type: 'POST',
-            data: JSON.stringify({ updatePassword: $(this).find('input[name="updatePassword"]').val(), password: $(this).find('input[name="password"]').val() }),
+            data: JSON.stringify({
+                query: `mutation {
+                updatePassword(oldPassword: "${$(this).find('input[name="oldPassword"]').val()}", newPassword: "${$(this).find('input[name="newPassword"]').val()}" )
+            }`
+            }),
             success: function (res) {
-                $('#updateMessage').html(res);
+                $('#updateMessage').html(res.data.updatePassword);
             }
         });
     });

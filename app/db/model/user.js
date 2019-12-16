@@ -10,6 +10,9 @@ const user = new Schema({
     image: { data: Buffer, type: String },
 });
 
+/**
+ * ASYNC salting and hashing password!
+ */
 user.pre('save', function (next) {
     var user = this;
     if (!user.isModified('password')) return next();
@@ -26,11 +29,12 @@ user.pre('save', function (next) {
     });
 });
 
-user.methods.comparePassword = function (candidatepass, res) {
-    bcrypt.compare(candidatepass, this.password, function (err, isMatch) {
-        if (err) return res(err);
-        res(null, isMatch);
-    });
+/**
+ * SYNC checking password!
+ */
+user.methods.comparePassword = function (candidatepass) {
+    return bcrypt.compareSync(candidatepass, this.password);
+    
 };
 
 module.exports = mongoose.model('User', user);
