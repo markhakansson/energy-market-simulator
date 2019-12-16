@@ -80,6 +80,27 @@ const UserMutations = {
       return "Password failed to update!";
 
     }
+  },
+  deleteAdmin: {
+    type: GraphQLString,
+    args: {
+      username: { type: new GraphQLNonNull(GraphQLString) },
+      password: { type: new GraphQLNonNull(GraphQLString) }
+    },
+    async resolve(parent, args, req) {
+      if(!req.isAuthenticated()) return "Not authenticated!";
+
+      if(user.username != args.username ) return "Are you the one you say you really are?";
+      const user = await User.findOne( { username: req.user.username });
+      if(!user) {
+        return "Failed";
+      }
+      if(user.comparePassword(args.password)) {
+        user.deleteOne();
+        return "User deleted";
+      }
+      return "Failed to delete user";
+    }
   }
 };
 

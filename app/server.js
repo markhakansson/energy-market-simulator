@@ -6,6 +6,8 @@ const passport = require('passport');
 const flash = require('connect-flash');
 const routes = require('./routes/index');
 const cookieParser = require('cookie-parser');
+const User = require('./db/model/user');
+
 
 // Loads the '.env' file in root to process.env.
 require('dotenv').config();

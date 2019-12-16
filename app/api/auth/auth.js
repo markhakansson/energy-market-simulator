@@ -38,9 +38,10 @@ passport.use('local-signup', new LocalStrategy(
             }
             if (!user) {
                 const user = new User({
-                    role: 'normal',
                     username: username,
-                    password: password
+                    password: password,
+                    role: 'normal',
+
                 });
                 const prosumer = new Prosumer({
                     name: username,
