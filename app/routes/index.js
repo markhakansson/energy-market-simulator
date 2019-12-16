@@ -61,14 +61,14 @@ router.get('/prosumer', function (req, res) {
     }
 });
 
-router.get('*', function (req, res) {
-    res.render('404');
-})
-
 router.use('/graphql', isLoggedIn, expressGraphql(req => ({
     schema,
     graphiql: true,
     context: req
 })));
+
+router.get('*', function (req, res) {
+    res.render('404');
+})
 
 module.exports = router;
