@@ -3,14 +3,12 @@ const Schema = mongoose.Schema;
 
 const consumer = new Schema({
     name: String,
-    market: Object,
+    market: String,
     timestamp: { type: Date, default: Date.now() },
     consumption: Number,
     bought: Number,
-    timeMultiplier: Number,
     blackout: Boolean,
     retrying: Boolean
-
 
 });
 

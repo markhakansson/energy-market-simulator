@@ -12,9 +12,9 @@ const ProsumerMutations = require('./schemas/prosumer').ProsumerMutations;
 const WeatherMutations = require('./schemas/weather').WeatherMutations;
 const UserMutations = require('./schemas/user').UserMutations;
 
-const { 
+const {
     GraphQLObjectType,
-    GraphQLSchema, 
+    GraphQLSchema
 } = graphql;
 
 const RootQuery = new GraphQLObjectType({
@@ -24,7 +24,7 @@ const RootQuery = new GraphQLObjectType({
         ...ProsumerQueries,
         ...MarketQueries,
         ...WeatherQueries,
-        ...UserQueries,
+        ...UserQueries
     }
 });
 
@@ -35,7 +35,7 @@ const Mutation = new GraphQLObjectType({
         ...ProsumerMutations,
         ...MarketMutations,
         ...WeatherMutations,
-        ...UserMutations,
+        ...UserMutations
     }
 });
 

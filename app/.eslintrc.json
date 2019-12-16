@@ -5,7 +5,8 @@
         "es6": true,
         "node": true,
         "mongo": true,
-        "mocha": true
+        "mocha": true,
+        "jquery": true
     },
     "extends": [
         "standard"
@@ -44,6 +45,9 @@
         "space-unary-ops": "warn",
         "comma-spacing": "warn",
         "object-curly-newline": "warn",
-        "key-spacing": "warn"
+        "key-spacing": "warn",
+        "spaced-comment": "warn",
+        "no-new": "warn",
+        "no-global-assign": "warn"
     }
 }

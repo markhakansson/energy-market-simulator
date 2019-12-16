@@ -3,12 +3,10 @@ const Schema = mongoose.Schema;
 
 const prosumer = new Schema({
     name: String,
-    wind: Number,
-    market: Object,
-    timeMultiplier: Number,
-    timestamp: { type: Date, default: Date.now() },
-    production: Number,
+    market: String,
+    timestamp: { type: Date, default: new Date() },
     consumption: Number,
+    production: Number,
     currBatteryCap: Number,
     maxBatteryCap: Number,
     fillBatteryRatio: Number,
@@ -17,8 +15,7 @@ const prosumer = new Schema({
     blackout: Boolean,
     turbineStatus: String,
     turbineWorking: Boolean,
-    turbineBreakPercent: Number,
-
+    turbineBreakPercent: Number
 
 });
 

@@ -19,3 +19,7 @@
 | 2019-12-05 | 4 | Look into GraphQL context and authentication + authorization. Toying around with it. |
 | 2019-12-06 | 4 | Add more placeholders for future features on the prosumer page. Will update it when the API is complete.|
 | 2019-12-09 | 4 | Work on front-end. Fix bugs in prosumer schema where resolvers didn't return |
+| 2019-12-10 | 4 | Work with sessions. |
+| 2019-12-11 | 4 | Work with frontend and finish how to deal with sessions/passport and graphql queries. |
+| 2019-12-12 | 4 | Work on frontend, send mutations to API |
+| 2019-12-13 | 8 | Start getting the simulator working together with the API and frontend. |

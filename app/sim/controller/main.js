@@ -3,45 +3,90 @@ const MarketSim = require('../model/market');
 const ProsumerSim = require('../model/prosumer');
 const WeatherSim = require('../model/weather');
 
+const Prosumer = require('../../db/model/prosumer');
+const Consumer = require('../../db/model/consumer');
+const User = require('../../db/model/user');
 
-console.log("Simulator now running... ");
-// name, price, production, maxBatteryCap
-let market = new MarketSim("Sweden", 2, 5000, 100000);
-// name, wind_speed, temperature
-let weather = new WeatherSim("sun", 10, 20);
 
-// name, market
-let consumer1 = new ConsumerSim("Hakansson", market);
-let consumer2 = new ConsumerSim("Strandberg", market);
+const timeMultiplier = 5000;
 
-// name, market, fillBattRatio, useBattRatio, batterySize
-let prosumer1 = new ProsumerSim("elon", market, 0.5, 0.5, 1000);
+const market = new MarketSim('Lulea', 2, 5000, 100000);
+const weather = new WeatherSim('Lulea', 10, 20);
 
-function main() {
-    setTimeout(function() {
+var prosumerNames = [];
+var prosumerList = [];
+
+var consumerNames = [];
+var consumerList = [];
+
+// Only allows for a single market as of now
+async function init () {
+    console.log('Initializing simulator...');
+    // Get all unique names of prosumers and consumers from DB
+    await Prosumer.distinct('name', function (err, res) {
+        if (err) {
+            console.error(err);
+        } else {
+            prosumerNames = res;
+        }
+    });
+
+    await Consumer.distinct('name', function (err, res) {
+        if (err) {
+            console.error(err);
+        } else {
+            consumerNames = res;
+        }
+    });
+
+    // Create new sim models
+    for (const name of prosumerNames) {
+        prosumerList.push(new ProsumerSim(name, market, timeMultiplier));
+    }
+
+    for (const name of consumerNames) {
+        consumerList.push(new ConsumerSim(name, market, timeMultiplier));
+    }
+
+    console.log('Prosumers: ' + prosumerNames);
+    console.log('Consumers: ' + consumerNames);
+}
+
+function simLoop () {
+    setTimeout(async function () {
         weather.update();
         market.generateProduction();
 
-        prosumer1.generateProduction(weather.weather.wind_speed);
-        prosumer1.generateConsumption();
+        for (const prosumer of prosumerList) {
+            await prosumer.fetchData();
+            prosumer.generateProduction(weather.weather.wind_speed);
+            prosumer.generateConsumption();
+        }
 
+        for (const consumer of consumerList) {
+            await consumer.fetchData();
+            consumer.generateConsumption();
+        }
 
-        consumer1.generateConsumption();
-        consumer2.generateConsumption();
+        for (const prosumer of prosumerList) {
+            prosumer.update();
+        }
 
-        prosumer1.update();
-        consumer1.update();
-        consumer2.update();
+        for (const consumer of consumerList) {
+            consumer.update();
+        }
+
         market.update();
-        console.log(weather.weather.wind_speed);
+        console.log('Wind speed: ' + weather.weather.wind_speed);
 
+        simLoop();
+    }, timeMultiplier);
+}
 
+async function main () {
+    await init();
+    console.log('Simulator now running... ');
+    simLoop();
+}
 
-        main();
-
-    }, 2000);
-}     
- 
-module.exports = main();
-
-
+module.exports = { main, init };

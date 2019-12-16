@@ -4,82 +4,62 @@ const Consumer = require('../../db/model/consumer');
 const Prosumer = require('../../db/model/prosumer');
 const Market = require('../../db/model/market');
 
-
 const { ConsumerType } = require('../../api/schemas/consumer');
 const { ProsumerType } = require('../../api/schemas/prosumer');
 const { MarketType } = require('../../api/schemas/market');
 
-
 const {
     GraphQLObjectType,
     GraphQLString,
-    GraphQLList,
     GraphQLID,
     GraphQLNonNull,
-    GraphQLSchema,
     GraphQLBoolean
-  } = graphql;
-
+} = graphql;
 
 const UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
     id: { type: GraphQLNonNull(GraphQLID) },
+    role: { type: GraphQLNonNull(GraphQLString)},
     username: { type: GraphQLNonNull(GraphQLString) },
     password: { type: GraphQLNonNull(GraphQLString) },
-    consumer: {
-      type: new GraphQLList(ConsumerType),
-      resolve(parent, args) {
-        return Consumer.find( { name: parent.username } );
-      }
-    },
-    prosumer: {
-      type: new GraphQLList(ProsumerType),
-      resolve(parent, args) {
-        return Prosumer.find( { name: parent.username } );
-      }
-    },
-    market: {
-      type: new GraphQLList(MarketType),
-      resolve(parent, args) {
-        return Market.find( { name: parent.username });
-      }
-    }
+    image: { type: GraphQLString },
+    
   })
 });
-
-
-
-const UserMutations = {
-  loginUser: {
-    type: GraphQLBoolean,
-    args: {
-      username: { type: new GraphQLNonNull(GraphQLString) },
-      password: { type: new GraphQLNonNull(GraphQLString) }
-    },
-    resolve(parent, args, req) {
-      User.findOne( { username: args.username }, function(err, user) {
-        // Removed to avoid throwing error with possible sensetive data, see OWASP
-        // if (err) throw err;
-
+const UserQueries = {
+  image: {
+    type: GraphQLString,
+    async resolve(parent, args, req) {
+      if(req.isAuthenticated()) {
+        const user = await User.findOne( { username: req.user.username });
         if(!user) {
-          throw new Error('Could not find user: ' + args.username);
-        } 
-        user.comparePassword(args.password, function(err, isMatch) { // Avoiding to throw errors here
-          if(!isMatch) throw new Error('Incorrect password for user: ' + args.username);
-
-          if(isMatch) {
-            req.login(user, error => (error ? error : user)); // Passport login
-            console.log(args.username + " is now logged in!");
-            return true;
-          }
-
-        });
-      });
+          return "Failed to get user image";
+        }
+        return user.image;
+      }
     }
   }
 };
 
-module.exports = { UserType, UserMutations };
+const UserMutations = {
+  uploadImg: {
+    type: GraphQLString,
+    args: {
+      image: { type: new GraphQLNonNull(GraphQLString) }, 
+    },
+    async resolve(parent, args, req) {
+      const user = await User.findOne( { username: req.user.username });
+      if(!user) { 
+        return "Image failed to upload!";       
+      }
+      user.image = args.image;
+      user.save();
+      return "Image uploaded!";
+    }
+  }
+};
+
+module.exports = { UserType, UserQueries, UserMutations };
 
  
