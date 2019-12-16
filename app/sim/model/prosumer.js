@@ -3,12 +3,12 @@ var tools = require('../../helper/tools');
 var Prosumer = require('../../db/model/prosumer');
 
 class ProsumerSim {
-    constructor (name, market) {
+    constructor (name, market, timeMultiplier) {
         this.prosumer = { name: name };
 
         this.market = market;
 
-        this.timeMultiplier = 5;
+        this.timeMultiplier = timeMultiplier;
     }
 
     async fetchData () {
@@ -81,13 +81,13 @@ class ProsumerSim {
 
     callTurbineRepairman () {
         const self = this.prosumer;
-        tools.sleep(2 * this.timeMultiplier * 1000).then(() => {
+        tools.sleep(2 * this.timeMultiplier).then(() => {
             self.turbineStatus = 'REPAIRMAN ON THE WAY...';
         });
-        tools.sleep(this.timeMultiplier * 1000).then(() => {
+        tools.sleep(this.timeMultiplier).then(() => {
             self.turbineStatus = 'REPAIRING...';
         });
-        tools.sleep(2 * this.timeMultiplier * 1000).then(() => {
+        tools.sleep(2 * this.timeMultiplier).then(() => {
             self.turbineWorking = true;
             self.turbineStatus = 'WORKING!';
         });
@@ -158,7 +158,7 @@ class ProsumerSim {
                 '\n Producing: ' + self.production + ' Wh' +
                 '\n Consuming: ' + self.consumption + ' Wh' +
                 '\n Bought energy: ' + self.bought + ' Wh' +
-                '\n Price per Wh is: ' + this.market.price + ' SEK' +
+                '\n Price per Wh is: ' + this.market.market.price + ' SEK' +
                 '\n Battery: ' + self.currBatteryCap + ' Wh' +
                 '\n Blackout: ' + self.blackout +
                 '\n Turbine status: ' + self.turbineStatus
