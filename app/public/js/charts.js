@@ -22,7 +22,9 @@ class ProsumerChart {
                             display: false,
                         },
                         ticks: {
-                            maxTicksLimit: 5
+                            maxTicksLimit: 5,
+                            minRotation: 0,
+                            maxRotation: 0
                         }
                     }],
                     yAxes: [{
@@ -44,7 +46,24 @@ class ProsumerChart {
         this.chart.data.datasets.forEach((dataset) => {
             dataset.data.push(data);
         });
+
+        if(this.chart.data.labels.length >= 10) {
+            this.removeFirstLabel(this.chart.data);
+            this.chart.data.datasets.forEach((dataset) => {
+                this.removeFirstElement(dataset);
+            })
+        }
+
+
         this.chart.update();
+    }
+
+    removeFirstElement(dataset) {
+        dataset.data.shift();
+    }
+
+    removeFirstLabel(data) {
+        data.labels.shift();
     }
 
 }
