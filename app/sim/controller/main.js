@@ -7,9 +7,11 @@ const Prosumer = require('../../db/model/prosumer');
 const Consumer = require('../../db/model/consumer');
 const User = require('../../db/model/user');
 
-// Set simulation speed
+// Set simulation speed in ms
 const TIME_MULTIPLIER = 5000;
 
+// These are basically reset everytime the simulation starts. Would be a good idea to get the previous
+// data from the database instead.
 const market = new MarketSim('Lulea', 2, 5000, 100000);
 const weather = new WeatherSim('Lulea', 10, 20);
 

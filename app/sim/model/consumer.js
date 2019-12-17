@@ -10,6 +10,9 @@ class ConsumerSim {
         this.timeMultiplier = timeMultiplier;
     }
 
+    /**
+     * Gets the latest version of this model from the database.
+     */
     async fetchData () {
         const self = this;
         await Consumer.findOne({ name: this.consumer.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
@@ -73,6 +76,9 @@ class ConsumerSim {
         }
     }
 
+    /**
+     * Saves the mdoel in its current state to the database.
+     */
     update () {
         let self = this.consumer;
         self = new Consumer({

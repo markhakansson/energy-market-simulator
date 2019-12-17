@@ -27,6 +27,9 @@ class WeatherSim {
         });
     }
 
+    /**
+     * Generates a new wind speed, then saves this model to the database.
+     */
     update () {
         var arr;
         const self = this.weather;

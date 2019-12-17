@@ -11,6 +11,9 @@ class ProsumerSim {
         this.timeMultiplier = timeMultiplier;
     }
 
+    /**
+     * Gets the current data for this model in the database.
+     */
     async fetchData () {
         const self = this;
         await Prosumer.findOne({ name: this.prosumer.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
@@ -22,6 +25,10 @@ class ProsumerSim {
         });
     }
 
+    /**
+     * Call this to randomize the chance of the turbine to break. This function will call the
+     * function 'callTurbineRepairman' which will fix the turbine some time in the future.
+     */
     randomizeTurbineBreaking () {
         const self = this.prosumer;
         if (self.turbineWorking) {
@@ -79,6 +86,9 @@ class ProsumerSim {
         }
     }
 
+    /**
+     * Repairs the turbine in the future. Updats the turbine status after some time.
+     */
     callTurbineRepairman () {
         const self = this.prosumer;
         tools.sleep(2 * this.timeMultiplier).then(() => {
@@ -93,6 +103,10 @@ class ProsumerSim {
         });
     }
 
+    /**
+     * Fills up the house's battery with amount.
+     * @param {*} energy The amount to charge.
+     */
     chargeBattery (energy) {
         const self = this.prosumer;
         if (self.currBatteryCap + energy >= self.maxBatteryCap) {
@@ -103,6 +117,10 @@ class ProsumerSim {
         }
     }
 
+    /**
+     * Withdraws a certain amount of energy from the house's battery.
+     * @param {*} energy The amount to use up.
+     */
     useBattery (energy) {
         const self = this.prosumer;
         if (self.currBatteryCap - energy < 0) {
@@ -114,6 +132,10 @@ class ProsumerSim {
         }
     }
 
+    /**
+     * Buys the given amount of energy from the connected market.
+     * @param {*} energy Amount to buy.
+     */
     buyFromMarket (energy) {
         const self = this.prosumer;
         const boughtEnergy = this.market.buy(energy);
@@ -123,14 +145,21 @@ class ProsumerSim {
         }
     }
 
+    /**
+     * Sells the chosen amount of energy to the connected market.
+     * @param {*} energy Amount to sell.
+     */
     sellToMarket (energy) {
         this.market.sell(energy);
     }
 
+    /**
+     * Saves this model to the database.
+     */
     update () {
         let self = this.prosumer;
 
-        console.log("Prosumer: \n" + this);
+        console.log('Prosumer: \n' + this);
 
         self = new Prosumer({
             name: self.name,
