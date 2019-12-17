@@ -7,22 +7,41 @@ const Prosumer = require('../../db/model/prosumer');
 const Consumer = require('../../db/model/consumer');
 const User = require('../../db/model/user');
 
-
-const timeMultiplier = 5000;
+// Set simulation speed
+const TIME_MULTIPLIER = 5000;
 
 const market = new MarketSim('Lulea', 2, 5000, 100000);
 const weather = new WeatherSim('Lulea', 10, 20);
 
 var prosumerNames = [];
-var prosumerList = [];
-
 var consumerNames = [];
-var consumerList = [];
 
-// Only allows for a single market as of now
+var prosumerMap = new Map();
+var consumerMap = new Map();
+
+/**
+ * Initializes all simulation models with data from the database.
+ * Currently only support a single market.
+ */
 async function init () {
     console.log('Initializing simulator...');
     // Get all unique names of prosumers and consumers from DB
+    await updateNameArrays();
+
+    // Create new sim models
+    for (const name of prosumerNames) {
+        prosumerMap.set(name, new ProsumerSim(name, market, TIME_MULTIPLIER));
+    }
+
+    for (const name of consumerNames) {
+        prosumerMap.set(name, new ConsumerSim(name, market, TIME_MULTIPLIER));
+    }
+
+    console.log('Prosumers: ' + prosumerNames);
+    console.log('Consumers: ' + consumerNames);
+}
+
+async function updateNameArrays () {
     await Prosumer.distinct('name', function (err, res) {
         if (err) {
             console.error(err);
@@ -38,41 +57,49 @@ async function init () {
             consumerNames = res;
         }
     });
+}
 
-    // Create new sim models
+/**
+ * Searches for new prosumers/consumers in the databse and adds them to the simulation.
+ */
+async function searchForNewUsers () {
+    await updateNameArrays();
+
     for (const name of prosumerNames) {
-        prosumerList.push(new ProsumerSim(name, market, timeMultiplier));
+        if (!prosumerMap.has(name)) {
+            prosumerMap.set(name, new ProsumerSim(name, market, TIME_MULTIPLIER));
+        }
     }
 
     for (const name of consumerNames) {
-        consumerList.push(new ConsumerSim(name, market, timeMultiplier));
+        if (!consumerMap.has(name)) {
+            consumerMap.set(name, new ConsumerSim(name, market, TIME_MULTIPLIER));
+        }
     }
-
-    console.log('Prosumers: ' + prosumerNames);
-    console.log('Consumers: ' + consumerNames);
 }
 
 function simLoop () {
     setTimeout(async function () {
+        searchForNewUsers();
         weather.update();
         market.generateProduction();
 
-        for (const prosumer of prosumerList) {
+        for (const [_, prosumer] of prosumerMap) {
             await prosumer.fetchData();
             prosumer.generateProduction(weather.weather.wind_speed);
             prosumer.generateConsumption();
         }
 
-        for (const consumer of consumerList) {
+        for (const [_, consumer] of consumerMap) {
             await consumer.fetchData();
             consumer.generateConsumption();
         }
 
-        for (const prosumer of prosumerList) {
+        for (const [_, prosumer] of prosumerMap) {
             prosumer.update();
         }
 
-        for (const consumer of consumerList) {
+        for (const [_, consumer] of consumerMap) {
             consumer.update();
         }
 
@@ -80,7 +107,7 @@ function simLoop () {
         console.log('Wind speed: ' + weather.weather.wind_speed);
 
         simLoop();
-    }, timeMultiplier);
+    }, TIME_MULTIPLIER);
 }
 
 async function main () {
