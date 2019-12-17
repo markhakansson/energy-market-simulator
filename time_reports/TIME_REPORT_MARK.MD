@@ -23,3 +23,4 @@
 | 2019-12-11 | 4 | Work with frontend and finish how to deal with sessions/passport and graphql queries. |
 | 2019-12-12 | 4 | Work on frontend, send mutations to API |
 | 2019-12-13 | 8 | Start getting the simulator working together with the API and frontend. |
+| 2019-12-16 | 8 | Simulator now works together with frontend and the API. Work on chart 
