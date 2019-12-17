@@ -4,6 +4,7 @@ const expressGraphql = require('express-graphql');
 const schema = require('../api/schema');
 const passport = require('passport');
 const isLoggedIn = require('../api/auth/auth').isLoggedIn;
+const isAdmin = require('../api/auth/auth').isAdmin;
 const Prosumer = require('../db/model/prosumer');
 const User = require('../db/model/user');
 
@@ -23,22 +24,32 @@ router.post('/login', passport.authenticate('local-login', { failureRedirect: '/
 
 router.get('/success', isLoggedIn, async function (req, res, next) {
     // res.render('prosumer', { message: req.session.username, updateMessage: '' });
-    console.log('Session:\n' + req.session);
+   
     const user = await User.findOne( { username: req.session.username });
     if(user.role == 'admin') {
-        res.render('manager', { message: req.session.username });
+        res.redirect('/admin?username=' + req.user.username);
     } else if(user.role == 'normal') {
-        const prosumer = await Prosumer.findOne( { name: req.session.username });
-        res.render('prosumer', {
-            message: prosumer.name,
-            useBatteryRatioDefault: prosumer.useBatteryRatio,
-            fillBatteryRatioDefault: prosumer.fillBatteryRatio
-        });
+        res.redirect('/prosumer?username=' + req.user.username);
     } else {
         req.logout();
         res.redirect('/');
+
     }
 });
+
+router.get('/admin', isAdmin, function(req, res, next) {
+    res.render('manager', { message: req.session.username });
+
+});
+
+router.get('/prosumer', isLoggedIn, async function(req, res, next) {
+    const prosumer = await Prosumer.findOne( { name: req.session.username });
+    res.render('prosumer', {
+        message: prosumer.name,
+        useBatteryRatioDefault: prosumer.useBatteryRatio,
+        fillBatteryRatioDefault: prosumer.fillBatteryRatio
+    });
+})
 
 router.get('/signup', function (req, res, next) {
     res.render('signup.ejs', { message: req.flash('signupMessage') });
@@ -59,8 +70,6 @@ router.use('/graphql', isLoggedIn, expressGraphql(req => ({
     context: req,
 }))); 
   
-  
-
 router.get('*', function (req, res) {
     res.render('404');
 })

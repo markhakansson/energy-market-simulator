@@ -8,6 +8,7 @@ const user = new Schema({
     role: { type: String, required: true },
     timestamp: { type: Date, default: Date.now() },
     image: { data: Buffer, type: String },
+    online: { type: Boolean, default: false }
 });
 
 /**

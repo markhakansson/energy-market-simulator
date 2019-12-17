@@ -13,7 +13,8 @@ const {
     GraphQLString,
     GraphQLID,
     GraphQLNonNull,
-    GraphQLBoolean
+    GraphQLBoolean,
+    GraphQLList
 } = graphql;
 
 const UserType = new GraphQLObjectType({
@@ -31,13 +32,26 @@ const UserQueries = {
   image: {
     type: GraphQLString,
     async resolve(parent, args, req) {
-      if(req.isAuthenticated()) {
-        const user = await User.findOne( { username: req.user.username });
-        if(!user) {
-          return "Failed to get user image";
-        }
-        return user.image;
+      if(!req.isAuthenticated()) return "Not authenticated!";
+      const user = await User.findOne( { username: req.user.username });
+      if(!user) {
+        return "Failed to get user image";
       }
+      return user.image;
+    
+    }
+  },
+  users: {
+    type: new GraphQLList(UserType),
+    async resolve(parent, args, req) {
+      if(!req.isAuthenticated()) return "Not authenticated!";
+      const user = await User.findOne( { username: req.user.username });
+      if (user.role == 'admin') {
+        const users = await User.find({}, { username: 1, _id: 0 } );
+        return users;
+        
+      }
+      return "Not authorized!";
     }
   }
 };
@@ -50,6 +64,7 @@ const UserMutations = {
       image: { type: new GraphQLNonNull(GraphQLString) }, 
     },
     async resolve(parent, args, req) {
+      if(!req.isAuthenticated()) return "Not authenticated!";
       const user = await User.findOne( { username: req.user.username });
       if(!user) { 
         return "Image failed to upload!";       
@@ -84,22 +99,19 @@ const UserMutations = {
   deleteAdmin: {
     type: GraphQLString,
     args: {
-      username: { type: new GraphQLNonNull(GraphQLString) },
       password: { type: new GraphQLNonNull(GraphQLString) }
     },
     async resolve(parent, args, req) {
       if(!req.isAuthenticated()) return "Not authenticated!";
-
-      if(user.username != args.username ) return "Are you the one you say you really are?";
       const user = await User.findOne( { username: req.user.username });
       if(!user) {
         return "Failed";
       }
       if(user.comparePassword(args.password)) {
         user.deleteOne();
-        return "User deleted";
+        return "User deleted!";
       }
-      return "Failed to delete user";
+      return "Failed to delete user!";
     }
   }
 };

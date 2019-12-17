@@ -74,4 +74,14 @@ function isLoggedIn (req, res, next) {
     res.redirect('/');
 }
 
-module.exports = { isLoggedIn };
+async function isAdmin (req, res, next) {
+    const user = await User.findOne( { username: req.session.username });
+
+    if(req.isAuthenticated() && user.role == 'admin') {
+        return next();
+    }
+    req.logout();
+    res.redirect('/');
+
+}
+module.exports = { isLoggedIn, isAdmin };
