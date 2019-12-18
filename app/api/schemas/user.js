@@ -57,6 +57,50 @@ const UserQueries = {
 };
 
 const UserMutations = {
+  login: {
+    type: GraphQLBoolean,
+    args: {
+      username: { type: new GraphQLNonNull(GraphQLString) },
+      password: { type: new GraphQLNonNull(GraphQLString) }
+    },
+    async resolve(parent, args, req) {
+      const user = await User.findOne( {username: args.username });
+      if(!user) {
+        return false;
+      }
+      if(user.comparePassword(args.password)) {
+        req.session.user = user.username;
+        req.session.admin = user.admin;
+        return true;
+      
+      }
+      return false;
+    }
+     
+
+  },
+
+  signUp: {
+    type: GraphQLBoolean,
+    args: {
+      username: { type: new GraphQLNonNull(GraphQLString) },
+      password: { type: new GraphQLNonNull(GraphQLString) }
+    },
+    async resolve(parent, args, req) {
+      const user = await User.findOne({ username: args.username });
+      if (!user) {
+          const user = new User({
+              username: args.username,
+              password: args.password,
+
+          });
+          await user.save();
+          return true;
+      }
+      return false;
+    
+    }
+  },
 
   uploadImg: {
     type: GraphQLString,

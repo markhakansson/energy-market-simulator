@@ -3,7 +3,6 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 // const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose');
-const passport = require('passport');
 const flash = require('connect-flash');
 const routes = require('./routes/index');
 const cookieParser = require('cookie-parser');
@@ -62,8 +61,6 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(flash());
 app.use('/', routes);
 

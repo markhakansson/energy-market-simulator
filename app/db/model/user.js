@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const user = new Schema({
     username: { type: String, required: true, index: { unique: true } },
     password: { type: String, required: true },
-    role: { type: String, required: true },
+    admin: { type: Boolean, default: false },
     timestamp: { type: Date, default: Date.now() },
     image: { data: Buffer, type: String },
     online: { type: Boolean, default: false }
