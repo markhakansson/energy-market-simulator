@@ -14,36 +14,33 @@ router.get('/', function (req, res, next) {
 });
 
 
-router.get('/success', isLoggedIn, async function (req, res, next) {
-    // res.render('prosumer', { message: req.session.username, updateMessage: '' });
-    // res.redirect('/graphql');
-    // const user = await User.findOne( { username: req.session.username });
-    // if(user.role == 'admin') {
-    //     res.redirect('/admin?username=' + req.user.username);
-    // } else if(user.role == 'normal') {
-    //     res.redirect('/prosumer?username=' + req.user.username);
-    // } else {
-    //     req.logout();
-    //     res.redirect('/');
-
-    // }
+router.get('/success', auth, function (req, res, next) {
+    if(req.session.manager) {
+        res.redirect('/manager?username' + req.session.user);
+    }
+    res.redirect('/prosumer?username=' + req.session.user);
+    
 });
 
+router.get('/manager', auth, isManager, function(req, res, next) {
+    res.render('manager', { 
+        message: req.session.user
+    });
+})
 
-router.get('/prosumer', isLoggedIn, async function(req, res, next) {
-    const prosumer = await Prosumer.findOne( { name: req.session.username });
+
+router.get('/prosumer', auth, async function(req, res, next) {
     res.render('prosumer', {
-        message: prosumer.name,
-        useBatteryRatioDefault: prosumer.useBatteryRatio,
-        fillBatteryRatioDefault: prosumer.fillBatteryRatio
+        message: req.session.user
+    
     });
 })
 
 router.get('/signup', isLoggedIn, function (req, res) {
-        res.render('signup.ejs');
+    res.render('signup.ejs');
 })
 
-router.get('/login', isLoggedIn, function(req, res) {
+router.get('/login', isLoggedIn,function(req, res) {
     res.render('login.ejs');
 })
 router.get('/logout', function(req, res, next) {
@@ -61,13 +58,24 @@ router.get('*', function (req, res) {
     res.render('404');
 })
 
+function auth(req, res, next) {
+    if(req.session.user && req.session.cookie) {
+        next();
+    }
+    res.redirect('/logout');
+}
+function isManager(req, res, next) {
+    if(req.session.manager) {
+        next();
+    }
+    res.redirect('/');
+}
 
 function isLoggedIn(req, res, next) {
     if(req.session.user && req.session.cookie) {
-        res.redirect('/success')
+        res.redirect('/success');
     }
     next();
-
 }
 
 module.exports = router;

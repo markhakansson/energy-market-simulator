@@ -1,6 +1,6 @@
 $(document).ready(function () {
 
-    $("#signForm").submit(function(e) {
+    $("#loginForm").submit(function(e) {
         e.preventDefault();
         $.ajax({
             url: 'http://localhost:4000/graphql',
@@ -8,20 +8,17 @@ $(document).ready(function () {
             type: 'POST',
             data: JSON.stringify({
                 query: `mutation { 
-                    signUp(
+                    login(
                         username: "${$('#username').val()}", 
                         password: "${$('#password').val()}"
                         ) 
                     }`
             }),
             success: function (res) {
-                if (res.data.signUp) {
-                    $('#signUpMsg').html("User created! Redirecting...");
-                    setTimeout(function() {
-                        window.location.href = "/";
-                    }, 1500);
+                if (res.data.login) {
+                    window.location.href = "/";
                 } else {
-                    $('#signUpMsg').html("User already exists or something else failed!");
+                    $('#loginMsg').html("Incorrect username or password!");
                 }
 
             }

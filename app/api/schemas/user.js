@@ -70,7 +70,7 @@ const UserMutations = {
       }
       if(user.comparePassword(args.password)) {
         req.session.user = user.username;
-        req.session.admin = user.admin;
+        req.session.manager = user.manager;
         return true;
       
       }
