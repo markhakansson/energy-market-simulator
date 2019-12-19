@@ -44,7 +44,9 @@ router.get('/login', isLoggedIn,function(req, res) {
 
 router.get('/logout', function(req, res, next) {
     if(req.session.user) {
-        req.session.destroy();        
+        req.session.destroy(function(err) {
+            if (err) return next(err);
+        });        
     }
     return res.redirect('/login');
 });
@@ -55,8 +57,21 @@ router.use('/graphql', expressGraphql(req => ({
     context: req,
 }))); 
   
+router.get('/online', isManager, function(req, res, next) {
+    const online = req.sessionStore.all(function(err, sessions) {
+        if(err) return next(err);
+        let online = [];
+        Object.values(sessions).forEach(e => { online.push(e.user) });
+        return online;
+    });
+    console.log(online);
+    return res.send(online);
+    
+});
 router.get('*', function (req, res) {
     return res.render('404');
 })
+
+
 
 module.exports = router;

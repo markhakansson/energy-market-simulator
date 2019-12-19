@@ -48,7 +48,11 @@ app.use(
     session({
         secret: process.env.SESSION_SECRET,
         resave: false, // If true this will cause race cond in our case, "Typically, you'll want false." See express session doc
-        saveUninitialized: true,
+        saveUninitialized: false, 
+                                    // Forces a session that is "uninitialized" to be saved to the store. 
+                                    // A session is uninitialized when it is new but not modified. 
+                                    // Choosing false is useful for implementing login sessions, reducing server storage usage,
+                                    //  or complying with laws that require permission before setting a cookie. 
         cookie: { maxAge: 600000 }
     })
 );
@@ -65,3 +69,4 @@ app.use(flash());
 app.use('/', routes);
 
 app.listen(4000, () => console.log('Express GraphQL Server Now Running On localhost:4000/graphql'));
+
