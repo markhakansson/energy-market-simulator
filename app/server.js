@@ -23,7 +23,7 @@ mongoose.connection.once('open', () => {
 // const user = new User({
 //     username: "1",
 //     password: "1",
-//     role: "admin"
+//     manager: true,
 // });
 // user.save();
 /**

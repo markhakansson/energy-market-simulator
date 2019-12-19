@@ -111,3 +111,32 @@ function updateWindspeed (location) {
         }
     });
 }
+
+function deleteUser() {
+    let password = prompt("Please enter your password");
+    if(password == null || password == "") {
+        $('#deleteUserMsg').html("Please provide your password");
+    }
+    $.ajax({
+        url: 'http://localhost:4000/graphql',
+        contentType: 'application/json',
+        type: 'POST',
+        data: JSON.stringify({
+            query: `mutation {
+                deleteUser(password:"${password}")
+           }`
+        }),
+        success: function (res) {
+            if(res.data.deleteUser) {
+                $('#deleteUserMsg').html("User deleted! Redirecting...");
+                setTimeout(function() {
+                    window.location.href = "logout"
+                }, 2000);
+            } else {
+                $('#deleteUserMsg').html("Incorrect password!");
+
+            }
+            
+        }
+    });
+}

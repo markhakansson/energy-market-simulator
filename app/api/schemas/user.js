@@ -3,6 +3,7 @@ const User = require('../../db/model/user');
 const Consumer = require('../../db/model/consumer');
 const Prosumer = require('../../db/model/prosumer');
 const Market = require('../../db/model/market');
+const init = require('../../sim/controller/main').init;
 
 const { ConsumerType } = require('../../api/schemas/consumer');
 const { ProsumerType } = require('../../api/schemas/prosumer');
@@ -32,8 +33,8 @@ const UserQueries = {
   image: {
     type: GraphQLString,
     async resolve(parent, args, req) {
-      if(!req.isAuthenticated()) return "Not authenticated!";
-      const user = await User.findOne( { username: req.user.username });
+      if(!req.session.user) return "Not authenticated!";
+      const user = await User.findOne( { username: req.session.user });
       if(!user) {
         return "Failed to get user image";
       }
@@ -44,14 +45,12 @@ const UserQueries = {
   users: {
     type: new GraphQLList(UserType),
     async resolve(parent, args, req) {
-      if(!req.isAuthenticated()) return "Not authenticated!";
-      const user = await User.findOne( { username: req.user.username });
-      if (user.role == 'admin') {
-        const users = await User.find({}, { username: 1, _id: 0 } );
-        return users;
+      if(!req.session.user) return "Not authenticated!";
+      if(!req.session.manager) return "Not authorized!";
+      
+      const users = await User.find({}, { username: 1, _id: 0 } );
+      return users;
         
-      }
-      return "Not authorized!";
     }
   }
 };
@@ -95,6 +94,12 @@ const UserMutations = {
 
           });
           await user.save();
+          
+          const prosumer = new Prosumer({
+            name: user.username
+          });
+          await prosumer.save();
+          await init.call();
           return true;
       }
       return false;
@@ -108,8 +113,8 @@ const UserMutations = {
       image: { type: new GraphQLNonNull(GraphQLString) }, 
     },
     async resolve(parent, args, req) {
-      if(!req.isAuthenticated()) return "Not authenticated!";
-      const user = await User.findOne( { username: req.user.username });
+      if(!req.session.user) return "Not authenticated!";
+      const user = await User.findOne( { username: req.session.user });
       if(!user) { 
         return "Image failed to upload!";       
       }
@@ -125,9 +130,9 @@ const UserMutations = {
       newPassword: { type: new GraphQLNonNull(GraphQLString) }
     },
     async resolve(parent, args, req) {
-      if(!req.isAuthenticated()) return "Not authenticated!";
+      if(!req.session.user) return "Not authenticated!";
 
-      const user = await User.findOne( { username: req.user.username });
+      const user = await User.findOne( { username: req.session.user });
       if(!user) {
         return "Password failed to update!";
       }
@@ -140,22 +145,22 @@ const UserMutations = {
 
     }
   },
-  deleteAdmin: {
-    type: GraphQLString,
+  deleteUser: {
+    type: GraphQLBoolean,
     args: {
       password: { type: new GraphQLNonNull(GraphQLString) }
     },
     async resolve(parent, args, req) {
-      if(!req.isAuthenticated()) return "Not authenticated!";
-      const user = await User.findOne( { username: req.user.username });
+      if(!req.session.user) return "Not authenticated!";
+      const user = await User.findOne( { username: req.session.user });
       if(!user) {
-        return "Failed";
+        return false;
       }
       if(user.comparePassword(args.password)) {
         user.deleteOne();
-        return "User deleted!";
+        return true;
       }
-      return "Failed to delete user!";
+      return false;
     }
   }
 };

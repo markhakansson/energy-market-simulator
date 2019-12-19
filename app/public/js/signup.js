@@ -18,10 +18,10 @@ $(document).ready(function () {
                 if (res.data.signUp) {
                     $('#signUpMsg').html("User created! Redirecting...");
                     setTimeout(function() {
-                        window.location.href = "/";
+                        window.location.href = "/login";
                     }, 1500);
                 } else {
-                    $('#signUpMsg').html("User already exists or something else failed!");
+                    $('#signUpMsg').html("User already exists!");
                 }
 
             }

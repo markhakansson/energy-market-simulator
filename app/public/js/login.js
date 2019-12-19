@@ -16,7 +16,7 @@ $(document).ready(function () {
             }),
             success: function (res) {
                 if (res.data.login) {
-                    window.location.href = "/";
+                    window.location.reload();
                 } else {
                     $('#loginMsg').html("Incorrect username or password!");
                 }
