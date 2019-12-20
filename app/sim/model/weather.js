@@ -2,8 +2,13 @@ var gauss = require('../../helper/gauss');
 var Weather = require('../../db/model/weather');
 
 class WeatherSim {
+    /**
+     * @param {*} name The name of the location this weather belongs to (market name).
+     * @param {*} wind_speed Initial wind speed.
+     * @param {*} temperature Initial temperature.
+     */
     constructor (name, wind_speed, temperature) {
-        if (name == null || name == '' || wind_speed == null || temperature == null) {
+        if (name == null || name === '' || wind_speed == null || temperature == null) {
             throw new Error('Constructor arguments must be defined!');
         }
 
