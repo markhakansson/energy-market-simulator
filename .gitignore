@@ -2,3 +2,4 @@ node_modules
 app/logs
 app/public/images
 app/.env
+logs
