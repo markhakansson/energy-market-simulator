@@ -5,7 +5,8 @@ const WeatherSim = require('../model/weather');
 
 const Prosumer = require('../../db/model/prosumer');
 const Consumer = require('../../db/model/consumer');
-const User = require('../../db/model/user');
+
+const Logger = require('../../config/logger');
 
 // Set simulation speed in ms
 const TIME_MULTIPLIER = 5000;
@@ -44,21 +45,27 @@ async function init () {
 }
 
 async function updateNameArrays () {
-    await Prosumer.distinct('name', function (err, res) {
-        if (err) {
-            console.error(err);
-        } else {
-            prosumerNames = res;
-        }
-    });
+    await Prosumer.distinct('name')
+        .then(res => {
+            if (res) {
+                prosumerNames = res;
+            }
+        })
+        .catch(err => {
+            if (err) {
+                Logger.error(err);
+            }
+        });
 
-    await Consumer.distinct('name', function (err, res) {
-        if (err) {
-            console.error(err);
-        } else {
-            consumerNames = res;
-        }
-    });
+    await Consumer.distinct('name')
+        .then(res => {
+            if (res) {
+                consumerNames = res;
+            }
+        })
+        .catch(err => {
+            Logger.error(err);
+        });
 }
 
 /**
