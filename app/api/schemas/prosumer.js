@@ -19,15 +19,15 @@ const ProsumerType = new GraphQLObjectType({
         market: { type: GraphQLString },
         timestamp: { type: GraphQLDateTime },
         consumption: { type: GraphQLFloat },
-        production: { type: GraphQLFloat },        
+        production: { type: GraphQLFloat },
         currBatteryCap: { type: GraphQLFloat },
         maxBatteryCap: { type: GraphQLFloat },
         fillBatteryRatio: { type: GraphQLFloat },
         useBatteryRatio: { type: GraphQLFloat },
         bought: { type: GraphQLFloat },
-        blackout: { type: GraphQLFloat },
+        blackout: { type: GraphQLBoolean },
         turbineStatus: { type: GraphQLString },
-        turbineWorking: { type: GraphQLBoolean} ,
+        turbineWorking: { type: GraphQLBoolean },
         turbineBreakPercent: { type: GraphQLFloat }
     })
 });
@@ -76,7 +76,7 @@ const ProsumerMutations = {
                 bought: 0,
                 turbineStatus: 'WORKING!',
                 turbineWorking: true,
-                turbineBreakPercent: 0.05 
+                turbineBreakPercent: 0.05
             });
             return prosumer.save();
         }
@@ -139,7 +139,7 @@ const ProsumerMutations = {
                         bought: doc.bought,
                         turbineStatus: doc.turbineStatus,
                         turbineWorking: doc.turbineWorking,
-                        turbineBreakPercent: doc.turbineBreakPercent                        
+                        turbineBreakPercent: doc.turbineBreakPercent
                     });
                     prosumer.save();
                     return true;
@@ -209,7 +209,7 @@ const ProsumerMutations = {
                         bought: doc.bought,
                         turbineStatus: doc.turbineStatus,
                         turbineWorking: doc.turbineWorking,
-                        turbineBreakPercent: doc.turbineBreakPercent                        
+                        turbineBreakPercent: doc.turbineBreakPercent
                     });
                     prosumer.save();
                     return true;
