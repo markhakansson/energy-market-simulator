@@ -27,6 +27,16 @@ const options = {
             }),
             format.printf(debug => `${debug.timestamp} ${debug.level}: ${debug.message}`)
         )
+    },
+    warn: {
+        level: 'warn',
+        filename: '../logs/warnings.log',
+        format: format.combine(
+            format.timestamp({
+                format: 'YYYY-MM-DD HH:mm:ss'
+            }),
+            format.printf(warn => `${warn.timestamp} ${warn.level} ${warn.message}`)
+        )
     }
 }
 
