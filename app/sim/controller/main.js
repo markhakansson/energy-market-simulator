@@ -13,8 +13,8 @@ const TIME_MULTIPLIER = 5000;
 
 // These are basically reset everytime the simulation starts. Would be a good idea to get the previous
 // data from the database instead.
-const market = new MarketSim('Lulea', 2, 5000, 100000);
-const weather = new WeatherSim('Lulea', 10, 20);
+const MARKET = new MarketSim('Lulea', TIME_MULTIPLIER);
+const WEATHER = new WeatherSim('Lulea', 10, 20);
 
 var prosumerNames = [];
 var consumerNames = [];
@@ -33,15 +33,31 @@ async function init () {
 
     // Create new sim models
     for (const name of prosumerNames) {
-        prosumerMap.set(name, new ProsumerSim(name, market, TIME_MULTIPLIER));
+        mapProsumer(name, MARKET);
     }
 
     for (const name of consumerNames) {
-        prosumerMap.set(name, new ConsumerSim(name, market, TIME_MULTIPLIER));
+        mapConsumer(name, MARKET);
     }
 
     console.log('Prosumers: ' + prosumerNames);
     console.log('Consumers: ' + consumerNames);
+}
+
+function mapProsumer (name, market) {
+    try {
+        prosumerMap.set(name, new ProsumerSim(name, market, TIME_MULTIPLIER));
+    } catch (err) {
+        Logger.error('Problem when creating prosumer: ' + err);
+    }
+}
+
+function mapConsumer (name, market) {
+    try {
+        consumerMap.set(name, new ConsumerSim(name, market, TIME_MULTIPLIER));
+    } catch (err) {
+        Logger.error('Problem when creating consumer: ' + err);
+    }
 }
 
 async function updateNameArrays () {
@@ -76,13 +92,13 @@ async function searchForNewUsers () {
 
     for (const name of prosumerNames) {
         if (!prosumerMap.has(name)) {
-            prosumerMap.set(name, new ProsumerSim(name, market, TIME_MULTIPLIER));
+            mapProsumer(name, MARKET);
         }
     }
 
     for (const name of consumerNames) {
         if (!consumerMap.has(name)) {
-            consumerMap.set(name, new ConsumerSim(name, market, TIME_MULTIPLIER));
+            mapConsumer(name, MARKET);
         }
     }
 }
@@ -90,12 +106,13 @@ async function searchForNewUsers () {
 function simLoop () {
     setTimeout(async function () {
         searchForNewUsers();
-        weather.update();
-        market.generateProduction();
+        await MARKET.fetchData();
+        WEATHER.update();
+        MARKET.generateProduction();
 
         for (const [_, prosumer] of prosumerMap) {
             await prosumer.fetchData();
-            prosumer.generateProduction(weather.weather.wind_speed);
+            prosumer.generateProduction(WEATHER.weather.wind_speed);
             prosumer.generateConsumption();
         }
 
@@ -112,8 +129,8 @@ function simLoop () {
             consumer.update();
         }
 
-        market.update();
-        console.log('Wind speed: ' + weather.weather.wind_speed);
+        MARKET.update();
+        console.log('Wind speed: ' + WEATHER.weather.wind_speed);
 
         simLoop();
     }, TIME_MULTIPLIER);

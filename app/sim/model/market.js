@@ -1,28 +1,39 @@
 const gauss = require('../../helper/gauss');
 const Market = require('../../db/model/market');
 
-class MarketSim {
-    constructor (name, price, production, maxBatteryCap) {
-        this.market = new Market({
-            name: name,
-            timestamp: Date.now(),
-            demand: 0,
-            status: 'built',
-            startUp: true,
-            price: price,
-            production: production,
-            consumption: production / 10,
-            currBatteryCap: 0,
-            maxBatteryCap: maxBatteryCap
-        });
+const Logger = require('../../config/logger');
 
-        this.market.save((err) => {
-            if (err) throw err;
-        });
+class MarketSim {
+    constructor (name, timeMultiplier) {
+        this.market = { name };
+        this.timeMultiplier = timeMultiplier;
+    }
+
+    /**
+     * Gets the current data for this model in the database.
+     */
+    async fetchData () {
+        const self = this;
+        await Market.findOne({ name: self.market.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
+            if (err) {
+                Logger.error('Matching market with name [' + self.market.name + '] was not found in the database!');
+                throw new Error('Matching market with name [' + self.market.name + '] was not found in the databse.');
+            } else {
+                self.market = doc;
+            }
+        })
     }
 
     buy (demand) {
         const self = this.market;
+
+        if (demand < 0 || demand == null) {
+            Logger.warn(
+                'In market [' + self.name + '] when receiving a buy order, expected postive Number. Recieved: ' +
+                demand + '.'
+            );
+        }
+
         self.demand += demand;
         const currBatt = self.currBatteryCap - demand;
         if (currBatt > 0 && !self.startUp) {
@@ -49,6 +60,14 @@ class MarketSim {
 
     sell (demand) {
         const self = this.market;
+
+        if (demand < 0 || demand == null) {
+            Logger.warn(
+                'In market [' + self.name + '] when receiving a sell order, expected postive Number. Recieved: ' +
+                demand + '.'
+            );
+        }
+
         self.demand -= demand;
         const currBatt = self.currBatteryCap + demand;
         if (currBatt <= self.maxBatteryCap) {
@@ -89,7 +108,6 @@ class MarketSim {
             self.status = 'BLACK OUT!!!!!';
             self.startUp = true;
         }
-
     }
 
     update () {
@@ -109,18 +127,22 @@ class MarketSim {
         });
 
         self.save((err) => {
-            if (err) throw err;
-            console.log('Market ' + self.name +
-                '\n current demand: ' + self.demand +
-                '\n status: ' + self.status +
-                '\n startup: ' + self.startUp +
-                '\n Time: ' + self.timestamp.toString() +
-                '\n Producing: ' + self.production + ' Wh' +
-                '\n Consuming: ' + self.consumption + ' Wh' +
-                '\n Price per Wh is: ' + self.price + ' SEK' +
-                '\n CurrentBatteryCap: ' + self.currBatteryCap + ' Wh' +
-                '\n MaxBatteryCap: ' + self.maxBatteryCap + ' Wh'
-            )
+            if (err) {
+                Logger.error('Could not save market to database: ' + err);
+                throw err;
+            } else {
+                console.log('Market ' + self.name +
+                    '\n current demand: ' + self.demand +
+                    '\n status: ' + self.status +
+                    '\n startup: ' + self.startUp +
+                    '\n Time: ' + self.timestamp.toString() +
+                    '\n Producing: ' + self.production + ' Wh' +
+                    '\n Consuming: ' + self.consumption + ' Wh' +
+                    '\n Price per Wh is: ' + self.price + ' SEK' +
+                    '\n CurrentBatteryCap: ' + self.currBatteryCap + ' Wh' +
+                    '\n MaxBatteryCap: ' + self.maxBatteryCap + ' Wh'
+                )
+            }
         });
     }
 }
