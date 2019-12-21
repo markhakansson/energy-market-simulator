@@ -65,7 +65,7 @@ class ProsumerSim {
             // Check if there is an excessive production of power
             if (prodDiff > 0) {
                 this.chargeBattery(self.fillBatteryRatio * prodDiff);
-                this.sellToMarket((1 - self.fillBatteryRatio) * prodDiff); // THIS IS NEGATIVE!! BECAUSE CLIENT SENDS IT AS 0-100!
+                this.sellToMarket((1 - self.fillBatteryRatio) * prodDiff);
             }
         }
     }
@@ -93,7 +93,7 @@ class ProsumerSim {
                 this.buyFromMarket((1 - self.useBatteryRatio) * consDiff);
             }
         } else {
-            self.consumption = Math.random() * Math.random() * 5000;
+            self.consumption = Math.random() * 5000;
         }
     }
 
@@ -155,6 +155,7 @@ class ProsumerSim {
             self.currBatteryCap = 0;
         } else {
             self.currBatteryCap -= energy;
+            self.blackout = false;
         }
     }
 
@@ -181,8 +182,14 @@ class ProsumerSim {
         } else if (boughtEnergy < energy) {
             self.consumption -= (energy - boughtEnergy);
             self.bought = boughtEnergy;
+            self.blackout = false;
         } else {
             self.bought = boughtEnergy;
+            self.blackout = false;
+
+            if (self.currBatteryCap === 0) {
+                self.blackout = true;
+            }
         }
     }
 
@@ -203,8 +210,6 @@ class ProsumerSim {
      */
     update () {
         let self = this.prosumer;
-
-        console.log('Prosumer: \n' + this);
 
         self = new Prosumer({
             name: self.name,
