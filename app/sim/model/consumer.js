@@ -2,6 +2,8 @@ var gauss = require('../../helper/gauss')
 var tools = require('../../helper/tools');
 var Consumer = require('../../db/model/consumer');
 
+const Logger = require('../../config/logger');
+
 class ConsumerSim {
     constructor (name, market, timeMultiplier) {
         this.consumer = { name: name };
@@ -17,16 +19,12 @@ class ConsumerSim {
         const self = this;
         await Consumer.findOne({ name: this.consumer.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
             if (err) {
-                throw err;
+                Logger.error('Matching consumer with name [' + self.consumer.name + '] was not found in the database!');
+                throw new Error('Matching consumer with name [' + self.consumer.name + '] was not found in the database!');
             } else {
                 self.consumer = doc;
             }
         });
-    }
-
-    setConsumption (consumption) {
-        const self = this.consumer;
-        self.consumption = consumption; // should be gauss distribution
     }
 
     generateConsumption () {
@@ -64,7 +62,14 @@ class ConsumerSim {
         const boughtEnergy = this.market.buy(energy);
         self.bought = boughtEnergy;
 
-        if (boughtEnergy === 0) {
+        if (boughtEnergy === 0 || boughtEnergy == null) {
+            self.consumption = 0;
+            self.blackout = true;
+        } else if (boughtEnergy < 0) {
+            Logger.warn(
+                'When buying energy from market in consumer [' + self.name +
+                '], expected positive Number. Received negative Number.'
+            );
             self.consumption = 0;
             self.blackout = true;
         } else if (boughtEnergy < energy) {
@@ -92,15 +97,19 @@ class ConsumerSim {
         });
 
         self.save((err) => {
-            if (err) throw err;
-            console.log('Consumer ' + self.name + ' is connected to ' + self.market +
-                '\n Time: ' + self.timestamp.toString() +
-                '\n Consuming: ' + self.consumption + ' Wh' +
-                '\n Bought energy: ' + self.bought + ' Wh' +
-                '\n Price per Wh is: ' + this.market.price + ' SEK' +
-                '\n Blackout: ' + self.blackout +
-                '\n Retrying: ' + self.retrying
-            )
+            if (err) {
+                Logger.error('Could not save consumer to database: ' + err);
+                throw err;
+            } else {
+                console.log('Consumer ' + self.name + ' is connected to ' + self.market +
+                    '\n Time: ' + self.timestamp.toString() +
+                    '\n Consuming: ' + self.consumption + ' Wh' +
+                    '\n Bought energy: ' + self.bought + ' Wh' +
+                    '\n Price per Wh is: ' + this.market.price + ' SEK' +
+                    '\n Blackout: ' + self.blackout +
+                    '\n Retrying: ' + self.retrying
+                )
+            }
         });
     }
 }
