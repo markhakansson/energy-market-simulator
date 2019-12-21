@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "mocha sim/tests/**/*.test.js",
+    "test": "nyc mocha sim/tests/**/*.test.js",
     "start": "nodemon server.js"
   },
   "repository": {
@@ -49,12 +49,13 @@
     "winston-daily-rotate-file": "^4.3.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.1",
     "eslint": "^6.7.2",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
+    "eslint-plugin-standard": "^4.0.1",
+    "nodemon": "^2.0.1",
+    "nyc": "^14.1.1"
   }
 }
