@@ -6,21 +6,33 @@ const Logger = require('../../config/logger');
 
 class ConsumerSim {
     constructor (name, market, timeMultiplier) {
-        this.consumer = { name: name };
+        this.consumer = new Consumer({
+            name: name,
+            market: market.market.name,
+            timestamp: Date.now(),
+            consumption: 2000,
+            bought: 0,
+            blackout: false,
+            retrying: false
+        });
 
         this.market = market;
         this.timeMultiplier = timeMultiplier;
     }
 
     /**
-     * Gets the latest version of this model from the database.
+     * Gets the latest version of this model from the database. If no data is found,
+     * it tries to create a new entry instead.
      */
     async fetchData () {
         const self = this;
         await Consumer.findOne({ name: this.consumer.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
             if (err) {
-                Logger.error('Matching consumer with name [' + self.consumer.name + '] was not found in the database!');
-                throw new Error('Matching consumer with name [' + self.consumer.name + '] was not found in the database!');
+                Logger.warn('Matching consumer with name [' + self.consumer.name + '] was not found in the database!');
+                self.consumer.save().catch((err) => {
+                    throw err;
+                });
+                // throw new Error('Matching consumer with name [' + self.consumer.name + '] was not found in the database!');
             } else {
                 self.consumer = doc;
             }
@@ -88,7 +100,7 @@ class ConsumerSim {
         let self = this.consumer;
         self = new Consumer({
             name: self.name,
-            market: self.market,
+            market: self.market.market.name,
             timestamp: Date.now(),
             consumption: self.consumption,
             bought: self.bought,

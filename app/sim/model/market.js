@@ -4,20 +4,36 @@ const Market = require('../../db/model/market');
 const Logger = require('../../config/logger');
 
 class MarketSim {
-    constructor (name, timeMultiplier) {
-        this.market = { name };
+    constructor (name, price, production, maxBatteryCap, timeMultiplier) {
+        this.market = new Market({
+            name: name,
+            timestamp: Date.now(),
+            demand: 0,
+            status: 'built',
+            startUp: true,
+            price: price,
+            production: production,
+            consumption: production / 10,
+            currBatteryCap: 0,
+            maxBatteryCap: maxBatteryCap
+        });
+
         this.timeMultiplier = timeMultiplier;
     }
 
     /**
-     * Gets the current data for this model in the database.
+     * Gets the current data for this model in the database. If no data is found,
+     * it tries to create a new entry instead.
      */
     async fetchData () {
         const self = this;
         await Market.findOne({ name: self.market.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
             if (err) {
-                Logger.error('Matching market with name [' + self.market.name + '] was not found in the database!');
-                throw new Error('Matching market with name [' + self.market.name + '] was not found in the databse.');
+                Logger.warn('Matching market with name [' + self.market.name + '] was not found in the database!');
+                self.market.save().catch((err) => {
+                    throw err;
+                });
+                // throw new Error('Matching market with name [' + self.market.name + '] was not found in the databse.');
             } else {
                 self.market = doc;
             }

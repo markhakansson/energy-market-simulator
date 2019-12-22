@@ -1,6 +1,8 @@
 var gauss = require('../../helper/gauss');
 var Weather = require('../../db/model/weather');
 
+const Logger = require('../../config/logger');
+
 class WeatherSim {
     /**
      * @param {*} name The name of the location this weather belongs to (market name).
@@ -27,8 +29,27 @@ class WeatherSim {
             temperature: temperature
         });
 
-        this.weather.save((err) => {
+/*         this.weather.save((err) => {
             if (err) throw err;
+        }); */
+    }
+
+    /**
+     * Gets the current data for this model in the database. If no data is found,
+     * it tries to create a new entry instead.
+     */
+    async fetchData () {
+        const self = this;
+        await Weather.findOne({ name: self.weather.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
+            if (err) {
+                Logger.warn('Matching weather with name [' + self.weather.name + '] was not found in the database');
+                self.weather.save().catch((err) => {
+                    throw err;
+                });
+                // throw new Error('Matching weather with name [' + self.weather.name + '] was not found in the database');
+            } else {
+                self.market = doc;
+            }
         });
     }
 
