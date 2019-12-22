@@ -8,12 +8,10 @@ const Consumer = require('../../db/model/consumer');
 
 const Logger = require('../../config/logger');
 
-// Set simulation speed in ms
+// Set simulation speed (in ms)
 const TIME_MULTIPLIER = 5000;
 
-// These are basically reset everytime the simulation starts. Would be a good idea to get the previous
-// data from the database instead.
-const MARKET = new MarketSim('Lulea', TIME_MULTIPLIER);
+const MARKET = new MarketSim('Lulea', 2, 5000, 100000, TIME_MULTIPLIER);
 const WEATHER = new WeatherSim('Lulea', 10, 20);
 
 var prosumerNames = [];
@@ -107,6 +105,7 @@ function simLoop () {
     setTimeout(async function () {
         searchForNewUsers();
         await MARKET.fetchData();
+        await WEATHER.fetchData();
         WEATHER.update();
         MARKET.generateProduction();
 
@@ -139,7 +138,12 @@ function simLoop () {
 async function main () {
     await init();
     console.log('Simulator now running... ');
-    simLoop();
+    try {
+        simLoop();
+    } catch (err) {
+        Logger.error('Simulation crashed with the following error: ' + err + ' Restarting now.');
+        main();
+    }
 }
 
 module.exports = { main, init };
