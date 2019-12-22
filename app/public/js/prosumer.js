@@ -19,7 +19,7 @@ $(document).ready(function () {
             type: 'POST',
             data: JSON.stringify({
                 query: `mutation {
-                    updateUseBatteryRatio(useBatteryRatio: ${value})
+                    updateUseBatteryRatio(useBatteryRatio: ${value / 100})
                 }`
             })
         });
@@ -32,7 +32,7 @@ $(document).ready(function () {
             type: 'POST',
             data: JSON.stringify({
                 query: `mutation {
-                    updateFillBatteryRatio(fillBatteryRatio: ${value})
+                    updateFillBatteryRatio(fillBatteryRatio: ${value / 100})
                 }`
             })
         });
@@ -113,7 +113,7 @@ function updateInformation () {
             $('#batterycap').html(prosumer.currBatteryCap.toFixed(2));
             updateMarketInformation(market);
             updateWindspeed(market);
-            if(productionChart !== null) {
+            if (productionChart !== null) {
                 productionChart.addData(prosumer.production.toFixed(2), prosumer.timestamp);
             }
         },
