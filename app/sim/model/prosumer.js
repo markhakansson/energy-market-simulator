@@ -118,6 +118,7 @@ class ProsumerSim {
     /**
      * Fills up the house's battery with amount.
      * If batter is full, sells the rest to the market.
+     * If energy is negative or null it will be ignored.
      * @param {*} energy The amount to charge.
      */
     chargeBattery (energy) {
@@ -139,6 +140,7 @@ class ProsumerSim {
     /**
      * Withdraws a certain amount of energy from the house's battery.
      * If not enough energy present, buys the rest from the market.
+     * If energy is negative or null it will be ignored.
      * @param {*} energy The amount to use up.
      */
     useBattery (energy) {
@@ -161,7 +163,9 @@ class ProsumerSim {
 
     /**
      * Buys the given amount of energy from the connected market.
-     * @param {*} energy Amount to buy.
+     * If bought energy from the market is not enough, the consumption
+     * will automatically lower to the received energy.
+     * @param {*} energy Amount to buy. Should be bigger than zero.
      */
     buyFromMarket (energy) {
         const self = this.prosumer;
@@ -200,7 +204,7 @@ class ProsumerSim {
     sellToMarket (energy) {
         if (energy > 0) {
             this.market.sell(energy);
-        } else if (energy < 0) {
+        } else if (energy < 0 || energy == null) {
             Logger.error('When selling to market in prosumer [' + this.prosumer.name + '] energy was negative!');
         }
     }
