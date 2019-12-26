@@ -53,7 +53,7 @@ app.use(
                                     // A session is uninitialized when it is new but not modified. 
                                     // Choosing false is useful for implementing login sessions, reducing server storage usage,
                                     //  or complying with laws that require permission before setting a cookie. 
-        cookie: { maxAge: 600000 }
+        cookie: { maxAge: false }
     })
 );
 

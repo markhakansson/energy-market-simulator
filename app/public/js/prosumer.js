@@ -29,9 +29,8 @@ $(document).ready(function () {
     setInterval(updateInformation, 5000);
     // setInterval(updateInformation, 100);
     updateInformation();
+    
 });
-
-
 
 function updateInformation () {
     $.ajax({
@@ -70,6 +69,7 @@ function updateInformation () {
             console.log(err);
         }
     });
+    
 }
 
 function updateMarketInformation (name) {
