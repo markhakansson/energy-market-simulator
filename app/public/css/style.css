@@ -42,6 +42,8 @@ input[type=submit] {
 }
 
 
+
+/* 
 ol {
     position: absolute;
     top: 20px;
@@ -59,4 +61,4 @@ ol {
     
     -webkit-overflow-scrolling: touch;
   }
-  
+   */

@@ -58,14 +58,12 @@ router.use('/graphql', expressGraphql(req => ({
 }))); 
   
 router.get('/online', isManager, function(req, res, next) {
-    const online = req.sessionStore.all(function(err, sessions) {
+    req.sessionStore.all(function(err, sessions) {
         if(err) return next(err);
         let online = [];
         Object.values(sessions).forEach(e => { online.push(e.user) });
-        return online;
+        return res.send({ users: online });
     });
-    console.log(online);
-    return res.send(online);
     
 });
 router.get('*', function (req, res) {
