@@ -7,8 +7,8 @@ const market = new Schema({
     demand: Number,
     status: String,
     startUp: Boolean,
-    price: Number,
-    production: Number,
+    price: Number, // real market value, can be set manually
+    production: Number, // real production value, can be set manually
     consumption: Number,
     currBatteryCap: Number,
     maxBatteryCap: Number,
@@ -18,13 +18,14 @@ const market = new Schema({
         max: 1.0,
         default: 0.0
     },
-    // Used for manual control of market
+    // used to toggle manual control. No autopilot => price and production is fixed.
     autopilot: {
         type: Boolean,
         default: true
     },
-    recommendedPrice: Number,
-    recommendedProduction: Number
+    recommendedPrice: Number, // sim value!
+    recommendedProduction: Number, // sim value!
+    plantInOperation: Boolean // use to turn plant on and off
 });
 
 module.exports = mongoose.model('Market', market);
