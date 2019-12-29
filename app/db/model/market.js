@@ -11,8 +11,19 @@ const market = new Schema({
     production: Number,
     consumption: Number,
     currBatteryCap: Number,
-    maxBatteryCap: Number
-
+    maxBatteryCap: Number,
+    fillBatteryRatio: {
+        type: Number,
+        min: 0.0,
+        max: 1.0
+    },
+    // Used for manual control of market
+    autopilot: {
+        type: Boolean,
+        default: true
+    },
+    recommendedPrice: Number,
+    recommendedProduction: Number
 });
 
 module.exports = mongoose.model('Market', market);
