@@ -30,13 +30,19 @@ const ConsumerQueries = {
     consumer: {
         type: ConsumerType,
         args: { name: { type: GraphQLString } },
-        resolve (parent, args) {
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
             return Consumer.findOne({ name: args.name }).sort({ timestamp: -1 });
         }
     },
     consumers: {
         type: new GraphQLList(ConsumerType),
-        resolve (parent, args) {
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
             return Consumer.find().sort({ timestamp: -1 });
         }
     }
@@ -49,7 +55,10 @@ const ConsumerMutations = {
             name: { type: new GraphQLNonNull(GraphQLString) },
             market: { type: new GraphQLNonNull(GraphQLString) }
         },
-        resolve (parent, args) {
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
             const consumer = new Consumer({
                 name: args.name,
                 market: args.market,
@@ -63,15 +72,18 @@ const ConsumerMutations = {
         }
     },
     updateConsumerConsumption: {
-        type: ConsumerType,
+        type: GraphQLBoolean,
         args: {
             name: { type: new GraphQLNonNull(GraphQLString) },
             consumption: { type: new GraphQLNonNull(GraphQLFloat) }
         },
-        resolve (parent, args) {
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
             const filter = { name: args.name };
             const data = Consumer.findOne(filter).sort({ timestamp: -1 }).exec();
-            data.then(
+            return data.then(
                 function (doc) {
                     const consumer = new Consumer({
                         name: doc.name,
@@ -83,9 +95,11 @@ const ConsumerMutations = {
                         retrying: doc.retrying
                     });
                     consumer.save();
+                    return true;
                 },
                 function (err) {
                     console.error(err);
+                    return false;
                 }
             );
         }

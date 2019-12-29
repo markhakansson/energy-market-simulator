@@ -31,13 +31,17 @@ const MarketQueries = ({
     market: {
         type: MarketType,
         args: { name: { type: GraphQLString } },
-        resolve (parent, args) {
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+
             return Market.findOne({ name: args.name }).sort({ timestamp: -1 });
         }
     },
     markets: {
         type: new GraphQLList(MarketType),
-        resolve (parent, args) {
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+
             return Market.find({});
         }
     }
@@ -51,7 +55,10 @@ const MarketMutations = {
             price: { type: new GraphQLNonNull(GraphQLFloat) },
             maxBatteryCap: { type: new GraphQLNonNull(GraphQLFloat) }
         },
-        resolve (parent, args) {
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
             const market = new Market({
                 name: args.name,
                 price: args.price,
@@ -67,11 +74,13 @@ const MarketMutations = {
     updatePrice: {
         type: MarketType,
         args: {
-            name: { type: new GraphQLNonNull(GraphQLString) },
             price: { type: new GraphQLNonNull(GraphQLString) }
         },
-        resolve (parent, args) {
-            const filter = { name: args.name };
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
+            const filter = { name: req.session.manager };
             const data = Market.findOne(filter).sort({ timestamp: -1 }).exec();
             data.then(
                 function (doc) {
