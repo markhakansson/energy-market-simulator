@@ -39,7 +39,9 @@ router.get('/signup', isLoggedIn, function (req, res) {
 });
 
 router.get('/logout', function (req, res, next) {
-    req.logout();
+    if (req.session) {
+        req.session.destroy();
+    }
     res.redirect('/');
 });
 
