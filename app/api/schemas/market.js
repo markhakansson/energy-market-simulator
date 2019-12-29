@@ -27,6 +27,7 @@ const MarketType = new GraphQLObjectType({
         consumption: { type: GraphQLFloat },
         currBatteryCap: { type: GraphQLFloat },
         maxBatteryCap: { type: GraphQLFloat },
+        fillBatteryRatio: { type: GraphQLFloat },
         autopilot: { type: GraphQLBoolean },
         recommendedPrice: { type: GraphQLFloat },
         recommendedProduction: { type: GraphQLFloat }
@@ -76,6 +77,7 @@ const MarketMutations = {
                 consumption: 1000,
                 currBatteryCap: 0,
                 maxBatteryCap: args.maxBatteryCap,
+                fillBatteryRatio: 0.0,
                 autopilot: true,
                 recommendedPrice: 0,
                 recommendedProduction: 0
@@ -83,10 +85,10 @@ const MarketMutations = {
             return market.save();
         }
     },
-    setProduction: {
+    setMarketProduction: {
         type: GraphQLBoolean,
         args: {
-            production: { type: new GraphQLNonNull(GraphQLString) }
+            production: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
             if (!req.session.user) return 'Not authenticated!';
@@ -106,6 +108,7 @@ const MarketMutations = {
                         consumption: doc.consumption,
                         currBatteryCap: doc.currBatteryCap,
                         maxBatteryCap: doc.maxBatteryCap,
+                        fillBatteryRatio: doc.fillBatteryRatio,
                         autopilot: doc.autopilot,
                         recommendedPrice: doc.recommendedPrice,
                         recommendedProduction: doc.recommendedProduction
@@ -120,10 +123,10 @@ const MarketMutations = {
             )
         }
     },
-    setPrice: {
+    setMarketPrice: {
         type: GraphQLBoolean,
         args: {
-            price: { type: new GraphQLNonNull(GraphQLString) }
+            price: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
             if (!req.session.user) return 'Not authenticated!';
@@ -144,6 +147,7 @@ const MarketMutations = {
                         consumption: doc.consumption,
                         currBatteryCap: doc.currBatteryCap,
                         maxBatteryCap: doc.maxBatteryCap,
+                        fillBatteryRatio: doc.fillBatteryRatio,
                         autopilot: doc.autopilot,
                         recommendedPrice: doc.recommendedPrice,
                         recommendedProduction: doc.recommendedProduction
@@ -157,6 +161,45 @@ const MarketMutations = {
                 }
             );
         }
+    },
+    setMarketFillBatteryRatio: {
+        type: GraphQLBoolean,
+        args: {
+            fillBatteryRatio: { type: new GraphQLNonNull(GraphQLFloat) }
+        },
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
+            const data = Market.findOne({ name: req.session.user }).sort({ timestamp: -1 }).exec();
+            return data.then(
+                doc => {
+                    const market = new Market({
+                        name: doc.name,
+                        timestamp: Date.now(),
+                        demand: doc.demand,
+                        status: doc.status,
+                        startUp: doc.startUp,
+                        price: doc.price,
+                        production: doc.production,
+                        consumption: doc.consumption,
+                        currBatteryCap: doc.currBatteryCap,
+                        maxBatteryCap: doc.maxBatteryCap,
+                        fillBatteryRatio: args.fillBatteryRatio,
+                        autopilot: doc.autopilot,
+                        recommendedPrice: doc.recommendedPrice,
+                        recommendedProduction: doc.recommendedProduction
+                    });
+                    market.save();
+                    return true;
+                },
+                err => {
+                    console.error(err);
+                    return false;
+                }
+            )
+        }
+
     },
     useAutopilot: {
         type: GraphQLBoolean,
@@ -182,6 +225,7 @@ const MarketMutations = {
                         consumption: doc.consumption,
                         currBatteryCap: doc.currBatteryCap,
                         maxBatteryCap: doc.maxBatteryCap,
+                        fillBatteryRatio: doc.fillBatteryRatio,
                         autopilot: args.autopilot,
                         recommendedPrice: doc.recommendedPrice,
                         recommendedProduction: doc.recommendedProduction

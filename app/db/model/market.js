@@ -15,7 +15,8 @@ const market = new Schema({
     fillBatteryRatio: {
         type: Number,
         min: 0.0,
-        max: 1.0
+        max: 1.0,
+        default: 0.0
     },
     // Used for manual control of market
     autopilot: {
