@@ -15,7 +15,12 @@ class MarketSim {
             production: production,
             consumption: production / 10,
             currBatteryCap: 0,
-            maxBatteryCap: maxBatteryCap
+            maxBatteryCap: maxBatteryCap,
+            fillBatteryRatio: 0.0,
+            autopilot: true,
+            recommendedPrice: price,
+            recommendedProduction: production,
+            plantInOperation: true
         });
 
         this.timeMultiplier = timeMultiplier;
@@ -40,6 +45,10 @@ class MarketSim {
         })
     }
 
+    /**
+     * Request eletricity to buy from the market.
+     * @param {*} demand The amount of electricity to request to buy.
+     */
     buy (demand) {
         const self = this.market;
 
@@ -74,6 +83,10 @@ class MarketSim {
         return 0;
     }
 
+    /**
+     * Offer electricity to sell to the market.
+     * @param {*} demand The amount of electricity to offer to sell.
+     */
     sell (demand) {
         const self = this.market;
 
@@ -108,21 +121,23 @@ class MarketSim {
 
     generateProduction () {
         const self = this.market;
-        if (self.startUp) {
-            self.status = 'starting up...';
-            setTimeout(() => {
-                self.startUp = false;
-            }, 10000);
-        } else {
-            self.status = 'running!';
-            if ((self.currBatteryCap += self.production) < self.maxBatteryCap) {
-                self.currBatteryCap += self.production;
+        if (self.plantInOperation) {
+            if (self.startUp) {
+                self.status = 'starting up...';
+                setTimeout(() => {
+                    self.startUp = false;
+                }, 10000);
+            } else {
+                self.status = 'running!';
+                if ((self.currBatteryCap += self.production) < self.maxBatteryCap) {
+                    self.currBatteryCap += self.production;
+                }
             }
-        }
 
-        if (self.currBatteryCap < 0) {
-            self.status = 'BLACK OUT!!!!!';
-            self.startUp = true;
+            if (self.currBatteryCap < 0) {
+                self.status = 'BLACK OUT!!!!!';
+                self.startUp = true;
+            }
         }
     }
 
@@ -139,7 +154,12 @@ class MarketSim {
             production: self.production,
             consumption: self.production / 10,
             currBatteryCap: self.currBatteryCap,
-            maxBatteryCap: self.maxBatteryCap
+            maxBatteryCap: self.maxBatteryCap,
+            fillBatteryRatio: self.fillBatteryRatio,
+            autopilot: self.autopilot,
+            recommendedPrice: self.recommendedPrice,
+            recommendedProduction: self.recommendedProduction,
+            plantInOperation: self.plantInOperation
         });
 
         self.save((err) => {
