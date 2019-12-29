@@ -23,17 +23,6 @@ const WeatherType = new GraphQLObjectType({
 });
 
 const WeatherQueries = {
-    adminWeather: {
-        type: WeatherType,
-        args: { name: { type: GraphQLString } },
-        resolve (parent, args, req) {
-            if (req.isAuthenticated()) {
-                if (req.user.role === 'admin') {
-                    return Weather.findOne({ name: args.name }).sort({ timestamp: -1 });
-                }
-            }
-        }
-    },
     weather: {
         type: WeatherType,
         args: { location: { type: GraphQLString } },
