@@ -5,7 +5,8 @@ const graphqlIsoDate = require('graphql-iso-date');
 const {
     GraphQLObjectType, GraphQLString,
     GraphQLID, GraphQLFloat,
-    GraphQLList, GraphQLNonNull
+    GraphQLList, GraphQLNonNull,
+    GraphQLBoolean
 } = graphql;
 
 const {
@@ -18,12 +19,17 @@ const MarketType = new GraphQLObjectType({
         id: { type: GraphQLID },
         name: { type: GraphQLString },
         timestamp: { type: GraphQLDateTime },
-        price: { type: GraphQLFloat },
-        battery: { type: GraphQLFloat },
-        consumption: { type: GraphQLFloat },
         demand: { type: GraphQLFloat },
+        status: { type: GraphQLString },
+        startUp: { type: GraphQLBoolean },
+        price: { type: GraphQLFloat },
+        production: { type: GraphQLFloat },
+        consumption: { type: GraphQLFloat },
         currBatteryCap: { type: GraphQLFloat },
-        maxBatteryCap: { type: GraphQLFloat }
+        maxBatteryCap: { type: GraphQLFloat },
+        autopilot: { type: GraphQLBoolean },
+        recommendedPrice: { type: GraphQLFloat },
+        recommendedProduction: { type: GraphQLFloat }
     })
 });
 
@@ -61,18 +67,61 @@ const MarketMutations = {
 
             const market = new Market({
                 name: args.name,
-                price: args.price,
-                battery: args.battery,
-                consumption: 0,
+                timestamp: Date.now(),
                 demand: 0,
+                status: 'built',
+                startUp: true,
+                price: args.price,
+                production: 10000,
+                consumption: 1000,
+                currBatteryCap: 0,
                 maxBatteryCap: args.maxBatteryCap,
-                currBatteryCap: 0
+                autopilot: true,
+                recommendedPrice: 0,
+                recommendedProduction: 0
             });
             return market.save();
         }
     },
-    updatePrice: {
-        type: MarketType,
+    setProduction: {
+        type: GraphQLBoolean,
+        args: {
+            production: { type: new GraphQLNonNull(GraphQLString) }
+        },
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
+            const data = Market.findOne({ name: req.session.user }).sort({ timestamp: -1 }).exec();
+            return data.then(
+                doc => {
+                    const market = new Market({
+                        name: doc.name,
+                        timestamp: Date.now(),
+                        demand: doc.demand,
+                        status: doc.status,
+                        startUp: doc.startUp,
+                        price: doc.price,
+                        production: args.production,
+                        consumption: doc.consumption,
+                        currBatteryCap: doc.currBatteryCap,
+                        maxBatteryCap: doc.maxBatteryCap,
+                        autopilot: doc.autopilot,
+                        recommendedPrice: doc.recommendedPrice,
+                        recommendedProduction: doc.recommendedProduction
+                    });
+                    market.save();
+                    return true;
+                },
+                err => {
+                    console.error(err);
+                    return false;
+                }
+            )
+        }
+    },
+    setPrice: {
+        type: GraphQLBoolean,
         args: {
             price: { type: new GraphQLNonNull(GraphQLString) }
         },
@@ -80,25 +129,71 @@ const MarketMutations = {
             if (!req.session.user) return 'Not authenticated!';
             if (!req.session.manager) return 'Not authorized!';
 
-            const filter = { name: req.session.manager };
+            const filter = { name: req.session.user };
             const data = Market.findOne(filter).sort({ timestamp: -1 }).exec();
-            data.then(
-                function (doc) {
+            return data.then(
+                doc => {
                     const market = new Market({
                         name: doc.name,
-                        price: args.price,
-                        battery: doc.battery,
-                        consumption: doc.consumption,
+                        timestamp: Date.now(),
                         demand: doc.demand,
+                        status: doc.status,
+                        startUp: doc.startUp,
+                        price: args.price,
+                        production: doc.production,
+                        consumption: doc.consumption,
                         currBatteryCap: doc.currBatteryCap,
-                        maxBatteryCap: doc.maxBatteryCap
+                        maxBatteryCap: doc.maxBatteryCap,
+                        autopilot: doc.autopilot,
+                        recommendedPrice: doc.recommendedPrice,
+                        recommendedProduction: doc.recommendedProduction
                     });
                     market.save();
+                    return true;
                 },
-                function (err) {
+                err => {
                     console.error(err);
+                    return false;
                 }
             );
+        }
+    },
+    useAutopilot: {
+        type: GraphQLBoolean,
+        description: 'Set the autopilot mode of market simulator',
+        args: {
+            autopilot: { type: new GraphQLNonNull(GraphQLBoolean) }
+        },
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
+            const data = Market.findOne({ name: req.session.user }).sort({ timestamp: -1 }).exec();
+            return data.then(
+                doc => {
+                    const market = new Market({
+                        name: doc.name,
+                        timestamp: Date.now(),
+                        demand: doc.demand,
+                        status: doc.status,
+                        startUp: doc.startUp,
+                        price: doc.price,
+                        production: doc.production,
+                        consumption: doc.consumption,
+                        currBatteryCap: doc.currBatteryCap,
+                        maxBatteryCap: doc.maxBatteryCap,
+                        autopilot: args.autopilot,
+                        recommendedPrice: doc.recommendedPrice,
+                        recommendedProduction: doc.recommendedProduction
+                    });
+                    market.save();
+                    return true;
+                },
+                err => {
+                    console.error(err);
+                    return false;
+                }
+            )
         }
     }
 };
