@@ -4,6 +4,8 @@ const Stats = require('fast-stats').Stats;
 
 /**
  * Generates a positive number from a data set with gaussian distribution.
+ * For best result the data values should be at least single-digits long.
+ *
  * @param {*} data Array of numbers to use gaussian distribution on.
  * @param {*} decimals Number of decimals to generate.
  * @param {*} percentage Propability threshold that the generated number should be above. Value between [0.0 - 1.0].
