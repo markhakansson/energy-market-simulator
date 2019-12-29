@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "nyc mocha sim/tests/**/*.test.js",
+    "test": "nyc mocha --recursive",
     "start": "nodemon server.js"
   },
   "repository": {

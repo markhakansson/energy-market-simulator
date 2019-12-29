@@ -1,6 +1,6 @@
 const expect = require('chai');
 const assert = require('assert');
-const MarketSim = require('../model/market');
+const MarketSim = require('../../sim/model/market');
 
 describe('#buy0', function () {
     it('should return 0', () => {

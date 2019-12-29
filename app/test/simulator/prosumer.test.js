@@ -1,6 +1,6 @@
 const expect = require('chai');
 const assert = require('assert');
-const ProsumerSim = require('../model/prosumer');
+const ProsumerSim = require('../../sim/model/prosumer');
 
 describe('#randomizeTurbineBreaking', function () {
     it('Turbine should break', () => {

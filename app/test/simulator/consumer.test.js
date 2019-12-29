@@ -1,6 +1,7 @@
 const expect = require('chai');
 const assert = require('assert');
-const ConsumerSim = require('../model/consumer');
+const root = require('app-root-path');
+const ConsumerSim = require('../../sim/model/consumer');
 
 /* describe('#setConsumption', function () {
     it('should be 1', () => {

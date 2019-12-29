@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const WeatherSim = require('../model/weather');
+const WeatherSim = require('../../sim/model/weather');
 
 const illegalWind = function () {
     new WeatherSim('test', 1000, 0)
