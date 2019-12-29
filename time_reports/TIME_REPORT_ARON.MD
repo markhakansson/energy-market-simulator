@@ -24,3 +24,8 @@
 |    2019-12-12|   8      Update password functionality and prosumer data from db
 |    2019-12-13|   8      Tryied to use grapqhl to update user password, lets not, or lets try it again later ... AND upload image func
 |    2019-12-15|   4      Graphql WILL NOT handle login, sign-up and password updates
+|    2019-12-16|   8      GrapQhl handles password update, login and sign up will wait, some prosumers fixes and started working on manager frontend
+|    2019-12-17|   7      Show users on manager dashboard, removing passport lib and implementing signup, login with graphql and handling auth only with epress-sessi
+|    2019-12-18|   5      Login and signup are now done with grapqhl and ajax, authentication and athorization is done in index.js
+|    2019-12-19|   5      Fixed some routing issues and started working on showing online users on the manager dashboard
+|    2019-12-26|   1      Online users are now displayed on manager page, it's based on express sessions, what if the users closes the window? (Expires = false)

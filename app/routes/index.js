@@ -2,73 +2,80 @@ const express = require('express');
 const router = express.Router();
 const expressGraphql = require('express-graphql');
 const schema = require('../api/schema');
-const passport = require('passport');
+const auth = require('../api/auth/auth').auth;
 const isLoggedIn = require('../api/auth/auth').isLoggedIn;
-const updatePassword = require('../api/auth/auth').updatePassword;
-var Prosumer = require('../db/model/prosumer');
+const isManager = require('../api/auth/auth').isManager;
+
 
 router.get('/', function (req, res, next) {
-    res.redirect('/login');
+    return res.redirect('/login');
 });
 
-router.get('/login', function (req, res, next) {
-    res.render('login.ejs', { message: req.flash('loginMessage') });
+
+router.get('/success', auth, function (req, res, next) {
+    if(req.session.manager) {
+        return res.redirect('/manager?username=' + req.session.user);
+    }
+    return res.redirect('/prosumer?username=' + req.session.user);
+    
 });
 
-router.post('/login', passport.authenticate('local-login', { failureRedirect: '/login', failureFlash: true }), function (req, res) {
-    req.session.username = req.user.username;
-    res.redirect('/success?username=' + req.user.username);
+router.get('/manager', auth, isManager, function(req, res, next) {
+    return res.render('manager', { 
+        message: req.session.user
+    });
 });
 
-router.get('/success', isLoggedIn, function (req, res, next) {
-    // res.render('prosumer', { message: req.session.username, updateMessage: '' });
-    res.redirect('/prosumer');
+
+router.get('/prosumer', auth, async function(req, res, next) {
+    return res.render('prosumer', {
+        message: req.session.user
+    
+    });
 });
 
-router.get('/signup', function (req, res, next) {
-    res.render('signup.ejs', { message: req.flash('signupMessage') });
-})
-
-router.post('/signup', passport.authenticate('local-signup', { failureRedirect: '/signup', failureFlash: true }), function (req, res) {
-    res.redirect('/success?username=' + req.user.username);
+router.get('/signup', isLoggedIn, function (req, res) {
+    return res.render('signup.ejs');
 });
-
-router.post('/update', isLoggedIn, updatePassword);
 
 router.get('/logout', function (req, res, next) {
     req.logout();
     res.redirect('/');
 });
 
-router.get('/prosumer', function (req, res) {
-    if (req.session.username != null) {
-        console.log('Session:\n' + req.session);
-
-        const query = Prosumer.findOne({ name: req.session.username }).sort({ timestamp: -1 });
-        query.exec(function (err, prosumer) {
-            if (err) {
-                console.log(err);
-            } else {
-                res.render('prosumer', {
-                    message: prosumer.name,
-                    useBatteryRatioDefault: prosumer.useBatteryRatio,
-                    fillBatteryRatioDefault: prosumer.fillBatteryRatio
-                });
-            }
-        });
-    } else {
-        res.redirect('/login');
-    }
+router.get('/login', isLoggedIn,function(req, res) {
+    return res.render('login.ejs');
 });
 
-router.use('/graphql', isLoggedIn, expressGraphql(req => ({
+router.get('/logout', function(req, res, next) {
+    if(req.session.user) {
+        req.session.destroy(function(err) {
+            if (err) return next(err);
+        });        
+    }
+    return res.redirect('/login');
+});
+
+router.use('/graphql', expressGraphql(req => ({
     schema,
     graphiql: true,
-    context: req
-})));
+    context: req,
+}))); 
+  
+router.get('/online', isManager, function(req, res, next) {
+    req.sessionStore.all(function(err, sessions) {
+        if(err) return next(err);
+        let online = [];
+        Object.values(sessions).forEach(e => { online.push(e.user) });
+        return res.send({ users: online });
+    });
+    
+});
 
 router.get('*', function (req, res) {
-    res.render('404');
-})
+    return res.render('404');
+});
+
+
 
 module.exports = router;

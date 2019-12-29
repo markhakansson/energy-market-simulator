@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Prosumer Page</title>
+    <title>Manager Page</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="css/style.css"> 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -12,7 +12,7 @@
     <script src="js/slider.js"></script>  
     <script src="js/charts.js"></script>
     <script src="js/profile.js"></script>
-    <script src="js/prosumer.js"></script>
+    <script src="js/manager.js"></script>
   </head>
  
   <body>
@@ -33,47 +33,43 @@
       <div class="row">
 
         <div class="col-md" id="useBatteryRatio" style="width: 100%" display="table">
-          <h2>Battery settings</h2>
+          <h2>Plant electricity settings</h2>
           
-          <!-- TODO: These sliders should only update after the user no longer clicks on the slider -->
-          <p>Use battery ratio</p>
-          <input type="range" min="0" max="100" value="">
-          <p>Value: <span id="useBatteryRatioValue"></span>%</p>
-          <script>updateSliderVal("useBatteryRatioSlider", "useBatteryRatioValue");</script>
+          <p>Buffer ratio</p>
+          
 
-          <p>Fill battery ratio</p>
-          <input type="range" min="0" max="100" value="">
-          <p>Value: <span id="fillBatteryRatioValue"></span>%</p>
-          <script>updateSliderVal("fillBatteryRatioSlider", "fillBatteryRatioValue");</script>
- 
+          <p>Market price</p>
+        
+
+
         </div>
 
         <div class="col-lg">
           <h2>Production</h2>
           <canvas id="chart"></canvas>
-          <!--<script>productionChart('#chart');</script>-->
-          <script>let productionChart = new ProsumerChart('#chart');</script>
         </div>
 
       </div>
 
-      <h2>Information</h2>
+      <h2>Information and online users</h2>
       <div class="row">
         <!-- Display wind, production etc. as values! -->  
         <div class="col-md">
           <ul>
-            <li>Current wind speed:</li><span id="windspeed"></span>
-            <li>Current production:</li><span id="production"></span>
-            <li>Current consumption:</li><span id="consumption"></span>
+            <li>Current electricity production:</li><span id="production"></span>
+            <li>Current market demand:</li><span id="demand"></span>
+            <li>Current modelled market price:</li><span id="price"></span>
           </ul>
         </div>
-
         <div class="col-md">
-          <ul>
-            <li>Net production:</li><span id="netproduction"></span>
-            <li>Battery capacity:</li><span id="batterycap"></span>
-            <li>Market price:</li><span id="marketprice"></span>
-          </ul>
+          <p>Users</p>
+            <ol id="users">
+            </ol>
+        </div>
+        <div class="col-md">
+          <p>Online</p>
+          <ol id="online">
+          </ol>
         </div>
 
       </div>
@@ -81,8 +77,6 @@
 
     <div class="container" id="profile" style="display:none">
       <h2>Profile</h2>
-      <button type="submit" class="btn btn-primary" onclick="deleteUser()">Delete me!</button>
-      <span id="deleteUserMsg"></span>
 
       <div class="row">
 
@@ -112,9 +106,6 @@
           <span>Max file size: 5mb</span>
           <span id ="profileMessage"></span>
         </div>
-
-
-
       </div>  
 
     </div>
@@ -124,5 +115,7 @@
         <input type="submit" class="btn btn-primary" value="Log Out"/>
       </form>
     </div>
+
+
   </body>
 </html>

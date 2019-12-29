@@ -1,16 +1,4 @@
 $(document).ready(function () {
-    $('#nav-monitor').click(function () {
-        $('a').removeClass('active');
-        $(this).find('a').addClass('active');
-        $('#profile').hide();
-        $('#monitor').show();
-    });
-    $('#nav-profile').click(function () {
-        $('a').removeClass('active');
-        $(this).find('a').addClass('active');
-        $('#monitor').hide();
-        $('#profile').show();
-    });
     $('#useBatteryRatioSlider').click(function () {
         const value = $('#useBatteryRatioValue').text();
         $.ajax({
@@ -37,61 +25,12 @@ $(document).ready(function () {
             })
         });
     });
+    // mutation { updatePassword(oldPassword: "test", newPassword: "f") }
     setInterval(updateInformation, 5000);
-    $('#update').submit(function (e) {
-        e.preventDefault();
-        $.ajax({
-            url: 'http://localhost:4000/update',
-            contentType: 'application/json',
-            type: 'POST',
-            data: JSON.stringify({ updatePassword: $(this).find('input[name="updatePassword"]').val(), password: $(this).find('input[name="password"]').val() }),
-            success: function (res) {
-                $('#updateMessage').html(res);
-            }
-        });
-    });
-    $.ajax({
-        url: 'http://localhost:4000/graphql',
-        contentType: 'application/json',
-        type: 'POST',
-        data: JSON.stringify({
-            query: `{
-                image
-            }`
-        }),
-        success: function (res) {
-            $('#profileImg').attr('src', res.data.image);
-        }
-    });
-
     // setInterval(updateInformation, 100);
     updateInformation();
+    
 });
-
-function readUrl (input) {
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-            $('#profileImg').attr('src', e.target.result);
-
-            $.ajax({
-                url: 'http://localhost:4000/graphql',
-                contentType: 'application/json',
-                type: 'POST',
-                data: JSON.stringify({
-                    query: `mutation {
-                    uploadImg(image:"${e.target.result}")
-                  }`
-                }),
-                processData: false,
-                success: function (res) {
-                    $('#profileMessage').html(res.data.uploadImg);
-                }
-            });
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
 
 function updateInformation () {
     $.ajax({
@@ -121,6 +60,7 @@ function updateInformation () {
             console.log(err);
         }
     });
+    
 }
 
 function updateMarketInformation (name) {
@@ -159,6 +99,35 @@ function updateWindspeed (location) {
         },
         error: function (err) {
             console.log(err);
+        }
+    });
+}
+
+function deleteUser() {
+    let password = prompt("Please enter your password");
+    if(password == null || password == "") {
+        $('#deleteUserMsg').html("Please provide your password");
+    }
+    $.ajax({
+        url: 'http://localhost:4000/graphql',
+        contentType: 'application/json',
+        type: 'POST',
+        data: JSON.stringify({
+            query: `mutation {
+                deleteUser(password:"${password}")
+           }`
+        }),
+        success: function (res) {
+            if(res.data.deleteUser) {
+                $('#deleteUserMsg').html("User deleted! Redirecting...");
+                setTimeout(function() {
+                    window.location.href = "logout"
+                }, 2000);
+            } else {
+                $('#deleteUserMsg').html("Incorrect password!");
+
+            }
+            
         }
     });
 }
