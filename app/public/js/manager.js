@@ -22,12 +22,12 @@ $(document).ready(function () {
         contentType: 'application/json',
         type: 'GET',
         success: function(res) {
-console.log(res);
             res.users.forEach(obj => {
                 $("#online").append("<li><a>" + obj +  "</a></li>");
 
             });
         }
     });
+
     
 });
