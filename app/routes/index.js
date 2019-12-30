@@ -20,6 +20,7 @@ router.get('/success', auth, function (req, res, next) {
 });
 
 router.get('/manager', auth, isManager, function(req, res, next) {
+    req.session.user = req.query.username;
     return res.render('manager', { 
         message: req.session.user
     });
