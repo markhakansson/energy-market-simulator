@@ -30,4 +30,4 @@
 |    2019-12-19|   5      Fixed some routing issues and started working on showing online users on the manager dashboard
 |    2019-12-26|   1      Online users are now displayed on manager page, it's based on express sessions, what if the users closes the window? (Expires = false)
 |    2019-12-29|   3      Manager view of prosumer dashboard
-|    2019-12-30|   2      Report
+|    2019-12-30|   2      Report and manager view of prosumer dashboard

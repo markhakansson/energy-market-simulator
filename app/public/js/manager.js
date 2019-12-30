@@ -13,7 +13,8 @@ $(document).ready(function () {
         success: function (res) {
             
             res.data.users.forEach(obj => {
-                $("#users").append("<li><a>" + obj.username +  "</a></li>");
+                $("#users").append("<li><a href='/prosumer?username=" + obj.username + "'>" + obj.username + "</a></li>");
+            
             });
         }
     });

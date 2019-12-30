@@ -36,7 +36,6 @@ const ProsumerQueries = {
     prosumer: {
         type: ProsumerType,
         resolve (parent, args, req) {
-            console.log(req.session.user);
             return Prosumer.findOne({ name: req.session.user }).sort({ timestamp: -1 });
         }
         
