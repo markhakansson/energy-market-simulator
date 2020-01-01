@@ -6,7 +6,7 @@ const market = new Schema({
     timestamp: { type: Date, default: Date.now() },
     demand: Number,
     status: String,
-    startUp: Boolean,
+    startUp: Boolean, // use to turn plant on and off
     price: Number, // real market value, can be set manually
     production: Number, // real production value, can be set manually
     consumption: Number,
@@ -25,7 +25,7 @@ const market = new Schema({
     },
     recommendedPrice: Number, // sim value!
     recommendedProduction: Number, // sim value!
-    plantInOperation: Boolean // use to turn plant on and off
+    plantInOperation: Boolean,
 });
 
 module.exports = mongoose.model('Market', market);
