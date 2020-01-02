@@ -101,19 +101,12 @@ class MarketSim {
             );
         }
 
-        console.log('#### RECIEVED ENERGY: ' + demand + ' ####');
-
-        // Needs to automatically reset the demand in the future, to
-        // not let demand decrease into negative infinity if no one is buying.
         this.demand -= demand;
         this.marketOutput += demand;
 
+        // Needs to reset the demand for each tick.
         setTimeout(() => {
-            //const self = this.market;
-            console.log('@@@ DEMAND IN SET TIMEOUT IS: ' + demand + ' @@@');
-            console.log(this.demand);
             this.demand += demand;
-            console.log(this.demand); // this will be overwritten by the next fetchData call!!!
         }, 1.25 * this.timeMultiplier);
     }
 
@@ -212,11 +205,7 @@ class MarketSim {
             self.recommendedProduction = 0;
         }
 
-        console.log('Prev demand: ' + this.prevDemand);
-        console.log('This demand: ' + this.demand);
-
         const recommendedPrice = self.price + 0.01 * (this.prevDemand - this.demand);
-        console.log('Recommended price: ' + recommendedPrice);
         if (recommendedPrice > 0) {
             self.recommendedPrice = recommendedPrice;
         } else {
