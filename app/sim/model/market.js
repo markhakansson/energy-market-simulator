@@ -27,6 +27,7 @@ class MarketSim {
         this.marketOutput = 0; // resets every tick
         this.startupInitiated = false;
         this.timeMultiplier = timeMultiplier;
+        this.demand = 0;
     }
 
     /**
@@ -64,9 +65,9 @@ class MarketSim {
 
         // Demand increases this tick and decreases later to not
         // let the demand increase into infinity if no one is selling.
-        self.demand += demand;
+        this.demand += demand;
         setTimeout(() => {
-            self.demand -= demand;
+            this.demand -= demand;
         }, 1.25 * this.timeMultiplier);
 
         // If plant is running, use the up the current production.
@@ -75,7 +76,6 @@ class MarketSim {
             if (usableEnergy >= 0) {
                 self.marketOutput -= demand;
                 return demand;
-
             } else {
                 usableEnergy = self.marketOutput + this.useBattery(demand - self.marketOutput);
                 self.marketOutput = 0;
@@ -101,27 +101,20 @@ class MarketSim {
             );
         }
 
-        self.demand -= demand;
-        const currBatt = self.currBatteryCap + demand;
-        if (currBatt <= self.maxBatteryCap) {
-            /**
-                 * if current battery is greater than 2/3 of max battery capacity
-                 * decrease price by 1/3
-                 */
-            if (currBatt > 2 * self.maxBatteryCap / 3) {
-                self.price -= self.price / 3;
-            }
-            /**
-                 * if current battery is less than 1/3 of max battery capacity
-                 * decrease price AGAIN by 1/2
-                 */
-            if (currBatt > self.maxBatteryCap / 3) {
-                self.price -= self.price / 2;
-            }
-            self.currBatteryCap += demand;
-        }
+        console.log('#### RECIEVED ENERGY: ' + demand + ' ####');
 
-        return 0;
+        // Needs to automatically reset the demand in the future, to
+        // not let demand decrease into negative infinity if no one is buying.
+        this.demand -= demand;
+        this.marketOutput += demand;
+
+        setTimeout(() => {
+            //const self = this.market;
+            console.log('@@@ DEMAND IN SET TIMEOUT IS: ' + demand + ' @@@');
+            console.log(this.demand);
+            this.demand += demand;
+            console.log(this.demand); // this will be overwritten by the next fetchData call!!!
+        }, 1.25 * this.timeMultiplier);
     }
 
     /**
@@ -183,6 +176,7 @@ class MarketSim {
 
         // Power plant is running
         } else if (self.plantInOperation) {
+            // Fix so plant consumption is also taken into account!
             self.status = 'running!';
 
             if (self.autopilot) {
@@ -210,13 +204,19 @@ class MarketSim {
      * to decide how much to produce and the price.
      */
     setRecommendations () {
-        if (self.demand > 0) {
-            self.recommendedProduction = 1.2 * self.demand;
+        const self = this.market;
+
+        if (this.demand > 0) {
+            self.recommendedProduction = 1.2 * this.demand;
         } else {
             self.recommendedProduction = 0;
         }
 
-        const recommendedPrice = self.price + 0.01 * (this.prevDemand - self.demand);
+        console.log('Prev demand: ' + this.prevDemand);
+        console.log('This demand: ' + this.demand);
+
+        const recommendedPrice = self.price + 0.01 * (this.prevDemand - this.demand);
+        console.log('Recommended price: ' + recommendedPrice);
         if (recommendedPrice > 0) {
             self.recommendedPrice = recommendedPrice;
         } else {
@@ -227,13 +227,12 @@ class MarketSim {
     update () {
         let self = this.market;
 
-        this.prevDemand = self.demand;
-        this.marketOutput = 0;
+        this.prevDemand = this.demand;
 
         self = new Market({
             name: self.name,
             timestamp: Date.now(),
-            demand: self.demand,
+            demand: this.demand,
             status: self.status,
             startUp: self.startUp,
             price: self.price,
@@ -254,15 +253,20 @@ class MarketSim {
                 throw err;
             } else {
                 console.log('Market ' + self.name +
-                    '\n current demand: ' + self.demand +
+                    '\n current demand: ' + this.demand +
                     '\n status: ' + self.status +
                     '\n startup: ' + self.startUp +
+                    '\n In operation: ' + self.plantInOperation +
+                    '\n Autopilot enabled: ' + self.autopilot +
                     '\n Time: ' + self.timestamp.toString() +
                     '\n Producing: ' + self.production + ' Wh' +
                     '\n Consuming: ' + self.consumption + ' Wh' +
                     '\n Price per Wh is: ' + self.price + ' SEK' +
                     '\n CurrentBatteryCap: ' + self.currBatteryCap + ' Wh' +
-                    '\n MaxBatteryCap: ' + self.maxBatteryCap + ' Wh'
+                    '\n MaxBatteryCap: ' + self.maxBatteryCap + ' Wh' +
+                    '\n Recommended price: ' + self.recommendedPrice + ' SEK' +
+                    '\n Recommended production: ' + self.recommendedProduction + ' Wh' +
+                    '\n Market output: ' + this.marketOutput
                 )
             }
         });
