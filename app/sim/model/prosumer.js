@@ -245,7 +245,9 @@ class ProsumerSim {
                 '\n Price per Wh is: ' + this.market.market.price + ' SEK' +
                 '\n Battery: ' + self.currBatteryCap + ' Wh' +
                 '\n Blackout: ' + self.blackout +
-                '\n Turbine status: ' + self.turbineStatus
+                '\n Turbine status: ' + self.turbineStatus +
+                '\n Fill battery ratio: ' + self.fillBatteryRatio +
+                '\n Use battery ratio: ' + self.useBatteryRatio
                 )
             }
         });
