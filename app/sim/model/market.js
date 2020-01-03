@@ -24,10 +24,11 @@ class MarketSim {
         });
 
         this.prevDemand = 0;
-        this.marketOutput = 0; // resets every tick
+        this.marketOutput = 0;
         this.startupInitiated = false;
         this.timeMultiplier = timeMultiplier;
         this.demand = 0;
+        this.deltaDemand = 0;
     }
 
     /**
@@ -45,7 +46,8 @@ class MarketSim {
             } else {
                 self.market = doc;
             }
-        })
+        });
+        this.marketOutput = 0;
     }
 
     /**
@@ -63,27 +65,21 @@ class MarketSim {
             );
         }
 
-        // Demand increases this tick and decreases later to not
-        // let the demand increase into infinity if no one is selling.
+        // Needs to reset the demand for each tick.
         this.demand += demand;
         setTimeout(() => {
             this.demand -= demand;
-        }, 1.25 * this.timeMultiplier);
+        }, 1.05 * this.timeMultiplier);
 
-        // If plant is running, use the up the current production.
-        if (self.plantInOperation) {
-            let usableEnergy = self.marketOutput - demand;
-            if (usableEnergy >= 0) {
-                self.marketOutput -= demand;
-                return demand;
-            } else {
-                usableEnergy = self.marketOutput + this.useBattery(demand - self.marketOutput);
-                self.marketOutput = 0;
-                return usableEnergy;
-            }
-        // If plant is stopped, use up the battery instead.
+        // Use market output if possible, else try to use the battery
+        let usableEnergy = self.marketOutput - demand;
+        if (usableEnergy >= 0) {
+            self.marketOutput -= demand;
+            return demand;
         } else {
-            return this.useBattery(demand);
+            usableEnergy = self.marketOutput + this.useBattery(demand - self.marketOutput);
+            self.marketOutput = 0;
+            return usableEnergy;
         }
     }
 
@@ -102,12 +98,14 @@ class MarketSim {
         }
 
         this.demand -= demand;
-        this.marketOutput += demand;
+
+        this.chargeBattery(self.fillBatteryRatio * demand);
+        this.marketOutput += ((1 - self.fillBatteryRatio) * demand);
 
         // Needs to reset the demand for each tick.
         setTimeout(() => {
             this.demand += demand;
-        }, 1.25 * this.timeMultiplier);
+        }, 1.05 * this.timeMultiplier);
     }
 
     /**
@@ -168,18 +166,18 @@ class MarketSim {
             self.status = 'stopped!';
 
         // Power plant is running
-        } else if (self.plantInOperation) {
-            // Fix so plant consumption is also taken into account!
-            self.status = 'running!';
+        } else if (self.plantInOperation || this.startupInitiated) {
+            setTimeout(() => {
+                self.status = 'running!';
 
-            if (self.autopilot) {
-                self.production = self.recommendedProduction;
-                self.price = self.recommendedPrice;
-            }
+                if (self.autopilot) {
+                    self.production = self.recommendedProduction;
+                    self.price = self.recommendedPrice;
+                }
 
-            this.marketOutput = (1 - self.fillBatteryRatio) * self.production;
-            this.chargeBattery(self.fillBatteryRatio * self.production);
-
+                this.marketOutput = (1 - self.fillBatteryRatio) * self.production;
+                this.chargeBattery(self.fillBatteryRatio * self.production);
+            }, 10 * this.timeMultiplier);
         // Startup sequence initiated
         } else if (self.startUp && !this.startupInitiated) {
             self.status = 'starting up...';
@@ -188,7 +186,7 @@ class MarketSim {
             setTimeout(() => {
                 self.plantInOperation = true;
                 this.startupInitiated = false;
-            }, 30 * this.timeMultiplier);
+            }, 10 * this.timeMultiplier);
         }
     }
 
@@ -200,11 +198,12 @@ class MarketSim {
         const self = this.market;
 
         if (this.demand > 0) {
-            self.recommendedProduction = 1.2 * this.demand;
+            self.recommendedProduction = 2.0 * this.demand;
         } else {
             self.recommendedProduction = 0;
         }
 
+        // Recommended price is previous price plus 1 percent of delta demand
         const recommendedPrice = self.price + 0.01 * (this.prevDemand - this.demand);
         if (recommendedPrice > 0) {
             self.recommendedPrice = recommendedPrice;
@@ -216,6 +215,7 @@ class MarketSim {
     update () {
         let self = this.market;
 
+        this.deltaDemand = this.prevDemand - this.demand;
         this.prevDemand = this.demand;
 
         self = new Market({
@@ -255,7 +255,8 @@ class MarketSim {
                     '\n MaxBatteryCap: ' + self.maxBatteryCap + ' Wh' +
                     '\n Recommended price: ' + self.recommendedPrice + ' SEK' +
                     '\n Recommended production: ' + self.recommendedProduction + ' Wh' +
-                    '\n Market output: ' + this.marketOutput
+                    '\n Market output: ' + this.marketOutput + ' Wh' +
+                    '\n Fill battery rate: ' + self.fillBatteryRatio
                 )
             }
         });
