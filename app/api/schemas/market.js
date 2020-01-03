@@ -70,7 +70,7 @@ const MarketMutations = {
                 name: args.name,
                 timestamp: Date.now(),
                 demand: 0,
-                status: 'built',
+                status: 'stopped!',
                 startUp: true,
                 price: args.price,
                 production: 10000,
@@ -201,11 +201,49 @@ const MarketMutations = {
         }
 
     },
+    setPowerPlantStatus: {
+        type: GraphQLBoolean,
+        args: {
+            enable: { type: new GraphQLNonNull(GraphQLBoolean) }
+        },
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
+            const data = Market.findOne({ name: req.session.user }).sort({ timestamp: -1 }).exec();
+            return data.then(
+                doc => {
+                    const market = new Market({
+                        name: doc.name,
+                        timestamp: Date.now(),
+                        demand: doc.demand,
+                        status: doc.startUp,
+                        startUp: args.enable,
+                        price: doc.price,
+                        production: doc.production,
+                        consumption: doc.consumption,
+                        currBatteryCap: doc.currBatteryCap,
+                        maxBatteryCap: doc.maxBatteryCap,
+                        fillBatteryRatio: doc.fillBatteryRatio,
+                        autopilot: doc.autopilot,
+                        recommendedPrice: doc.recommendedPrice,
+                        recommendedProduction: doc.recommendedProduction
+                    });
+                    market.save();
+                    return true;
+                },
+                err => {
+                    console.error(err);
+                    return false;
+                }
+            )
+        }
+    },
     useAutopilot: {
         type: GraphQLBoolean,
         description: 'Set the autopilot mode of market simulator',
         args: {
-            autopilot: { type: new GraphQLNonNull(GraphQLBoolean) }
+            enable: { type: new GraphQLNonNull(GraphQLBoolean) }
         },
         resolve (parent, args, req) {
             if (!req.session.user) return 'Not authenticated!';
@@ -226,7 +264,7 @@ const MarketMutations = {
                         currBatteryCap: doc.currBatteryCap,
                         maxBatteryCap: doc.maxBatteryCap,
                         fillBatteryRatio: doc.fillBatteryRatio,
-                        autopilot: args.autopilot,
+                        autopilot: args.enable,
                         recommendedPrice: doc.recommendedPrice,
                         recommendedProduction: doc.recommendedProduction
                     });
