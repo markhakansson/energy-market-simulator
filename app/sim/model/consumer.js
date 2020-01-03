@@ -100,7 +100,7 @@ class ConsumerSim {
         let self = this.consumer;
         self = new Consumer({
             name: self.name,
-            market: self.market.market.name,
+            market: self.market,
             timestamp: Date.now(),
             consumption: self.consumption,
             bought: self.bought,
@@ -117,7 +117,7 @@ class ConsumerSim {
                     '\n Time: ' + self.timestamp.toString() +
                     '\n Consuming: ' + self.consumption + ' Wh' +
                     '\n Bought energy: ' + self.bought + ' Wh' +
-                    '\n Price per Wh is: ' + this.market.price + ' SEK' +
+                    '\n Price per Wh is: ' + this.market.market.price + ' SEK' +
                     '\n Blackout: ' + self.blackout +
                     '\n Retrying: ' + self.retrying
                 )
