@@ -23,12 +23,19 @@ class MarketSim {
             plantInOperation: true
         });
 
+        // 'Global' simulation variables
+        // Useful for things that will be saved in a future tick
         this.prevDemand = 0;
         this.marketOutput = 0;
         this.startupInitiated = false;
         this.timeMultiplier = timeMultiplier;
         this.demand = 0;
         this.deltaDemand = 0;
+        this.production = 0;
+        this.consumption = 0;
+        this.price = 0;
+        this.status = 'stopped';
+        this.plantInOperation = true;
     }
 
     /**
@@ -48,6 +55,8 @@ class MarketSim {
             }
         });
         this.marketOutput = 0;
+        this.status = self.market.status;
+        this.plantInOperation = self.market.plantInOperation;
     }
 
     /**
@@ -162,31 +171,37 @@ class MarketSim {
 
         // Power plant has been stopped
         if (!self.startUp) {
-            self.plantInOperation = false;
-            self.status = 'stopped!';
+            this.plantInOperation = false;
+            this.status = 'stopped!';
 
         // Power plant is running
-        } else if (self.plantInOperation || this.startupInitiated) {
+        } else if (this.plantInOperation || this.startupInitiated) {
+            if (self.autopilot) {
+                self.price = self.recommendedPrice;
+            }
+
+            const currTickRecommendedProduction = self.recommendedProduction;
+
             setTimeout(() => {
-                self.status = 'running!';
+                this.status = 'running!';
 
                 if (self.autopilot) {
-                    self.production = self.recommendedProduction;
-                    self.price = self.recommendedPrice;
+                    this.production = currTickRecommendedProduction;
                 }
 
-                this.marketOutput = (1 - self.fillBatteryRatio) * self.production;
-                this.chargeBattery(self.fillBatteryRatio * self.production);
-            }, 10 * this.timeMultiplier);
+                this.consumption = this.production / 10;
+                this.marketOutput = (1 - self.fillBatteryRatio) * this.production;
+                this.chargeBattery(self.fillBatteryRatio * this.production);
+            }, 2 * this.timeMultiplier);
         // Startup sequence initiated
         } else if (self.startUp && !this.startupInitiated) {
-            self.status = 'starting up...';
+            this.status = 'starting up...';
             this.startupInitiated = true;
 
             setTimeout(() => {
-                self.plantInOperation = true;
+                this.plantInOperation = true;
                 this.startupInitiated = false;
-            }, 10 * this.timeMultiplier);
+            }, 2 * this.timeMultiplier);
         }
     }
 
@@ -222,18 +237,18 @@ class MarketSim {
             name: self.name,
             timestamp: Date.now(),
             demand: this.demand,
-            status: self.status,
+            status: this.status,
             startUp: self.startUp,
             price: self.price,
-            production: self.production,
-            consumption: self.production / 10,
+            production: this.production,
+            consumption: this.consumption,
             currBatteryCap: self.currBatteryCap,
             maxBatteryCap: self.maxBatteryCap,
             fillBatteryRatio: self.fillBatteryRatio,
             autopilot: self.autopilot,
             recommendedPrice: self.recommendedPrice,
             recommendedProduction: self.recommendedProduction,
-            plantInOperation: self.plantInOperation
+            plantInOperation: this.plantInOperation
         });
 
         self.save((err) => {
@@ -243,13 +258,13 @@ class MarketSim {
             } else {
                 console.log('Market ' + self.name +
                     '\n current demand: ' + this.demand +
-                    '\n status: ' + self.status +
+                    '\n status: ' + this.status +
                     '\n startup: ' + self.startUp +
-                    '\n In operation: ' + self.plantInOperation +
+                    '\n In operation: ' + this.plantInOperation +
                     '\n Autopilot enabled: ' + self.autopilot +
                     '\n Time: ' + self.timestamp.toString() +
-                    '\n Producing: ' + self.production + ' Wh' +
-                    '\n Consuming: ' + self.consumption + ' Wh' +
+                    '\n Producing: ' + this.production + ' Wh' +
+                    '\n Consuming: ' + this.consumption + ' Wh' +
                     '\n Price per Wh is: ' + self.price + ' SEK' +
                     '\n CurrentBatteryCap: ' + self.currBatteryCap + ' Wh' +
                     '\n MaxBatteryCap: ' + self.maxBatteryCap + ' Wh' +
