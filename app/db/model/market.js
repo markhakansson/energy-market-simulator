@@ -26,6 +26,8 @@ const market = new Schema({
     recommendedPrice: Number, // sim value!
     recommendedProduction: Number, // sim value!
     plantInOperation: Boolean,
+    manualProduction: Number, // use to set production manually
+    manualPrice: Number // use to set price manually
 });
 
 module.exports = mongoose.model('Market', market);

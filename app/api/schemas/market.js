@@ -30,7 +30,9 @@ const MarketType = new GraphQLObjectType({
         fillBatteryRatio: { type: GraphQLFloat },
         autopilot: { type: GraphQLBoolean },
         recommendedPrice: { type: GraphQLFloat },
-        recommendedProduction: { type: GraphQLFloat }
+        recommendedProduction: { type: GraphQLFloat },
+        manualProduction: { type: GraphQLFloat },
+        manualPrice: { type: GraphQLFloat }
     })
 });
 
@@ -80,7 +82,9 @@ const MarketMutations = {
                 fillBatteryRatio: 0.0,
                 autopilot: true,
                 recommendedPrice: 0,
-                recommendedProduction: 0
+                recommendedProduction: 0,
+                manualProduction: 0,
+                manualPrice: 0
             });
             return market.save();
         }
@@ -104,14 +108,16 @@ const MarketMutations = {
                         status: doc.status,
                         startUp: doc.startUp,
                         price: doc.price,
-                        production: args.production,
+                        production: doc.production,
                         consumption: doc.consumption,
                         currBatteryCap: doc.currBatteryCap,
                         maxBatteryCap: doc.maxBatteryCap,
                         fillBatteryRatio: doc.fillBatteryRatio,
                         autopilot: doc.autopilot,
                         recommendedPrice: doc.recommendedPrice,
-                        recommendedProduction: doc.recommendedProduction
+                        recommendedProduction: doc.recommendedProduction,
+                        manualProduction: args.production,
+                        manualPrice: doc.manualPrice
                     });
                     market.save();
                     return true;
@@ -142,7 +148,7 @@ const MarketMutations = {
                         demand: doc.demand,
                         status: doc.status,
                         startUp: doc.startUp,
-                        price: args.price,
+                        price: doc.price,
                         production: doc.production,
                         consumption: doc.consumption,
                         currBatteryCap: doc.currBatteryCap,
@@ -150,7 +156,9 @@ const MarketMutations = {
                         fillBatteryRatio: doc.fillBatteryRatio,
                         autopilot: doc.autopilot,
                         recommendedPrice: doc.recommendedPrice,
-                        recommendedProduction: doc.recommendedProduction
+                        recommendedProduction: doc.recommendedProduction,
+                        manualProduction: doc.manualProduction,
+                        manualPrice: args.price
                     });
                     market.save();
                     return true;
@@ -188,7 +196,9 @@ const MarketMutations = {
                         fillBatteryRatio: args.fillBatteryRatio,
                         autopilot: doc.autopilot,
                         recommendedPrice: doc.recommendedPrice,
-                        recommendedProduction: doc.recommendedProduction
+                        recommendedProduction: doc.recommendedProduction,
+                        manualProduction: doc.manualProduction,
+                        manualPrice: doc.manualPrice
                     });
                     market.save();
                     return true;
@@ -227,7 +237,9 @@ const MarketMutations = {
                         fillBatteryRatio: doc.fillBatteryRatio,
                         autopilot: doc.autopilot,
                         recommendedPrice: doc.recommendedPrice,
-                        recommendedProduction: doc.recommendedProduction
+                        recommendedProduction: doc.recommendedProduction,
+                        manualProduction: doc.manualProduction,
+                        manualPrice: doc.manualPrice
                     });
                     market.save();
                     return true;
@@ -266,7 +278,9 @@ const MarketMutations = {
                         fillBatteryRatio: doc.fillBatteryRatio,
                         autopilot: args.enable,
                         recommendedPrice: doc.recommendedPrice,
-                        recommendedProduction: doc.recommendedProduction
+                        recommendedProduction: doc.recommendedProduction,
+                        manualProduction: doc.manualProduction,
+                        manualPrice: doc.manualPrice
                     });
                     market.save();
                     return true;
