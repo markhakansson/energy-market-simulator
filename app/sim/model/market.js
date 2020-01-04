@@ -20,7 +20,9 @@ class MarketSim {
             autopilot: true,
             recommendedPrice: price,
             recommendedProduction: production,
-            plantInOperation: true
+            plantInOperation: true,
+            manualProduction: 0,
+            manualPrice: 0
         });
 
         // 'Global' simulation variables
@@ -54,6 +56,7 @@ class MarketSim {
                 self.market = doc;
             }
         });
+
         this.marketOutput = 0;
         this.status = self.market.status;
         this.plantInOperation = self.market.plantInOperation;
@@ -74,8 +77,9 @@ class MarketSim {
             );
         }
 
-        // Needs to reset the demand for each tick.
         this.demand += demand;
+
+        // Needs to reset the demand for each tick.
         setTimeout(() => {
             this.demand -= demand;
         }, 1.05 * this.timeMultiplier);
@@ -169,6 +173,12 @@ class MarketSim {
         // Set simulation recommendations first
         this.setRecommendations();
 
+        if (self.autopilot) {
+            self.price = self.recommendedPrice;
+        } else {
+            self.price = self.manualPrice;
+        }
+
         // Power plant has been stopped
         if (!self.startUp) {
             this.plantInOperation = false;
@@ -180,13 +190,17 @@ class MarketSim {
                 self.price = self.recommendedPrice;
             }
 
+            // Needs to save the current tick values to be used in the settimeout
             const currTickRecommendedProduction = self.recommendedProduction;
+            const currTickManualProduction = self.manualProduction;
 
             setTimeout(() => {
                 this.status = 'running!';
 
                 if (self.autopilot) {
                     this.production = currTickRecommendedProduction;
+                } else {
+                    this.production = currTickManualProduction;
                 }
 
                 this.consumption = this.production / 10;
@@ -248,7 +262,9 @@ class MarketSim {
             autopilot: self.autopilot,
             recommendedPrice: self.recommendedPrice,
             recommendedProduction: self.recommendedProduction,
-            plantInOperation: this.plantInOperation
+            plantInOperation: this.plantInOperation,
+            manualProduction: self.manualProduction,
+            manualPrice: self.manualPrice
         });
 
         self.save((err) => {
