@@ -8,8 +8,8 @@ const consumer = new Schema({
     consumption: Number,
     bought: Number,
     blackout: Boolean,
-    retrying: Boolean
-
+    retrying: Boolean,
+    demand: Number
 });
 
 module.exports = mongoose.model('Consumer', consumer);

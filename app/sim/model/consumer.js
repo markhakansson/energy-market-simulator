@@ -13,11 +13,17 @@ class ConsumerSim {
             consumption: 2000,
             bought: 0,
             blackout: false,
-            retrying: false
+            retrying: false,
+            demand: 0
         });
 
         this.market = market;
         this.timeMultiplier = timeMultiplier;
+        this.retrying = false;
+        this.blackout = false;
+        this.demand = 0;
+        this.bought = 0;
+        this.consumption = 0;
     }
 
     /**
@@ -47,49 +53,62 @@ class ConsumerSim {
 
         // Threshold of 4 kWh. If it reaches over that point the distribution will favor smaller consumptions.
         if (consumption > 0) {
-            if (consumption < 4.0) {
+            if (consumption < 0.1) {
+                arr = [1.5 * consumption, 2.0 * consumption, 2.5 * consumption];
+            } else if (consumption < 1.0) {
+                arr = [consumption, 1.2 * consumption, 1.4 * consumption];
+            } else if (consumption < 4.0) {
                 arr = [0.8 * consumption, consumption, 1.2 * consumption];
             } else {
                 arr = [0.8 * consumption, 0.9 * consumption, 0.95 * consumption, 1.1 * consumption];
             }
 
-            consumption = gauss.gauss(arr, 4, 0.05) * 1000;
+            try {
+                consumption = gauss.gauss(arr, 4, 0.05) * 1000;
+            } catch (err) {
+                Logger.error('When genereting gaussian distribution in consumer [' + self.consumer.name + '] caught error: ' + err);
+                arr = [0.8 * 3, 3, 1.2 * 3];
+                consumption = gauss.gauss(arr, 4, 0.05) * 1000;
+            }
             this.buyFromMarket(consumption);
 
         // If blackout has occured, try to buy from market in the future
-        } else if (self.blackout && !self.retrying) {
-            self.retrying = true;
+        } else if (this.blackout && !this.retrying) {
+            this.retrying = true;
 
             tools.sleep(2 * this.timeMultiplier).then(() => {
                 arr = [0.8 * 3, 3, 1.2 * 3];
                 consumption = gauss.gauss(arr, 4, 0.05) * 1000;
                 this.buyFromMarket(consumption);
-                self.retrying = self.blackout;
+                this.retrying = this.blackout;
             });
+        // Rare case if consumption is zero while not blackouted
+        } else if (consumption === 0 && !this.blackout) {
+            arr = [0.8 * 3, 3, 1.2 * 3];
+            consumption = gauss.gauss(arr, 4, 0.05) * 1000;
+            this.buyFromMarket(consumption);
         }
     }
 
     buyFromMarket (energy) {
         const self = this.consumer;
         const boughtEnergy = this.market.buy(energy);
+        this.demand = energy;
         self.bought = boughtEnergy;
 
-        if (boughtEnergy === 0 || boughtEnergy == null) {
-            self.consumption = 0;
-            self.blackout = true;
+        if (boughtEnergy === 0 || boughtEnergy == null || boughtEnergy < energy) {
+            this.consumption = 0;
+            this.blackout = true;
         } else if (boughtEnergy < 0) {
             Logger.warn(
                 'When buying energy from market in consumer [' + self.name +
                 '], expected positive Number. Received negative Number.'
             );
-            self.consumption = 0;
-            self.blackout = true;
-        } else if (boughtEnergy < energy) {
-            self.consumption -= (energy - boughtEnergy);
-            self.blackout = false;
+            this.consumption = 0;
+            this.blackout = true;
         } else {
-            self.consumption = energy;
-            self.blackout = false;
+            this.consumption = energy;
+            this.blackout = false;
         }
     }
 
@@ -104,8 +123,9 @@ class ConsumerSim {
             timestamp: Date.now(),
             consumption: self.consumption,
             bought: self.bought,
-            blackout: self.blackout,
-            retrying: self.retrying
+            blackout: this.blackout,
+            retrying: this.retrying,
+            demand: this.demand
         });
 
         self.save((err) => {
@@ -118,8 +138,9 @@ class ConsumerSim {
                     '\n Consuming: ' + self.consumption + ' Wh' +
                     '\n Bought energy: ' + self.bought + ' Wh' +
                     '\n Price per Wh is: ' + this.market.market.price + ' SEK' +
-                    '\n Blackout: ' + self.blackout +
-                    '\n Retrying: ' + self.retrying
+                    '\n Blackout: ' + this.blackout +
+                    '\n Retrying: ' + this.retrying +
+                    '\n Energy need: ' + this.demand
                 )
             }
         });

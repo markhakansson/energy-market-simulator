@@ -22,7 +22,8 @@ const ConsumerType = new GraphQLObjectType({
         consumption: { type: GraphQLFloat },
         bought: { type: GraphQLFloat },
         blackout: { type: GraphQLBoolean },
-        retrying: { type: GraphQLBoolean }
+        retrying: { type: GraphQLBoolean },
+        demand: { type: GraphQLFloat }
     })
 });
 
@@ -66,7 +67,8 @@ const ConsumerMutations = {
                 consumption: 0,
                 bought: 0,
                 blackout: false,
-                retrying: false
+                retrying: false,
+                demand: 0
             });
             return consumer.save();
         }
@@ -92,7 +94,8 @@ const ConsumerMutations = {
                         consumption: args.consumption,
                         bought: doc.bought,
                         blackout: doc.blackout,
-                        retrying: doc.retrying
+                        retrying: doc.retrying,
+                        demand: doc.demand
                     });
                     consumer.save();
                     return true;
