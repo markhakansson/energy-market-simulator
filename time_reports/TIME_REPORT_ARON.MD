@@ -33,3 +33,4 @@
 |    2019-12-30|   2      Report and manager view of prosumer dashboard
 |    2020-01-01|   2      Report
 |    2020-01-03|   1      Report
+|    2020-01-06|   5      Data from API to front-end impl for manager (mostly AJAX), text input for better controll and fixes for the sliders 
