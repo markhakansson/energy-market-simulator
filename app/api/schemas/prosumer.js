@@ -28,7 +28,9 @@ const ProsumerType = new GraphQLObjectType({
         blackout: { type: GraphQLBoolean },
         turbineStatus: { type: GraphQLString },
         turbineWorking: { type: GraphQLBoolean },
-        turbineBreakPercent: { type: GraphQLFloat }
+        turbineBreakPercent: { type: GraphQLFloat },
+        blocked: { type: GraphQLBoolean },
+        blockedTimer: { type: GraphQLFloat }
     })
 });
 
@@ -78,9 +80,55 @@ const ProsumerMutations = {
                 bought: 0,
                 turbineStatus: 'WORKING!',
                 turbineWorking: true,
-                turbineBreakPercent: 0.05
+                turbineBreakPercent: 0.05,
+                blocked: false,
+                blockedTimer: 0.0
             });
             return prosumer.save();
+        }
+    },
+    blockProsumer: {
+        args: {
+            prosumerName: { type: new GraphQLNonNull(GraphQLString) },
+            timeout: { type: new GraphQLNonNull(GraphQLFloat) }
+        },
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
+            const data = Prosumer.findOne({ name: args.prosumerName }).sort({ timestamp: -1 }).exec();
+            return data.then(
+                doc => {
+                    // If already blocked don't do anything
+                    if (doc.blocked) {
+                        return false;
+                    } else {
+                        const prosumer = new Prosumer({
+                            name: doc.name,
+                            market: doc.market,
+                            timestamp: Date.now(),
+                            consumption: doc.consumption,
+                            production: doc.production,
+                            currBatteryCap: doc.currBatteryCap,
+                            maxBatteryCap: doc.maxBatteryCap,
+                            fillBatteryRatio: args.fillBatteryRatio,
+                            useBatteryRatio: doc.useBatteryRatio,
+                            bought: doc.bought,
+                            turbineStatus: doc.turbineStatus,
+                            turbineWorking: doc.turbineWorking,
+                            turbineBreakPercent: doc.turbineBreakPercent,
+                            blocked: true,
+                            blockedTimer: args.timeout
+                        });
+                        prosumer.save();
+                        return true;
+                    }
+                },
+                err => {
+                    console.error(err);
+                    return false;
+                }
+            )
         }
     },
     updateFillBatteryRatio: {
@@ -99,7 +147,7 @@ const ProsumerMutations = {
                         name: doc.name,
                         market: doc.market,
                         timestamp: Date.now(),
-                        cosnumption: doc.consumption,
+                        consumption: doc.consumption,
                         production: doc.production,
                         currBatteryCap: doc.currBatteryCap,
                         maxBatteryCap: doc.maxBatteryCap,
@@ -108,7 +156,9 @@ const ProsumerMutations = {
                         bought: doc.bought,
                         turbineStatus: doc.turbineStatus,
                         turbineWorking: doc.turbineWorking,
-                        turbineBreakPercent: doc.turbineBreakPercent
+                        turbineBreakPercent: doc.turbineBreakPercent,
+                        blocked: doc.blocked,
+                        blockedTimer: doc.blockedTimer
                     });
                     prosumer.save();
                     return true;
@@ -145,7 +195,9 @@ const ProsumerMutations = {
                         bought: doc.bought,
                         turbineStatus: doc.turbineStatus,
                         turbineWorking: doc.turbineWorking,
-                        turbineBreakPercent: doc.turbineBreakPercent
+                        turbineBreakPercent: doc.turbineBreakPercent,
+                        blocked: doc.blocked,
+                        blockedTimer: doc.blockedTimer
                     });
                     prosumer.save();
                     return true;
@@ -182,7 +234,9 @@ const ProsumerMutations = {
                         bought: doc.bought,
                         turbineStatus: doc.turbineStatus,
                         turbineWorking: doc.turbineWorking,
-                        turbineBreakPercent: doc.turbineBreakPercent
+                        turbineBreakPercent: doc.turbineBreakPercent,
+                        blocked: doc.blocked,
+                        blockedTimer: doc.blockedTimer
                     });
                     prosumer.save();
                     return true;
@@ -219,7 +273,9 @@ const ProsumerMutations = {
                         bought: doc.bought,
                         turbineStatus: doc.turbineStatus,
                         turbineWorking: doc.turbineWorking,
-                        turbineBreakPercent: doc.turbineBreakPercent
+                        turbineBreakPercent: doc.turbineBreakPercent,
+                        blocked: doc.blocked,
+                        blockedTimer: doc.blockedTimer
                     });
                     prosumer.save();
                     return true;

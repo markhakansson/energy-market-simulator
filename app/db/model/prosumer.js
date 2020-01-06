@@ -30,6 +30,13 @@ const prosumer = new Schema({
         type: Number,
         min: 0.0,
         max: 1.0
+    },
+    blocked: Boolean,
+    blockedTimer: {
+        type: Number,
+        default: 0.0,
+        min: 0.0,
+        max: 100
     }
 });
 
