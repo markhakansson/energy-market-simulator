@@ -11,7 +11,6 @@ router.get('/', function (req, res, next) {
     return res.redirect('/login');
 });
 
-
 router.get('/success', auth, function (req, res, next) {
     if(req.session.manager) {
         return res.redirect('/manager?username=' + req.session.user);
@@ -21,6 +20,7 @@ router.get('/success', auth, function (req, res, next) {
 });
 
 router.get('/manager', auth, isManager, function(req, res, next) {
+    req.session.user = req.query.username;
     return res.render('manager', { 
         message: req.session.user
     });
@@ -28,6 +28,10 @@ router.get('/manager', auth, isManager, function(req, res, next) {
 
 
 router.get('/prosumer', auth, async function(req, res, next) {
+    if (req.session.manager) {
+        req.session.user = req.query.username;
+                
+    }
     return res.render('prosumer', {
         message: req.session.user
     
@@ -36,11 +40,6 @@ router.get('/prosumer', auth, async function(req, res, next) {
 
 router.get('/signup', isLoggedIn, function (req, res) {
     return res.render('signup.ejs');
-});
-
-router.get('/logout', function (req, res, next) {
-    req.logout();
-    res.redirect('/');
 });
 
 router.get('/login', isLoggedIn,function(req, res) {

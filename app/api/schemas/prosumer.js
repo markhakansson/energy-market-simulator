@@ -52,6 +52,7 @@ const ProsumerQueries = {
 
             return Prosumer.findOne({ name: req.user.user }).sort({ timestamp: -1 });
         }
+
     }
 };
 
