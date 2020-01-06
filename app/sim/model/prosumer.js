@@ -26,6 +26,9 @@ class ProsumerSim {
         this.market = market;
 
         this.timeMultiplier = timeMultiplier;
+
+        this.turbineStatus = 'WORKING';
+        this.turbineWorking = true;
     }
 
     /**
@@ -53,18 +56,18 @@ class ProsumerSim {
      */
     randomizeTurbineBreaking () {
         const self = this.prosumer;
-        if (self.turbineWorking) {
+        if (this.turbineWorking) {
             const rand = Math.random();
 
             if (rand < self.turbineBreakagePercent) {
                 self.production = 0;
-                self.turbineWorking = false;
-                self.turbineStatus = 'BROKEN! REPAIRMAN CALLED!';
+                this.turbineWorking = false;
+                this.turbineStatus = 'BROKEN! REPAIRMAN CALLED!';
                 this.callTurbineRepairman();
             }
         }
 
-        return self.turbineWorking;
+        return this.turbineWorking;
     }
 
     generateProduction (windSpeed) {
@@ -103,7 +106,13 @@ class ProsumerSim {
                 arr = [0.8 * consumption, 0.9 * consumption, 0.95 * consumption, 1.1 * consumption];
             }
 
-            self.consumption = gauss.gaussLimit(arr, 4, 0.05, 0, 60) * 100;
+            try {
+                self.consumption = gauss.gaussLimit(arr, 4, 0.05, 0, 60) * 100;
+            } catch (err) {
+                Logger.error('When genereting gaussian distribution in consumer [' + self.prosumer.name + '] caught error: ' + err);
+                self.consumption = Math.random() * 5000;
+            }
+
             const consDiff = self.consumption - self.production;
 
             // Check if household's demand exceeds production
@@ -121,16 +130,15 @@ class ProsumerSim {
      * Is an asynchronous function.
      */
     callTurbineRepairman () {
-        const self = this.prosumer;
         tools.sleep(2 * this.timeMultiplier).then(() => {
-            self.turbineStatus = 'REPAIRMAN ON THE WAY...';
+            this.turbineStatus = 'REPAIRMAN ON THE WAY...';
         });
         tools.sleep(this.timeMultiplier).then(() => {
-            self.turbineStatus = 'REPAIRING...';
+            this.turbineStatus = 'REPAIRING...';
         });
         tools.sleep(2 * this.timeMultiplier).then(() => {
-            self.turbineWorking = true;
-            self.turbineStatus = 'WORKING!';
+            this.turbineWorking = true;
+            this.turbineStatus = 'WORKING!';
         });
     }
 
@@ -246,8 +254,8 @@ class ProsumerSim {
             useBatteryRatio: self.useBatteryRatio,
             bought: self.bought,
             blackout: self.blackout,
-            turbineStatus: self.turbineStatus,
-            turbineWorking: self.turbineWorking,
+            turbineStatus: this.turbineStatus,
+            turbineWorking: this.turbineWorking,
             turbineBreakPercent: self.turbineBreakagePercent
         });
 
@@ -264,7 +272,7 @@ class ProsumerSim {
                 '\n Price per Wh is: ' + this.market.market.price + ' SEK' +
                 '\n Battery: ' + self.currBatteryCap + ' Wh' +
                 '\n Blackout: ' + self.blackout +
-                '\n Turbine status: ' + self.turbineStatus +
+                '\n Turbine status: ' + this.turbineStatus +
                 '\n Fill battery ratio: ' + self.fillBatteryRatio +
                 '\n Use battery ratio: ' + self.useBatteryRatio
                 )
