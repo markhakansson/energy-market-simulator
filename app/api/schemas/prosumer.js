@@ -33,24 +33,12 @@ const ProsumerType = new GraphQLObjectType({
 });
 
 const ProsumerQueries = {
-    adminProsumer: {
-        type: ProsumerType,
-        args: { name: { type: GraphQLString } },
-        resolve (parent, args, req) {
-            if (req.isAuthenticated()) {
-                if (req.user.role === 'admin') {
-                    return Prosumer.findOne({ name: args.name });
-                }
-            }
-        }
-    },
     prosumer: {
         type: ProsumerType,
         resolve (parent, args, req) {
-            if (req.isAuthenticated()) {
-                return Prosumer.findOne({ name: req.user.username }).sort({ timestamp: -1 });
-            }
+            return Prosumer.findOne({ name: req.session.user }).sort({ timestamp: -1 });
         }
+        
     }
 };
 

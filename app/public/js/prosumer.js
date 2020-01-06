@@ -32,7 +32,7 @@ $(document).ready(function () {
     
 });
 
-function updateInformation () {
+function updateInformation (user) {
     $.ajax({
         url: 'http://localhost:4000/graphql',
         contentType: 'application/json',

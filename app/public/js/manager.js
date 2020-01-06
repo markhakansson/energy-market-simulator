@@ -13,7 +13,8 @@ $(document).ready(function () {
         success: function (res) {
             
             res.data.users.forEach(obj => {
-                $("#users").append("<li><a>" + obj.username +  "</a></li>");
+                $("#users").append("<li><a href='/prosumer?username=" + obj.username + "'>" + obj.username + "</a></li>");
+            
             });
         }
     });
@@ -22,12 +23,12 @@ $(document).ready(function () {
         contentType: 'application/json',
         type: 'GET',
         success: function(res) {
-console.log(res);
             res.users.forEach(obj => {
                 $("#online").append("<li><a>" + obj +  "</a></li>");
 
             });
         }
     });
+
     
 });
