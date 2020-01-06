@@ -9,7 +9,7 @@ class MarketSim {
             name: name,
             timestamp: Date.now(),
             demand: 0, // the sum of all households' demand for electricity
-            status: 'built',
+            status: 'startup!',
             startUp: true,
             price: price,
             production: production,
@@ -36,7 +36,7 @@ class MarketSim {
         this.production = 0;
         this.consumption = 0;
         this.price = 0;
-        this.status = 'stopped';
+        this.status = 'startup';
         this.plantInOperation = true;
     }
 
@@ -84,13 +84,13 @@ class MarketSim {
         }, 1.05 * this.timeMultiplier);
 
         // Use market output if possible, else try to use the battery
-        let usableEnergy = self.marketOutput - demand;
+        let usableEnergy = this.marketOutput - demand;
         if (usableEnergy >= 0) {
-            self.marketOutput -= demand;
+            this.marketOutput -= demand;
             return demand;
         } else {
-            usableEnergy = self.marketOutput + this.useBattery(demand - self.marketOutput);
-            self.marketOutput = 0;
+            usableEnergy = this.marketOutput + this.useBattery(demand - this.marketOutput);
+            this.marketOutput = 0;
             return usableEnergy;
         }
     }
@@ -118,6 +118,8 @@ class MarketSim {
         setTimeout(() => {
             this.demand += demand;
         }, 1.05 * this.timeMultiplier);
+
+        return 0;
     }
 
     /**
