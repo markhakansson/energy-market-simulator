@@ -6,7 +6,6 @@ const Logger = require('../../config/logger');
 
 class ProsumerSim {
     constructor (name, market, timeMultiplier) {
-        // this.prosumer = { name: name };
         this.prosumer = new Prosumer({
             name: name,
             market: market.market.name,
@@ -72,7 +71,7 @@ class ProsumerSim {
         if (this.turbineWorking) {
             const rand = Math.random();
 
-            if (rand < self.turbineBreakagePercent) {
+            if (rand <= self.turbineBreakagePercent) {
                 self.production = 0;
                 this.turbineWorking = false;
                 this.turbineStatus = 'BROKEN! REPAIRMAN CALLED!';
