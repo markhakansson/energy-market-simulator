@@ -21,7 +21,9 @@ class ProsumerSim {
             blackout: false,
             turbineStatus: 'WORKING',
             turbineWorking: true,
-            turbineBreakagePercent: 0.2
+            turbineBreakagePercent: 0.2,
+            blocked: false,
+            blockedTimer: 0.0
         });
         this.market = market;
 
@@ -29,6 +31,8 @@ class ProsumerSim {
 
         this.turbineStatus = 'WORKING';
         this.turbineWorking = true;
+        this.blocked = false;
+        this.blockTimerStarted = false;
     }
 
     /**
@@ -48,6 +52,15 @@ class ProsumerSim {
                 self.prosumer = doc;
             }
         });
+
+        if (self.blocked && !this.blockTimerStarted) {
+            this.blocked = true;
+            this.blockTimerStarted = true;
+            setTimeout(() => {
+                this.blocked = false;
+                this.blockTimerStarted = false;
+            }, this.market.blockTimer);
+        }
     }
 
     /**
@@ -133,10 +146,10 @@ class ProsumerSim {
         tools.sleep(2 * this.timeMultiplier).then(() => {
             this.turbineStatus = 'REPAIRMAN ON THE WAY...';
         });
-        tools.sleep(this.timeMultiplier).then(() => {
+        tools.sleep(3 * this.timeMultiplier).then(() => {
             this.turbineStatus = 'REPAIRING...';
         });
-        tools.sleep(2 * this.timeMultiplier).then(() => {
+        tools.sleep(5 * this.timeMultiplier).then(() => {
             this.turbineWorking = true;
             this.turbineStatus = 'WORKING!';
         });
@@ -226,10 +239,11 @@ class ProsumerSim {
 
     /**
      * Sells the chosen amount of energy to the connected market.
+     * If prosumer is blocked they will not be allowed to sell.
      * @param {*} energy Amount to sell.
      */
     sellToMarket (energy) {
-        if (energy > 0) {
+        if (energy > 0 && !this.blocked) {
             this.market.sell(energy);
         } else if (energy < 0 || energy == null) {
             Logger.error('When selling to market in prosumer [' + this.prosumer.name + '] energy was negative!');
@@ -256,7 +270,9 @@ class ProsumerSim {
             blackout: self.blackout,
             turbineStatus: this.turbineStatus,
             turbineWorking: this.turbineWorking,
-            turbineBreakPercent: self.turbineBreakagePercent
+            turbineBreakPercent: self.turbineBreakagePercent,
+            blocked: this.blocked,
+            blockTimer: this.blockTimer
         });
 
         self.save((err) => {
@@ -274,7 +290,8 @@ class ProsumerSim {
                 '\n Blackout: ' + self.blackout +
                 '\n Turbine status: ' + this.turbineStatus +
                 '\n Fill battery ratio: ' + self.fillBatteryRatio +
-                '\n Use battery ratio: ' + self.useBatteryRatio
+                '\n Use battery ratio: ' + self.useBatteryRatio +
+                '\n Blocked from market: ' + this.blocked
                 )
             }
         });
