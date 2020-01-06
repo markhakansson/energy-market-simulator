@@ -46,17 +46,24 @@ class MarketSim {
      */
     async fetchData () {
         const self = this;
+
         await Market.findOne({ name: self.market.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
-            if (err) {
-                Logger.warn('Matching market with name [' + self.market.name + '] was not found in the database!');
-                self.market.save().catch((err) => {
-                    throw err;
-                });
-            } else {
+            // if (err) {
+            //     Logger.warn('Matching market with name [' + self.market.name + '] was not found in the database!');
+            //     self.market.save().catch((err) => {
+            //         throw err;
+            //     });
+            // } else {
+            //     console.log(doc);
+            //     self.market = doc;
+            // }
+            if (err) throw err;
+            if(doc) {
                 self.market = doc;
+            } else {
+                self.market.save();
             }
         });
-
         this.marketOutput = 0;
         this.status = self.market.status;
         this.plantInOperation = self.market.plantInOperation;

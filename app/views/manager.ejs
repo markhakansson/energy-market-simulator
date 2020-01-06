@@ -9,7 +9,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="js/slider.js"></script>  
     <script src="js/charts.js"></script>
     <script src="js/profile.js"></script>
     <script src="js/manager.js"></script>
@@ -17,7 +16,8 @@
  
   <body>
     <div class="container" id="navbar">      
-      <h1><%= message %>'s Dashboard <span id="timestamp"></span></h1>
+      <h1><%= message %>'s Dashboard</span></h1>
+      <p>Last updated: <span id="timestamp"></span></p>
       <ul class="nav nav-tabs">
         <li class="nav-item" id="nav-monitor">
           <a class="nav-link active" >Monitor</a>
@@ -36,17 +36,24 @@
           <h2>Plant electricity settings</h2>
           
           <p>Buffer ratio</p>
-          
+          <input type="range" id="bufferRatioSlider" min="0" max="100">
+          <p>Value: <span id="bufferRatioValue"></span>%</p>
+
 
           <p>Market price</p>
-        
+          <input type="range" id="marketPriceSlider" min="0" max="100">
+          <p>Value: <span id="priceRatioValue"></span></p>
+
 
 
         </div>
 
         <div class="col-lg">
-          <h2>Production</h2>
+          <h2>Demand</h2>
           <canvas id="chart"></canvas>
+          <!--<script>productionChart('#chart');</script>-->
+          <script>let marketChart = new MarketChart('#chart');</script>
+        
         </div>
 
       </div>
@@ -56,9 +63,12 @@
         <!-- Display wind, production etc. as values! -->  
         <div class="col-md">
           <ul>
-            <li>Current electricity production:</li><span id="production"></span>
-            <li>Current market demand:</li><span id="demand"></span>
-            <li>Current modelled market price:</li><span id="price"></span>
+            <li>Current status: <span id="status"></span></li>
+            <li>Current electricity production: <span id="production"></span></li>
+            <li>Current electricity consumption: <span id ="consumption"></span></li>
+            <li>Current market demand: <span id="demand"></span></li>
+            <li>Current market price: <span id="price"></span></li>
+            <li>Recommended market price <span id="recPrice"></span></li>
           </ul>
         </div>
         <div class="col-md">

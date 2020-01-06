@@ -29,6 +29,83 @@ $(document).ready(function () {
             });
         }
     });
+    $('#bufferRatioSlider').change(function () {
+        const value = this.value;
+        $('#bufferRatioValue').html(value);
+        $.ajax({
+            url: 'http://localhost:4000/graphql',
+            contentType: 'application/json',
+            type: 'POST',
+            data: JSON.stringify({
+                query: `mutation {
+                    setMarketFillBatteryRatio(fillBatteryRatio: ${value / 100})
+                }`
+            }),
+            success: function() {
+                console.log("BufferRatio updated to " + value + "%");
+            }
+        });
+    });
+    $('#marketPriceSlider').change(function () {
+        const value = this.value;
+        $('#priceRatioValue').html(value);
+        $.ajax({
+            url: 'http://localhost:4000/graphql',
+            contentType: 'application/json',
+            type: 'POST',
+            data: JSON.stringify({
+                query: `mutation {
+                    setMarketPrice(price: ${value})
+                }`
+            }),
+            success: function() {
+                console.log("Price updated to " + value);
+            }
+        });
+    });
+    
+    updateInformation();
 
+    // setInterval(updateInformation, 5000);
     
 });
+
+
+function updateInformation () {
+    $.ajax({
+        url: 'http://localhost:4000/graphql',
+        contentType: 'application/json',
+        type: 'POST',
+        data: JSON.stringify({
+            query: `{
+                market{timestamp, status,production, consumption, demand, price, fillBatteryRatio, recommendedPrice}
+            }`
+        }),
+        success: function (res) {
+            const market = res.data.market;
+            $('#timestamp').html(market.timestamp);
+            $('#status').html(market.status);
+            $('#production').html(market.production);
+            $('#consumption').html(market.consumption);
+            $('#demand').html(market.demand);
+            $('#price').html(market.price);
+            $('#recPrice').html(market.recommendedPrice);
+            
+            // Sliders
+            $('#bufferRatioSlider').val(market.fillBatteryRatio * 100);
+            $('#bufferRatioValue').html(market.fillBatteryRatio * 100);
+            $('#marketPriceSlider').val(market.price);
+            $('#priceRatioValue').html(market.price);
+
+            // Chart
+            if (marketChart !== null) {
+                marketChart.addData(market.demand, market.timestamp);
+            }
+        
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+    
+}

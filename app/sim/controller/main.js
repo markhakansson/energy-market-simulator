@@ -11,8 +11,9 @@ const Logger = require('../../config/logger');
 // Set simulation speed (in ms)
 const TIME_MULTIPLIER = 5000;
 
-const MARKET = new MarketSim('Lulea', 2, 5000, 100000, TIME_MULTIPLIER);
-const WEATHER = new WeatherSim('Lulea', 10, 20);
+// Lets make market have the same name as the manager?
+const MARKET = new MarketSim('1', 2, 5000, 100000, TIME_MULTIPLIER);
+const WEATHER = new WeatherSim('1', 10, 20);
 
 var prosumerNames = [];
 var consumerNames = [];

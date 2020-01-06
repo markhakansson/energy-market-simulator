@@ -42,8 +42,8 @@ const MarketQueries = ({
         args: { name: { type: GraphQLString } },
         resolve (parent, args, req) {
             if (!req.session.user) return 'Not authenticated!';
-
-            return Market.findOne({ name: args.name }).sort({ timestamp: -1 });
+            if (!req.session.manager) return 'Not authorized!';
+            return Market.findOne({ name: req.session.user }).sort({ timestamp: -1 });
         }
     },
     markets: {
