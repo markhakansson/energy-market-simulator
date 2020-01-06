@@ -29,21 +29,36 @@
       <br>
     </div>
 
+
     <div class="container" id="monitor"> 
+      <p>Autopilot</p>
+      <label class="switch">
+        <input type="checkbox" id="autopilot">
+        <span class="slider"></span>
+      </label>
+    
       <div class="row">
 
-        <div class="col-md" id="useBatteryRatio" style="width: 100%" display="table">
+        <div class="col-md" style="width: 100%" display="table">
           <h2>Plant electricity settings</h2>
           
-          <p>Buffer ratio</p>
-          <input type="range" id="bufferRatioSlider" min="0" max="100">
-          <p>Value: <span id="bufferRatioValue"></span>%</p>
+          <div>
+            <p>Electricity production <input type="text" id="productionValueText"><button id="setProductionValue">Set</button></p>
+            <input type="range" id="productionSlider" min="0" max="10000" />
+            <p>Value: <span id="productionValue"></span></p>
+          </div>
 
+          <div>
+            <p>Buffer ratio <input type="text" id="bufferValueText">%<button id="setBufferRatio">Set</button></p>
+            <input type="range" id="bufferRatioSlider" min="0" max="100" />
+            <p>Value: <span id="bufferRatioValue"></span>%</p>
+          </div>
 
-          <p>Market price</p>
-          <input type="range" id="marketPriceSlider" min="0" max="100">
-          <p>Value: <span id="priceRatioValue"></span></p>
-
+          <div>
+            <p>Market price <input type="text" id="priceValueText"><button id="setPrice">Set</button></p>
+            <input type="range" id="marketPriceSlider" min="0" max="100" />
+            <p>Value: <span id="priceRatioValue"></span></p>
+          </div>
 
 
         </div>
@@ -64,7 +79,6 @@
         <div class="col-md">
           <ul>
             <li>Current status: <span id="status"></span></li>
-            <li>Current electricity production: <span id="production"></span></li>
             <li>Current electricity consumption: <span id ="consumption"></span></li>
             <li>Current market demand: <span id="demand"></span></li>
             <li>Current market price: <span id="price"></span></li>
