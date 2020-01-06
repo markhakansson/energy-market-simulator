@@ -25,7 +25,7 @@ class MarketSim {
             manualPrice: 0
         });
 
-        // 'Global' simulation variables
+        // Public simulation variables
         // Useful for things that will be saved in a future tick
         this.prevDemand = 0;
         this.marketOutput = 0;
@@ -46,10 +46,10 @@ class MarketSim {
      */
     async fetchData () {
         const self = this;
-        await Market.findOne({ name: self.market.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
+        await Market.findOne({ name: self.market.name }, null, { sort: { timestamp: -1 } }, async function (err, doc) {
             if (err) {
                 Logger.warn('Matching market with name [' + self.market.name + '] was not found in the database!');
-                self.market.save().catch((err) => {
+                await self.market.save().catch((err) => {
                     throw err;
                 });
             } else {
@@ -59,7 +59,6 @@ class MarketSim {
 
         this.marketOutput = 0;
         this.status = self.market.status;
-        this.plantInOperation = self.market.plantInOperation;
     }
 
     /**
@@ -227,7 +226,7 @@ class MarketSim {
         const self = this.market;
 
         if (this.demand > 0) {
-            self.recommendedProduction = 2.0 * this.demand;
+            self.recommendedProduction = 5.0 * this.demand;
         } else {
             self.recommendedProduction = 0;
         }
