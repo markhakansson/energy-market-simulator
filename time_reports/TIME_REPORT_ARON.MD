@@ -32,3 +32,4 @@
 |    2019-12-29|   3      Manager view of prosumer dashboard
 |    2019-12-30|   2      Report and manager view of prosumer dashboard
 |    2020-01-01|   2      Report
+|    2020-01-03|   1      Report
