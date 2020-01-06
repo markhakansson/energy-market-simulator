@@ -27,3 +27,7 @@
 | 2019-12-17 | 3 | Fix chart to display data over time on prosumer page. |
 | 2019-12-19 | 4 | Work on fixing bugs and handle errors in simulator |
 | 2019-12-20 | 4 | Log errors to file in simulator. Fix bugs |
+| 2019-12-21 | 4 | Clean code and smaller fixes |
+| 2019-12-22 | 4 | Get the simulator to only use database values, and catch errors in simulator |
+| 2019-12-29 | 5 | Update API schemas to support new auth methods. Start working on getting the market simulator to support manager interaction |
+| 2020-01-01 | 5 | Work on simulator generating recommendations for the manager. Generation of production complete. |

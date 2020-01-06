@@ -28,10 +28,6 @@ class WeatherSim {
             wind_speed: wind_speed,
             temperature: temperature
         });
-
-/*         this.weather.save((err) => {
-            if (err) throw err;
-        }); */
     }
 
     /**

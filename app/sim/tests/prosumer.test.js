@@ -1,16 +1,18 @@
 const expect = require('chai');
 const assert = require('assert');
 const ProsumerSim = require('../model/prosumer');
+const MarketSim = require('../model/market');
 
 describe('#randomizeTurbineBreaking', function () {
     it('Turbine should break', () => {
         // name, market, wind, fillBattRatio, useBattRatio, batterySize
-        const ProsumerSimTest = new ProsumerSim('test', null);
+        const MarketSimTest = new MarketSim('test', 2, 1000, 10000, 1);
+        const ProsumerSimTest = new ProsumerSim('test', MarketSimTest, 1);
         ProsumerSimTest.prosumer.turbineBreakagePercent = 1;
-        ProsumerSimTest.prosumer.turbineWorking = true;
+        ProsumerSimTest.turbineWorking = true;
         ProsumerSimTest.randomizeTurbineBreaking();
         assert.strictEqual(ProsumerSimTest.prosumer.production, 0);
-        assert.strictEqual(ProsumerSimTest.prosumer.turbineWorking, false);
-        assert.strictEqual(ProsumerSimTest.prosumer.turbineStatus, 'BROKEN! REPAIRMAN CALLED!');
+        assert.strictEqual(ProsumerSimTest.turbineWorking, false);
+        assert.strictEqual(ProsumerSimTest.turbineStatus, 'BROKEN! REPAIRMAN CALLED!');
     });
 });

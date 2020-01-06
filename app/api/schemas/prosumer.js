@@ -28,17 +28,31 @@ const ProsumerType = new GraphQLObjectType({
         blackout: { type: GraphQLBoolean },
         turbineStatus: { type: GraphQLString },
         turbineWorking: { type: GraphQLBoolean },
-        turbineBreakPercent: { type: GraphQLFloat }
+        turbineBreakPercent: { type: GraphQLFloat },
+        blocked: { type: GraphQLBoolean },
+        blockedTimer: { type: GraphQLFloat }
     })
 });
 
 const ProsumerQueries = {
+    adminProsumer: {
+        type: ProsumerType,
+        args: { name: { type: GraphQLString } },
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
+            return Prosumer.findOne({ name: args.name });
+        }
+    },
     prosumer: {
         type: ProsumerType,
         resolve (parent, args, req) {
-            return Prosumer.findOne({ name: req.session.user }).sort({ timestamp: -1 });
+            if (!req.session.user) return 'Not authenticated!';
+
+            return Prosumer.findOne({ name: req.user.user }).sort({ timestamp: -1 });
         }
-        
+
     }
 };
 
@@ -50,7 +64,10 @@ const ProsumerMutations = {
             market: { type: new GraphQLNonNull(GraphQLString) },
             maxBatteryCap: { type: new GraphQLNonNull(GraphQLInt) }
         },
-        resolve (parent, args) {
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
             const prosumer = new Prosumer({
                 name: args.name,
                 market: args.market,
@@ -64,9 +81,55 @@ const ProsumerMutations = {
                 bought: 0,
                 turbineStatus: 'WORKING!',
                 turbineWorking: true,
-                turbineBreakPercent: 0.05
+                turbineBreakPercent: 0.05,
+                blocked: false,
+                blockedTimer: 0.0
             });
             return prosumer.save();
+        }
+    },
+    blockProsumer: {
+        args: {
+            prosumerName: { type: new GraphQLNonNull(GraphQLString) },
+            timeout: { type: new GraphQLNonNull(GraphQLFloat) }
+        },
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
+            const data = Prosumer.findOne({ name: args.prosumerName }).sort({ timestamp: -1 }).exec();
+            return data.then(
+                doc => {
+                    // If already blocked don't do anything
+                    if (doc.blocked) {
+                        return false;
+                    } else {
+                        const prosumer = new Prosumer({
+                            name: doc.name,
+                            market: doc.market,
+                            timestamp: Date.now(),
+                            consumption: doc.consumption,
+                            production: doc.production,
+                            currBatteryCap: doc.currBatteryCap,
+                            maxBatteryCap: doc.maxBatteryCap,
+                            fillBatteryRatio: args.fillBatteryRatio,
+                            useBatteryRatio: doc.useBatteryRatio,
+                            bought: doc.bought,
+                            turbineStatus: doc.turbineStatus,
+                            turbineWorking: doc.turbineWorking,
+                            turbineBreakPercent: doc.turbineBreakPercent,
+                            blocked: true,
+                            blockedTimer: args.timeout
+                        });
+                        prosumer.save();
+                        return true;
+                    }
+                },
+                err => {
+                    console.error(err);
+                    return false;
+                }
+            )
         }
     },
     updateFillBatteryRatio: {
@@ -75,7 +138,9 @@ const ProsumerMutations = {
             fillBatteryRatio: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            const filter = { name: req.session.username };
+            if (!req.session.user) return 'Not authenticated!';
+
+            const filter = { name: req.session.user };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
             return data.then(
                 doc => {
@@ -83,7 +148,7 @@ const ProsumerMutations = {
                         name: doc.name,
                         market: doc.market,
                         timestamp: Date.now(),
-                        cosnumption: doc.consumption,
+                        consumption: doc.consumption,
                         production: doc.production,
                         currBatteryCap: doc.currBatteryCap,
                         maxBatteryCap: doc.maxBatteryCap,
@@ -92,7 +157,9 @@ const ProsumerMutations = {
                         bought: doc.bought,
                         turbineStatus: doc.turbineStatus,
                         turbineWorking: doc.turbineWorking,
-                        turbineBreakPercent: doc.turbineBreakPercent
+                        turbineBreakPercent: doc.turbineBreakPercent,
+                        blocked: doc.blocked,
+                        blockedTimer: doc.blockedTimer
                     });
                     prosumer.save();
                     return true;
@@ -110,7 +177,9 @@ const ProsumerMutations = {
             useBatteryRatio: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            const filter = { name: req.session.username };
+            if (!req.session.user) return 'Not authenticated!';
+
+            const filter = { name: req.session.user };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
             return data.then(
                 doc => {
@@ -127,7 +196,9 @@ const ProsumerMutations = {
                         bought: doc.bought,
                         turbineStatus: doc.turbineStatus,
                         turbineWorking: doc.turbineWorking,
-                        turbineBreakPercent: doc.turbineBreakPercent
+                        turbineBreakPercent: doc.turbineBreakPercent,
+                        blocked: doc.blocked,
+                        blockedTimer: doc.blockedTimer
                     });
                     prosumer.save();
                     return true;
@@ -145,7 +216,9 @@ const ProsumerMutations = {
             production: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            const filter = { name: req.session.username };
+            if (!req.session.user) return 'Not authenticated!';
+
+            const filter = { name: req.session.user };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
             return data.then(
                 doc => {
@@ -162,7 +235,9 @@ const ProsumerMutations = {
                         bought: doc.bought,
                         turbineStatus: doc.turbineStatus,
                         turbineWorking: doc.turbineWorking,
-                        turbineBreakPercent: doc.turbineBreakPercent
+                        turbineBreakPercent: doc.turbineBreakPercent,
+                        blocked: doc.blocked,
+                        blockedTimer: doc.blockedTimer
                     });
                     prosumer.save();
                     return true;
@@ -180,7 +255,9 @@ const ProsumerMutations = {
             consumption: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            const filter = { name: req.session.username };
+            if (!req.session.user) return 'Not authenticated!';
+
+            const filter = { name: req.session.user };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
             return data.then(
                 doc => {
@@ -197,7 +274,9 @@ const ProsumerMutations = {
                         bought: doc.bought,
                         turbineStatus: doc.turbineStatus,
                         turbineWorking: doc.turbineWorking,
-                        turbineBreakPercent: doc.turbineBreakPercent
+                        turbineBreakPercent: doc.turbineBreakPercent,
+                        blocked: doc.blocked,
+                        blockedTimer: doc.blockedTimer
                     });
                     prosumer.save();
                     return true;

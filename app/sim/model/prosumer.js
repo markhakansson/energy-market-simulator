@@ -6,26 +6,60 @@ const Logger = require('../../config/logger');
 
 class ProsumerSim {
     constructor (name, market, timeMultiplier) {
-        this.prosumer = { name: name };
-
+        this.prosumer = new Prosumer({
+            name: name,
+            market: market.market.name,
+            timestamp: Date.now(),
+            consumption: 0,
+            production: 0,
+            currBatteryCap: 0,
+            maxBatteryCap: 0,
+            fillBatteryRatio: 0.0,
+            useBatteryRatio: 0.0,
+            bought: 0.0,
+            blackout: false,
+            turbineStatus: 'WORKING',
+            turbineWorking: true,
+            turbineBreakagePercent: 0.2,
+            blocked: false,
+            blockedTimer: 0.0
+        });
         this.market = market;
 
         this.timeMultiplier = timeMultiplier;
+
+        this.turbineStatus = 'WORKING';
+        this.turbineWorking = true;
+        this.blocked = false;
+        this.blockTimerStarted = false;
     }
 
     /**
-     * Gets the current data for this model in the database.
+     * Gets the current data for this model in the database. If no data is found,
+     * it tries to create a new entry instead.
      */
     async fetchData () {
         const self = this;
         await Prosumer.findOne({ name: this.prosumer.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
             if (err) {
                 Logger.error('Matching prosumer with name [' + self.prosumer.name + '] was not found in the database!');
-                throw new Error('Matching prosumer with name [' + self.prosumer.name + '] was not found in the database!');
+                self.prosumer.save().catch((err) => {
+                    throw err;
+                });
+                // throw new Error('Matching prosumer with name [' + self.prosumer.name + '] was not found in the database!');
             } else {
                 self.prosumer = doc;
             }
         });
+
+        if (self.blocked && !this.blockTimerStarted) {
+            this.blocked = true;
+            this.blockTimerStarted = true;
+            setTimeout(() => {
+                this.blocked = false;
+                this.blockTimerStarted = false;
+            }, this.market.blockTimer);
+        }
     }
 
     /**
@@ -34,18 +68,18 @@ class ProsumerSim {
      */
     randomizeTurbineBreaking () {
         const self = this.prosumer;
-        if (self.turbineWorking) {
+        if (this.turbineWorking) {
             const rand = Math.random();
 
-            if (rand < self.turbineBreakagePercent) {
+            if (rand <= self.turbineBreakagePercent) {
                 self.production = 0;
-                self.turbineWorking = false;
-                self.turbineStatus = 'BROKEN! REPAIRMAN CALLED!';
+                this.turbineWorking = false;
+                this.turbineStatus = 'BROKEN! REPAIRMAN CALLED!';
                 this.callTurbineRepairman();
             }
         }
 
-        return self.turbineWorking;
+        return this.turbineWorking;
     }
 
     generateProduction (windSpeed) {
@@ -84,7 +118,13 @@ class ProsumerSim {
                 arr = [0.8 * consumption, 0.9 * consumption, 0.95 * consumption, 1.1 * consumption];
             }
 
-            self.consumption = gauss.gaussLimit(arr, 4, 0.05, 0, 60) * 100;
+            try {
+                self.consumption = gauss.gaussLimit(arr, 4, 0.05, 0, 60) * 100;
+            } catch (err) {
+                Logger.error('When genereting gaussian distribution in consumer [' + self.prosumer.name + '] caught error: ' + err);
+                self.consumption = Math.random() * 5000;
+            }
+
             const consDiff = self.consumption - self.production;
 
             // Check if household's demand exceeds production
@@ -102,16 +142,15 @@ class ProsumerSim {
      * Is an asynchronous function.
      */
     callTurbineRepairman () {
-        const self = this.prosumer;
         tools.sleep(2 * this.timeMultiplier).then(() => {
-            self.turbineStatus = 'REPAIRMAN ON THE WAY...';
+            this.turbineStatus = 'REPAIRMAN ON THE WAY...';
         });
-        tools.sleep(this.timeMultiplier).then(() => {
-            self.turbineStatus = 'REPAIRING...';
+        tools.sleep(3 * this.timeMultiplier).then(() => {
+            this.turbineStatus = 'REPAIRING...';
         });
-        tools.sleep(2 * this.timeMultiplier).then(() => {
-            self.turbineWorking = true;
-            self.turbineStatus = 'WORKING!';
+        tools.sleep(5 * this.timeMultiplier).then(() => {
+            this.turbineWorking = true;
+            this.turbineStatus = 'WORKING!';
         });
     }
 
@@ -199,10 +238,11 @@ class ProsumerSim {
 
     /**
      * Sells the chosen amount of energy to the connected market.
+     * If prosumer is blocked they will not be allowed to sell.
      * @param {*} energy Amount to sell.
      */
     sellToMarket (energy) {
-        if (energy > 0) {
+        if (energy > 0 && !this.blocked) {
             this.market.sell(energy);
         } else if (energy < 0 || energy == null) {
             Logger.error('When selling to market in prosumer [' + this.prosumer.name + '] energy was negative!');
@@ -227,9 +267,11 @@ class ProsumerSim {
             useBatteryRatio: self.useBatteryRatio,
             bought: self.bought,
             blackout: self.blackout,
-            turbineStatus: self.turbineStatus,
-            turbineWorking: self.turbineWorking,
-            turbineBreakPercent: self.turbineBreakagePercent
+            turbineStatus: this.turbineStatus,
+            turbineWorking: this.turbineWorking,
+            turbineBreakPercent: self.turbineBreakagePercent,
+            blocked: this.blocked,
+            blockTimer: this.blockTimer
         });
 
         self.save((err) => {
@@ -245,7 +287,10 @@ class ProsumerSim {
                 '\n Price per Wh is: ' + this.market.market.price + ' SEK' +
                 '\n Battery: ' + self.currBatteryCap + ' Wh' +
                 '\n Blackout: ' + self.blackout +
-                '\n Turbine status: ' + self.turbineStatus
+                '\n Turbine status: ' + this.turbineStatus +
+                '\n Fill battery ratio: ' + self.fillBatteryRatio +
+                '\n Use battery ratio: ' + self.useBatteryRatio +
+                '\n Blocked from market: ' + this.blocked
                 )
             }
         });
