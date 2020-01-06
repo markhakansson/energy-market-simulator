@@ -31,3 +31,8 @@
 | 2019-12-22 | 4 | Get the simulator to only use database values, and catch errors in simulator |
 | 2019-12-29 | 5 | Update API schemas to support new auth methods. Start working on getting the market simulator to support manager interaction |
 | 2020-01-01 | 5 | Work on simulator generating recommendations for the manager. Generation of production complete. |
+| 2020-01-02 | 4 | Clean up code in simulator. Market sim uses demand to set price. |
+| 2020-01-03 | 5 | Update market API, fix bugs where values did not save to DB. |
+| 2020-01-04 | 4 | Update market db model and sim to support manually set values. |
+| 2020-01-05 | 3 | Fix bugs where simulators would not save correct values to DB |
+| 2020-01-06 | 8 | Finish simulator so it supports all basic functionalities. |
