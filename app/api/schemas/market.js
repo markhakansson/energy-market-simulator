@@ -5,7 +5,8 @@ const graphqlIsoDate = require('graphql-iso-date');
 const {
     GraphQLObjectType, GraphQLString,
     GraphQLID, GraphQLFloat,
-    GraphQLList, GraphQLNonNull
+    GraphQLList, GraphQLNonNull,
+    GraphQLBoolean
 } = graphql;
 
 const {
@@ -18,12 +19,20 @@ const MarketType = new GraphQLObjectType({
         id: { type: GraphQLID },
         name: { type: GraphQLString },
         timestamp: { type: GraphQLDateTime },
-        price: { type: GraphQLFloat },
-        battery: { type: GraphQLFloat },
-        consumption: { type: GraphQLFloat },
         demand: { type: GraphQLFloat },
+        status: { type: GraphQLString },
+        startUp: { type: GraphQLBoolean },
+        price: { type: GraphQLFloat },
+        production: { type: GraphQLFloat },
+        consumption: { type: GraphQLFloat },
         currBatteryCap: { type: GraphQLFloat },
-        maxBatteryCap: { type: GraphQLFloat }
+        maxBatteryCap: { type: GraphQLFloat },
+        fillBatteryRatio: { type: GraphQLFloat },
+        autopilot: { type: GraphQLBoolean },
+        recommendedPrice: { type: GraphQLFloat },
+        recommendedProduction: { type: GraphQLFloat },
+        manualProduction: { type: GraphQLFloat },
+        manualPrice: { type: GraphQLFloat }
     })
 });
 
@@ -31,13 +40,17 @@ const MarketQueries = ({
     market: {
         type: MarketType,
         args: { name: { type: GraphQLString } },
-        resolve (parent, args) {
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+
             return Market.findOne({ name: args.name }).sort({ timestamp: -1 });
         }
     },
     markets: {
         type: new GraphQLList(MarketType),
-        resolve (parent, args) {
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+
             return Market.find({});
         }
     }
@@ -51,45 +64,232 @@ const MarketMutations = {
             price: { type: new GraphQLNonNull(GraphQLFloat) },
             maxBatteryCap: { type: new GraphQLNonNull(GraphQLFloat) }
         },
-        resolve (parent, args) {
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
             const market = new Market({
                 name: args.name,
-                price: args.price,
-                battery: args.battery,
-                consumption: 0,
+                timestamp: Date.now(),
                 demand: 0,
+                status: 'stopped!',
+                startUp: true,
+                price: args.price,
+                production: 10000,
+                consumption: 1000,
+                currBatteryCap: 0,
                 maxBatteryCap: args.maxBatteryCap,
-                currBatteryCap: 0
+                fillBatteryRatio: 0.0,
+                autopilot: true,
+                recommendedPrice: 0,
+                recommendedProduction: 0,
+                manualProduction: 0,
+                manualPrice: 0
             });
             return market.save();
         }
     },
-    updatePrice: {
-        type: MarketType,
+    setMarketProduction: {
+        type: GraphQLBoolean,
         args: {
-            name: { type: new GraphQLNonNull(GraphQLString) },
-            price: { type: new GraphQLNonNull(GraphQLString) }
+            production: { type: new GraphQLNonNull(GraphQLFloat) }
         },
-        resolve (parent, args) {
-            const filter = { name: args.name };
-            const data = Market.findOne(filter).sort({ timestamp: -1 }).exec();
-            data.then(
-                function (doc) {
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
+            const data = Market.findOne({ name: req.session.user }).sort({ timestamp: -1 }).exec();
+            return data.then(
+                doc => {
                     const market = new Market({
                         name: doc.name,
-                        price: args.price,
-                        battery: doc.battery,
-                        consumption: doc.consumption,
+                        timestamp: Date.now(),
                         demand: doc.demand,
+                        status: doc.status,
+                        startUp: doc.startUp,
+                        price: doc.price,
+                        production: doc.production,
+                        consumption: doc.consumption,
                         currBatteryCap: doc.currBatteryCap,
-                        maxBatteryCap: doc.maxBatteryCap
+                        maxBatteryCap: doc.maxBatteryCap,
+                        fillBatteryRatio: doc.fillBatteryRatio,
+                        autopilot: doc.autopilot,
+                        recommendedPrice: doc.recommendedPrice,
+                        recommendedProduction: doc.recommendedProduction,
+                        manualProduction: args.production,
+                        manualPrice: doc.manualPrice
                     });
                     market.save();
+                    return true;
                 },
-                function (err) {
+                err => {
                     console.error(err);
+                    return false;
+                }
+            )
+        }
+    },
+    setMarketPrice: {
+        type: GraphQLBoolean,
+        args: {
+            price: { type: new GraphQLNonNull(GraphQLFloat) }
+        },
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
+            const filter = { name: req.session.user };
+            const data = Market.findOne(filter).sort({ timestamp: -1 }).exec();
+            return data.then(
+                doc => {
+                    const market = new Market({
+                        name: doc.name,
+                        timestamp: Date.now(),
+                        demand: doc.demand,
+                        status: doc.status,
+                        startUp: doc.startUp,
+                        price: doc.price,
+                        production: doc.production,
+                        consumption: doc.consumption,
+                        currBatteryCap: doc.currBatteryCap,
+                        maxBatteryCap: doc.maxBatteryCap,
+                        fillBatteryRatio: doc.fillBatteryRatio,
+                        autopilot: doc.autopilot,
+                        recommendedPrice: doc.recommendedPrice,
+                        recommendedProduction: doc.recommendedProduction,
+                        manualProduction: doc.manualProduction,
+                        manualPrice: args.price
+                    });
+                    market.save();
+                    return true;
+                },
+                err => {
+                    console.error(err);
+                    return false;
                 }
             );
+        }
+    },
+    setMarketFillBatteryRatio: {
+        type: GraphQLBoolean,
+        args: {
+            fillBatteryRatio: { type: new GraphQLNonNull(GraphQLFloat) }
+        },
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
+            const data = Market.findOne({ name: req.session.user }).sort({ timestamp: -1 }).exec();
+            return data.then(
+                doc => {
+                    const market = new Market({
+                        name: doc.name,
+                        timestamp: Date.now(),
+                        demand: doc.demand,
+                        status: doc.status,
+                        startUp: doc.startUp,
+                        price: doc.price,
+                        production: doc.production,
+                        consumption: doc.consumption,
+                        currBatteryCap: doc.currBatteryCap,
+                        maxBatteryCap: doc.maxBatteryCap,
+                        fillBatteryRatio: args.fillBatteryRatio,
+                        autopilot: doc.autopilot,
+                        recommendedPrice: doc.recommendedPrice,
+                        recommendedProduction: doc.recommendedProduction,
+                        manualProduction: doc.manualProduction,
+                        manualPrice: doc.manualPrice
+                    });
+                    market.save();
+                    return true;
+                },
+                err => {
+                    console.error(err);
+                    return false;
+                }
+            )
+        }
+
+    },
+    setPowerPlantStatus: {
+        type: GraphQLBoolean,
+        args: {
+            enable: { type: new GraphQLNonNull(GraphQLBoolean) }
+        },
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
+            const data = Market.findOne({ name: req.session.user }).sort({ timestamp: -1 }).exec();
+            return data.then(
+                doc => {
+                    const market = new Market({
+                        name: doc.name,
+                        timestamp: Date.now(),
+                        demand: doc.demand,
+                        status: doc.startUp,
+                        startUp: args.enable,
+                        price: doc.price,
+                        production: doc.production,
+                        consumption: doc.consumption,
+                        currBatteryCap: doc.currBatteryCap,
+                        maxBatteryCap: doc.maxBatteryCap,
+                        fillBatteryRatio: doc.fillBatteryRatio,
+                        autopilot: doc.autopilot,
+                        recommendedPrice: doc.recommendedPrice,
+                        recommendedProduction: doc.recommendedProduction,
+                        manualProduction: doc.manualProduction,
+                        manualPrice: doc.manualPrice
+                    });
+                    market.save();
+                    return true;
+                },
+                err => {
+                    console.error(err);
+                    return false;
+                }
+            )
+        }
+    },
+    useAutopilot: {
+        type: GraphQLBoolean,
+        description: 'Set the autopilot mode of market simulator',
+        args: {
+            enable: { type: new GraphQLNonNull(GraphQLBoolean) }
+        },
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
+            const data = Market.findOne({ name: req.session.user }).sort({ timestamp: -1 }).exec();
+            return data.then(
+                doc => {
+                    const market = new Market({
+                        name: doc.name,
+                        timestamp: Date.now(),
+                        demand: doc.demand,
+                        status: doc.status,
+                        startUp: doc.startUp,
+                        price: doc.price,
+                        production: doc.production,
+                        consumption: doc.consumption,
+                        currBatteryCap: doc.currBatteryCap,
+                        maxBatteryCap: doc.maxBatteryCap,
+                        fillBatteryRatio: doc.fillBatteryRatio,
+                        autopilot: args.enable,
+                        recommendedPrice: doc.recommendedPrice,
+                        recommendedProduction: doc.recommendedProduction,
+                        manualProduction: doc.manualProduction,
+                        manualPrice: doc.manualPrice
+                    });
+                    market.save();
+                    return true;
+                },
+                err => {
+                    console.error(err);
+                    return false;
+                }
+            )
         }
     }
 };

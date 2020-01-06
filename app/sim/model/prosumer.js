@@ -6,22 +6,41 @@ const Logger = require('../../config/logger');
 
 class ProsumerSim {
     constructor (name, market, timeMultiplier) {
-        this.prosumer = { name: name };
-
+        // this.prosumer = { name: name };
+        this.prosumer = new Prosumer({
+            name: name,
+            market: market.market.name,
+            timestamp: Date.now(),
+            consumption: 0,
+            production: 0,
+            currBatteryCap: 0,
+            maxBatteryCap: 0,
+            fillBatteryRatio: 0.0,
+            useBatteryRatio: 0.0,
+            bought: 0.0,
+            blackout: false,
+            turbineStatus: 'WORKING',
+            turbineWorking: true,
+            turbineBreakagePercent: 0.2
+        });
         this.market = market;
 
         this.timeMultiplier = timeMultiplier;
     }
 
     /**
-     * Gets the current data for this model in the database.
+     * Gets the current data for this model in the database. If no data is found,
+     * it tries to create a new entry instead.
      */
     async fetchData () {
         const self = this;
         await Prosumer.findOne({ name: this.prosumer.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
             if (err) {
                 Logger.error('Matching prosumer with name [' + self.prosumer.name + '] was not found in the database!');
-                throw new Error('Matching prosumer with name [' + self.prosumer.name + '] was not found in the database!');
+                self.prosumer.save().catch((err) => {
+                    throw err;
+                });
+                // throw new Error('Matching prosumer with name [' + self.prosumer.name + '] was not found in the database!');
             } else {
                 self.prosumer = doc;
             }
@@ -245,7 +264,9 @@ class ProsumerSim {
                 '\n Price per Wh is: ' + this.market.market.price + ' SEK' +
                 '\n Battery: ' + self.currBatteryCap + ' Wh' +
                 '\n Blackout: ' + self.blackout +
-                '\n Turbine status: ' + self.turbineStatus
+                '\n Turbine status: ' + self.turbineStatus +
+                '\n Fill battery ratio: ' + self.fillBatteryRatio +
+                '\n Use battery ratio: ' + self.useBatteryRatio
                 )
             }
         });

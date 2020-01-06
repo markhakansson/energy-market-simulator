@@ -50,7 +50,10 @@ const ProsumerMutations = {
             market: { type: new GraphQLNonNull(GraphQLString) },
             maxBatteryCap: { type: new GraphQLNonNull(GraphQLInt) }
         },
-        resolve (parent, args) {
+        resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.manager) return 'Not authorized!';
+
             const prosumer = new Prosumer({
                 name: args.name,
                 market: args.market,
@@ -75,7 +78,9 @@ const ProsumerMutations = {
             fillBatteryRatio: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            const filter = { name: req.session.username };
+            if (!req.session.user) return 'Not authenticated!';
+
+            const filter = { name: req.session.user };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
             return data.then(
                 doc => {
@@ -110,7 +115,9 @@ const ProsumerMutations = {
             useBatteryRatio: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            const filter = { name: req.session.username };
+            if (!req.session.user) return 'Not authenticated!';
+
+            const filter = { name: req.session.user };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
             return data.then(
                 doc => {
@@ -145,7 +152,9 @@ const ProsumerMutations = {
             production: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            const filter = { name: req.session.username };
+            if (!req.session.user) return 'Not authenticated!';
+
+            const filter = { name: req.session.user };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
             return data.then(
                 doc => {
@@ -180,7 +189,9 @@ const ProsumerMutations = {
             consumption: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            const filter = { name: req.session.username };
+            if (!req.session.user) return 'Not authenticated!';
+
+            const filter = { name: req.session.user };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
             return data.then(
                 doc => {
