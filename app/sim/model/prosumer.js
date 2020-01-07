@@ -41,7 +41,7 @@ class ProsumerSim {
     async fetchData () {
         const self = this;
         await Prosumer.findOne({ name: this.prosumer.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
-            if (err) {
+            if (doc.market === 'none' || err) {
                 Logger.error('Matching prosumer with name [' + self.prosumer.name + '] was not found in the database!');
                 self.prosumer.save().catch((err) => {
                     throw err;
