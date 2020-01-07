@@ -26,9 +26,10 @@ $(document).ready(function () {
         });
     });
     // mutation { updatePassword(oldPassword: "test", newPassword: "f") }
+    updateInformation();
+
     setInterval(updateInformation, 5000);
     // setInterval(updateInformation, 100);
-    updateInformation();
     
 });
 

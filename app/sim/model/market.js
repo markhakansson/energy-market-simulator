@@ -46,17 +46,26 @@ class MarketSim {
      */
     async fetchData () {
         const self = this;
-        await Market.findOne({ name: self.market.name }, null, { sort: { timestamp: -1 } }, async function (err, doc) {
-            if (err) {
-                Logger.warn('Matching market with name [' + self.market.name + '] was not found in the database!');
-                await self.market.save().catch((err) => {
-                    throw err;
-                });
-            } else {
+        await Market.findOne({ name: self.market.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
+            // if (err) {
+            //     Logger.warn('Matching market with name [' + self.market.name + '] was not found in the database!');
+            //     self.market.save().catch((err) => {
+            //         throw err;
+            //     });
+            // } else {
+            //     console.log(doc);
+            //     self.market = doc;
+            // }
+            if (err) throw err;
+            if(doc) {
                 self.market = doc;
+            } else {
+                self.market.save();
             }
         });
-
+        this.marketOutput = 0;
+        this.status = self.market.status;
+        this.plantInOperation = self.market.plantInOperation;
         this.marketOutput = 0;
         this.status = self.market.status;
     }
@@ -217,6 +226,7 @@ class MarketSim {
                 this.plantInOperation = true;
                 this.startupInitiated = false;
             }, 2 * this.timeMultiplier);
+
         }
     }
 
@@ -232,7 +242,6 @@ class MarketSim {
         } else {
             self.recommendedProduction = 0;
         }
-
         // Recommended price is previous price plus 1 percent of delta demand
         const recommendedPrice = self.price + 0.01 * (this.prevDemand - this.demand);
         if (recommendedPrice > 0) {

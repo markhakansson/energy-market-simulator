@@ -6,6 +6,7 @@ const Logger = require('../../config/logger');
 
 class ProsumerSim {
     constructor (name, market, timeMultiplier) {
+
         this.prosumer = new Prosumer({
             name: name,
             market: market.market.name,
