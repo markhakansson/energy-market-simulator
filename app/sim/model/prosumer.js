@@ -6,7 +6,6 @@ const Logger = require('../../config/logger');
 
 class ProsumerSim {
     constructor (name, market, timeMultiplier) {
-
         this.prosumer = new Prosumer({
             name: name,
             market: market.market.name,
@@ -91,9 +90,7 @@ class ProsumerSim {
                 'When generating production in prosumer [' + self.name +
                 '], expected positive Number. Received: ' + windSpeed + '.'
             );
-        }
-
-        if (this.randomizeTurbineBreaking()) {
+        } else if (this.randomizeTurbineBreaking()) {
             self.production = windSpeed * 250;
             const prodDiff = self.production - self.consumption;
 
@@ -151,7 +148,7 @@ class ProsumerSim {
         });
         tools.sleep(5 * this.timeMultiplier).then(() => {
             this.turbineWorking = true;
-            this.turbineStatus = 'WORKING!';
+            this.turbineStatus = 'WORKING';
         });
     }
 
@@ -212,7 +209,7 @@ class ProsumerSim {
         const boughtEnergy = this.market.buy(energy);
 
         if (boughtEnergy == null) {
-            Logger.warn(
+            Logger.error(
                 'When buying energy from market in prosumer [' + self.name +
                 '], expected Number but received "null".'
             );
