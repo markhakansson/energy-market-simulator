@@ -9,7 +9,7 @@ class MarketSim {
             name: name,
             timestamp: Date.now(),
             demand: 0, // the sum of all households' demand for electricity
-            status: 'built',
+            status: 'startup!',
             startUp: true,
             price: price,
             production: production,
@@ -25,7 +25,7 @@ class MarketSim {
             manualPrice: 0
         });
 
-        // 'Global' simulation variables
+        // Public simulation variables
         // Useful for things that will be saved in a future tick
         this.prevDemand = 0;
         this.marketOutput = 0;
@@ -36,7 +36,7 @@ class MarketSim {
         this.production = 0;
         this.consumption = 0;
         this.price = 0;
-        this.status = 'stopped';
+        this.status = 'startup';
         this.plantInOperation = true;
     }
 
@@ -46,7 +46,6 @@ class MarketSim {
      */
     async fetchData () {
         const self = this;
-
         await Market.findOne({ name: self.market.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
             // if (err) {
             //     Logger.warn('Matching market with name [' + self.market.name + '] was not found in the database!');
@@ -67,6 +66,8 @@ class MarketSim {
         this.marketOutput = 0;
         this.status = self.market.status;
         this.plantInOperation = self.market.plantInOperation;
+        this.marketOutput = 0;
+        this.status = self.market.status;
     }
 
     /**
@@ -92,13 +93,13 @@ class MarketSim {
         }, 1.05 * this.timeMultiplier);
 
         // Use market output if possible, else try to use the battery
-        let usableEnergy = self.marketOutput - demand;
+        let usableEnergy = this.marketOutput - demand;
         if (usableEnergy >= 0) {
-            self.marketOutput -= demand;
+            this.marketOutput -= demand;
             return demand;
         } else {
-            usableEnergy = self.marketOutput + this.useBattery(demand - self.marketOutput);
-            self.marketOutput = 0;
+            usableEnergy = this.marketOutput + this.useBattery(demand - this.marketOutput);
+            this.marketOutput = 0;
             return usableEnergy;
         }
     }
@@ -126,6 +127,8 @@ class MarketSim {
         setTimeout(() => {
             this.demand += demand;
         }, 1.05 * this.timeMultiplier);
+
+        return 0;
     }
 
     /**
@@ -223,6 +226,7 @@ class MarketSim {
                 this.plantInOperation = true;
                 this.startupInitiated = false;
             }, 2 * this.timeMultiplier);
+
         }
     }
 
@@ -234,11 +238,10 @@ class MarketSim {
         const self = this.market;
 
         if (this.demand > 0) {
-            self.recommendedProduction = 2.0 * this.demand;
+            self.recommendedProduction = 5.0 * this.demand;
         } else {
             self.recommendedProduction = 0;
         }
-
         // Recommended price is previous price plus 1 percent of delta demand
         const recommendedPrice = self.price + 0.01 * (this.prevDemand - this.demand);
         if (recommendedPrice > 0) {
