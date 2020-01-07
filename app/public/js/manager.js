@@ -13,6 +13,26 @@ $(document).ready(function () {
         success: function (res) {
             res.data.users.forEach(obj => {
                 $("#users").append("<li><a href='/prosumer?username=" + obj.username + "'>" + obj.username + "</a></li>");
+                $("#users").append("<button type=button id=" + obj.username + " > Block </button>");
+                $("#users").on("click", "#" + obj.username, function() {
+                    $.ajax({
+                        url: 'http://localhost:4000/graphql',
+                        contentType: 'application/json',
+                        type: 'POST',
+                        data: JSON.stringify({
+                            query: `mutation {
+                                blockProsumer(prosumerName: "${obj.username}", timeout: ${$("#timeBlock").val()})
+                            }`
+                        }),
+                        success: function(res) {
+                            $("#blockInfo").html(res.data.blockProsumer);
+                        },
+                        error: function(e) {
+                            $("#blockInfo").html("Error: " + e + "\n Did you provide digits?");
+                        }
+                    })                    
+
+                });
             
             });
         }
@@ -182,7 +202,7 @@ $(document).ready(function () {
   
     updateInformation();
 
-    setInterval(updateInformation, 5000);
+    // setInterval(updateInformation, 5000);
     
 });
 
