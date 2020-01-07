@@ -1,3 +1,5 @@
+const cookieParser = require("cookie-parser");
+
 $(document).ready(function () {
     $('#useBatteryRatioSlider').click(function () {
         const value = $('#useBatteryRatioValue').text();
@@ -25,15 +27,95 @@ $(document).ready(function () {
             })
         });
     });
+    $('#useBatteryRatioSlider').change(function () {
+        const value = this.value;
+        $.ajax({
+            url: 'http://localhost:4000/graphql',
+            contentType: 'application/json',
+            type: 'POST',
+            data: JSON.stringify({
+                query: `mutation {
+                    updateUseBatteryRatio(useBatteryRatio: ${value / 100})
+                }`
+            }),
+            success: function() {
+                $('#useBatteryRatioValue').html(value);
+
+            }
+        });
+    });
+    $('#setUseBatteryRatioValue').click(function () {
+        const value = $('#useBatteryRatioText').val();
+        $.ajax({
+            url: 'http://localhost:4000/graphql',
+            contentType: 'application/json',
+            type: 'POST',
+            data: JSON.stringify({
+                query: `mutation {
+                    updateUseBatteryRatio(useBatteryRatio: ${value / 100})
+                }`
+            }),
+            success: function() {
+                $('#useBatteryRatioValue').html(value);
+                $('#useBatteryRatioSlider').val(value);
+
+            },
+            error: function(e) {
+                alert("Bad request, did you input digits?");
+            }
+        });
+
+    });
+    $('#fillBatteryRatioSlider').change(function () {
+        const value = this.value;
+        $.ajax({
+            url: 'http://localhost:4000/graphql',
+            contentType: 'application/json',
+            type: 'POST',
+            data: JSON.stringify({
+                query: `mutation {
+                    updateFillBatteryRatio(fillBatteryRatio: ${value / 100})
+                }`
+            }),
+            success: function() {
+                $('#fillBatteryRatioValue').html(value);
+
+            }
+        });
+    });
+    $('#setFillBatteryRatio').click(function () {
+        const value = $('#fillBatteryRatioText').val();
+        $.ajax({
+            url: 'http://localhost:4000/graphql',
+            contentType: 'application/json',
+            type: 'POST',
+            data: JSON.stringify({
+                query: `mutation {
+                    updateFillBatteryRatio(fillBatteryRatio: ${value / 100})
+                }`
+            }),
+            success: function() {
+                $('#fillBatteryRatioValue').html(value);
+                $('#fillBatteryRatioSlider').val(value);
+
+            },
+            error: function(e) {
+                console.log(e);
+                alert("Bad request, did you input digits?");
+            }
+        });
+
+    });
+ 
     // mutation { updatePassword(oldPassword: "test", newPassword: "f") }
     updateInformation();
 
-    setInterval(updateInformation, 5000);
+    // setInterval(updateInformation, 5000);
     // setInterval(updateInformation, 100);
     
 });
 
-function updateInformation (user) {
+function updateInformation () {
     $.ajax({
         url: 'http://localhost:4000/graphql',
         contentType: 'application/json',
@@ -44,6 +126,7 @@ function updateInformation (user) {
             }`
         }),
         success: function (result) {
+            console.log(result.data);
             const prosumer = result.data.prosumer;
             const market = String(prosumer.market);
             $('#timestamp').html(prosumer.timestamp);
@@ -105,9 +188,10 @@ function updateWindspeed (location) {
 }
 
 function deleteUser() {
-    let password = prompt("Please enter your password");
+    const password = $('#pass').val();
     if(password == null || password == "") {
-        $('#deleteUserMsg').html("Please provide your password");
+        $('#deleteUserMsg').html("Please provide your password!");
+        return;
     }
     $.ajax({
         url: 'http://localhost:4000/graphql',

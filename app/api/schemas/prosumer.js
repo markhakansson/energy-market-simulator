@@ -35,22 +35,11 @@ const ProsumerType = new GraphQLObjectType({
 });
 
 const ProsumerQueries = {
-    adminProsumer: {
-        type: ProsumerType,
-        args: { name: { type: GraphQLString } },
-        resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
-            if (!req.session.manager) return 'Not authorized!';
-
-            return Prosumer.findOne({ name: args.name });
-        }
-    },
     prosumer: {
         type: ProsumerType,
         resolve (parent, args, req) {
             if (!req.session.user) return 'Not authenticated!';
-
-            return Prosumer.findOne({ name: req.user.user }).sort({ timestamp: -1 });
+            return Prosumer.findOne({ name: req.session.user }).sort({ timestamp: -1 });
         }
 
     }
@@ -89,6 +78,7 @@ const ProsumerMutations = {
         }
     },
     blockProsumer: {
+        type: ProsumerType,
         args: {
             prosumerName: { type: new GraphQLNonNull(GraphQLString) },
             timeout: { type: new GraphQLNonNull(GraphQLFloat) }

@@ -47,20 +47,16 @@ class MarketSim {
     async fetchData () {
         const self = this;
         await Market.findOne({ name: self.market.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
-            // if (err) {
-            //     Logger.warn('Matching market with name [' + self.market.name + '] was not found in the database!');
-            //     self.market.save().catch((err) => {
-            //         throw err;
-            //     });
-            // } else {
-            //     console.log(doc);
-            //     self.market = doc;
-            // }
             if (err) throw err;
             if(doc) {
                 self.market = doc;
             } else {
-                self.market.save();
+                self.market.save((err) => {
+                    if (err) {
+                        Logger.error('Could not save market to database: ' + err);
+                        throw err;
+                    }
+                });
             }
         });
         this.marketOutput = 0;
@@ -276,7 +272,7 @@ class MarketSim {
             manualProduction: self.manualProduction,
             manualPrice: self.manualPrice
         });
-
+        console.log(this.demand);
         self.save((err) => {
             if (err) {
                 Logger.error('Could not save market to database: ' + err);

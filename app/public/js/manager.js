@@ -11,7 +11,6 @@ $(document).ready(function () {
             }`
         }),
         success: function (res) {
-            
             res.data.users.forEach(obj => {
                 $("#users").append("<li><a href='/prosumer?username=" + obj.username + "'>" + obj.username + "</a></li>");
             
@@ -59,7 +58,6 @@ $(document).ready(function () {
                 }`
             }),
             success: function() {
-                console.log("Production updated to " + value);
                 $('#productionValue').html(value);
                 $('#productionSlider').val(value);
             },
@@ -81,7 +79,6 @@ $(document).ready(function () {
                 }`
             }),
             success: function(e) {
-                console.log("BufferRatio updated to " + value + "%");
                 $('#bufferRatioValue').html(value);
 
             }
@@ -99,7 +96,6 @@ $(document).ready(function () {
                 }`
             }),
             success: function() {
-                console.log("BufferRatio updated to " + value + "%");
                 $('#bufferRatioValue').html(value);
                 $('#bufferRatioSlider').val(value);
             },
@@ -121,7 +117,6 @@ $(document).ready(function () {
                 }`
             }),
             success: function() {
-                console.log("Price updated to " + value);
                 $('#priceRatioValue').html(value);
 
             }
@@ -139,7 +134,6 @@ $(document).ready(function () {
                 }`
             }),
             success: function() {
-                console.log("Price updated to " + value);
                 $('#priceRatioValue').html(value);
                 $('#marketPriceSlider').val(value);
             },
@@ -161,7 +155,6 @@ $(document).ready(function () {
                     }`
                 }),
                 success: function() {
-                    console.log("autopilot turned off");
                     $(this).prop('checked', false);
     
                 }
@@ -178,7 +171,6 @@ $(document).ready(function () {
                     }`
                 }),
                 success: function() {
-                    console.log("autopilot turned on");
                     $(this).prop('checked', true);
     
                 }
@@ -190,7 +182,7 @@ $(document).ready(function () {
   
     updateInformation();
 
-    // setInterval(updateInformation, 5000);
+    setInterval(updateInformation, 5000);
     
 });
 
