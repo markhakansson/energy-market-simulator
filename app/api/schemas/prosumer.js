@@ -89,6 +89,7 @@ const ProsumerMutations = {
         }
     },
     blockProsumer: {
+        type: GraphQLBoolean,
         args: {
             prosumerName: { type: new GraphQLNonNull(GraphQLString) },
             timeout: { type: new GraphQLNonNull(GraphQLFloat) }
