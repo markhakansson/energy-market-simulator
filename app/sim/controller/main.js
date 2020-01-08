@@ -114,6 +114,7 @@ function simLoop () {
             await prosumer.fetchData();
             prosumer.generateProduction(WEATHER.weather.wind_speed);
             prosumer.generateConsumption();
+            prosumer.handleOverproduction();
         }
 
         for (const [_, consumer] of consumerMap) {
