@@ -54,8 +54,7 @@ $(document).ready(function () {
                     setMarketProduction(production: ${value})
                 }`
             }),
-            success: function () {
-                console.log('Production updated to ' + value);
+            success: function() {
                 $('#productionValue').html(value);
                 $('#productionSlider').val(value);
             },
@@ -75,8 +74,7 @@ $(document).ready(function () {
                     setMarketFillBatteryRatio(fillBatteryRatio: ${value / 100})
                 }`
             }),
-            success: function (e) {
-                console.log('BufferRatio updated to ' + value + '%');
+            success: function(e) {
                 $('#bufferRatioValue').html(value);
             }
         });
@@ -92,8 +90,7 @@ $(document).ready(function () {
                     setMarketFillBatteryRatio(fillBatteryRatio: ${value / 100})
                 }`
             }),
-            success: function () {
-                console.log('BufferRatio updated to ' + value + '%');
+            success: function() {
                 $('#bufferRatioValue').html(value);
                 $('#bufferRatioSlider').val(value);
             },
@@ -113,8 +110,7 @@ $(document).ready(function () {
                     setMarketPrice(price: ${value})
                 }`
             }),
-            success: function () {
-                console.log('Price updated to ' + value);
+            success: function() {
                 $('#priceRatioValue').html(value);
             }
         });
@@ -130,8 +126,7 @@ $(document).ready(function () {
                     setMarketPrice(price: ${value})
                 }`
             }),
-            success: function () {
-                console.log('Price updated to ' + value);
+            success: function() {
                 $('#priceRatioValue').html(value);
                 $('#marketPriceSlider').val(value);
             },
@@ -151,8 +146,7 @@ $(document).ready(function () {
                         useAutopilot(enable: ${false})
                     }`
                 }),
-                success: function () {
-                    console.log('autopilot turned off');
+                success: function() {
                     $(this).prop('checked', false);
                 }
 
@@ -167,8 +161,7 @@ $(document).ready(function () {
                         useAutopilot(enable: ${true})
                     }`
                 }),
-                success: function () {
-                    console.log('autopilot turned on');
+                success: function() {
                     $(this).prop('checked', true);
                 }
 
@@ -178,7 +171,8 @@ $(document).ready(function () {
 
     updateInformation();
 
-    // setInterval(updateInformation, 5000);
+    setInterval(updateInformation, 5000);
+    
 });
 
 function updateInformation () {

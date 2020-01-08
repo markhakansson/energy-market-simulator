@@ -15,14 +15,11 @@ const Logger = require('./config/logger');
 // Loads the '.env' file in root to process.env.
 require('dotenv').config();
 
-require('./sim/controller/main').main();
+// require('./sim/controller/main').main();
 
 mongoose.connect(process.env.DB_HOST, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connection.on('error', console.log.bind(console, 'CONNECTION ERROR!'));
 mongoose.connection.on('disconnected', console.log.bind(console, 'CONNECTION DISCONNECTED!'))
-// mongoose.connection.once('open', () => {
-//     console.log('connected to database');
-// });
 
 /* const user = new User({
     username: 'Lulea',
@@ -81,16 +78,6 @@ app.use((req, res, next) => {
     }
     next();
 });
-
-// const exit = function() {
-//     mongoose.connection.close(function () {
-//       console.log('database connection closed');
-//       process.exit(0);
-//     });
-//   }
-
-// // Make sure to close the connection when node is closed.
-// process.on('SIGINT', exit).on('SIGTERM', exit);
 
 app.use('/', routes);
 

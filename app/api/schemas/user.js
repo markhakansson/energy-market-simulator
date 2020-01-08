@@ -153,6 +153,7 @@ const UserMutations = {
             }
             if (user.comparePassword(args.password)) {
                 user.deleteOne();
+                Prosumer.remove({ name: req.session.user }).exec();
                 return true;
             }
             return false;
