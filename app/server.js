@@ -15,7 +15,7 @@ const Logger = require('./config/logger');
 // Loads the '.env' file in root to process.env.
 require('dotenv').config();
 
-// require('./sim/controller/main').main();
+require('./sim/controller/main').main();
 
 mongoose.connect(process.env.DB_HOST, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connection.on('error', console.log.bind(console, 'CONNECTION ERROR!'));
