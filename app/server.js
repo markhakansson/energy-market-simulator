@@ -5,7 +5,12 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 const routes = require('./routes/index');
 const cookieParser = require('cookie-parser');
+
 const User = require('./db/model/user');
+const Market = require('./db/model/market');
+const Weather = require('./db/model/weather');
+
+const Logger = require('./config/logger');
 
 // Loads the '.env' file in root to process.env.
 require('dotenv').config();
@@ -19,12 +24,26 @@ mongoose.connection.on('disconnected', console.log.bind(console, 'CONNECTION DIS
 //     console.log('connected to database');
 // });
 
-// const user = new User({
-//     username: "1",
-//     password: "1",
-//     manager: true,
-// });
-// user.save();
+/* const user = new User({
+    username: 'Lulea',
+    password: 'Lulea',
+    manager: true
+});
+user.save();
+
+const market = new Market({
+    name: 'Lulea',
+    price: 2,
+    maxBatteryCap: 100000,
+    fillBatteryRatio: 0.5
+});
+market.save();
+
+const weather = new Weather({
+    name: 'Lulea',
+    market: 'Lulea'
+});
+weather.save(); */
 /**
  * Express
  */
@@ -33,13 +52,12 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.json({
     limit: '5mb', // Image size restriction
     extended: true
-    }
-));
+}));
+
 app.use(bodyParser.urlencoded({
     limit: '5mb',
     extended: true
-    }
-));
+}));
 
 app.use(express.static('public'));
 app.use(cookieParser());
@@ -47,11 +65,11 @@ app.use(
     session({
         secret: process.env.SESSION_SECRET,
         resave: false, // If true this will cause race cond in our case, "Typically, you'll want false." See express session doc
-        saveUninitialized: false, 
-                                    // Forces a session that is "uninitialized" to be saved to the store. 
-                                    // A session is uninitialized when it is new but not modified. 
-                                    // Choosing false is useful for implementing login sessions, reducing server storage usage,
-                                    //  or complying with laws that require permission before setting a cookie. 
+        saveUninitialized: false,
+        // Forces a session that is "uninitialized" to be saved to the store.
+        // A session is uninitialized when it is new but not modified.
+        // Choosing false is useful for implementing login sessions, reducing server storage usage,
+        //  or complying with laws that require permission before setting a cookie.
         cookie: { maxAge: false }
     })
 );
@@ -59,12 +77,12 @@ app.use(
 // This middleware will check if user's cookie is still saved in browser and user is not set, then automatically log the user out.
 app.use((req, res, next) => {
     if (req.cookies.user_sid && !req.session.user) {
-        res.clearCookie(process.env.SESSION_SECRET);        
+        res.clearCookie(process.env.SESSION_SECRET);
     }
     next();
 });
 
-// const exit = function() { 
+// const exit = function() {
 //     mongoose.connection.close(function () {
 //       console.log('database connection closed');
 //       process.exit(0);
@@ -77,4 +95,3 @@ app.use((req, res, next) => {
 app.use('/', routes);
 
 app.listen(4000, () => console.log('Express GraphQL Server Now Running On localhost:4000/graphql'));
-
