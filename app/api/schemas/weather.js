@@ -17,8 +17,8 @@ const WeatherType = new GraphQLObjectType({
         name: { type: GraphQLString },
         timestamp: { type: GraphQLDateTime },
         wind_speed: { type: GraphQLFloat },
-        wind_direction: { type: GraphQLString },
-        description: { type: GraphQLString }
+        temperature: { type: GraphQLFloat },
+        market: { type: GraphQLString }
     })
 });
 

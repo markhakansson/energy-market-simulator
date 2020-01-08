@@ -13,7 +13,6 @@ class ConsumerSim {
             consumption: 2000,
             bought: 0,
             blackout: false,
-            retrying: false,
             demand: 0
         });
 
@@ -124,7 +123,6 @@ class ConsumerSim {
             consumption: self.consumption,
             bought: self.bought,
             blackout: this.blackout,
-            retrying: this.retrying,
             demand: this.demand
         });
 

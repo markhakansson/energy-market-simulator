@@ -1,6 +1,7 @@
 const graphql = require('graphql');
 const Market = require('../../db/model/market');
 const graphqlIsoDate = require('graphql-iso-date');
+const errorMsg = require('./errors');
 
 const {
     GraphQLObjectType, GraphQLString,
@@ -41,9 +42,18 @@ const MarketQueries = ({
         type: MarketType,
         args: { name: { type: GraphQLString } },
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
-            if (!req.session.manager) return 'Not authorized!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
+
             return Market.findOne({ name: req.session.user }).sort({ timestamp: -1 });
+        }
+    },
+    markets: {
+        type: new GraphQLList(MarketType),
+        resolve (parent, args, req) {
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+
+            return Market.find({});
         }
     }
 })
@@ -57,8 +67,8 @@ const MarketMutations = {
             maxBatteryCap: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
-            if (!req.session.manager) return 'Not authorized!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
 
             const market = new Market({
                 name: args.name,
@@ -87,8 +97,8 @@ const MarketMutations = {
             production: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
-            if (!req.session.manager) return 'Not authorized!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
 
             const data = Market.findOne({ name: req.session.user }).sort({ timestamp: -1 }).exec();
             return data.then(
@@ -116,7 +126,7 @@ const MarketMutations = {
                 },
                 err => {
                     console.error(err);
-                    return false;
+                    throw new Error('Could not save document to database: ' + err);
                 }
             )
         }
@@ -127,8 +137,8 @@ const MarketMutations = {
             price: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
-            if (!req.session.manager) return 'Not authorized!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
 
             const filter = { name: req.session.user };
             const data = Market.findOne(filter).sort({ timestamp: -1 }).exec();
@@ -157,7 +167,7 @@ const MarketMutations = {
                 },
                 err => {
                     console.error(err);
-                    return false;
+                    throw new Error('Could not save document to database: ' + err);
                 }
             );
         }
@@ -168,8 +178,8 @@ const MarketMutations = {
             fillBatteryRatio: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
-            if (!req.session.manager) return 'Not authorized!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
 
             const data = Market.findOne({ name: req.session.user }).sort({ timestamp: -1 }).exec();
             return data.then(
@@ -197,7 +207,7 @@ const MarketMutations = {
                 },
                 err => {
                     console.error(err);
-                    return false;
+                    throw new Error('Could not save document to database: ' + err);
                 }
             )
         }
@@ -209,8 +219,8 @@ const MarketMutations = {
             enable: { type: new GraphQLNonNull(GraphQLBoolean) }
         },
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
-            if (!req.session.manager) return 'Not authorized!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
 
             const data = Market.findOne({ name: req.session.user }).sort({ timestamp: -1 }).exec();
             return data.then(
@@ -238,7 +248,7 @@ const MarketMutations = {
                 },
                 err => {
                     console.error(err);
-                    return false;
+                    throw new Error('Could not save document to database: ' + err);
                 }
             )
         }
@@ -250,8 +260,8 @@ const MarketMutations = {
             enable: { type: new GraphQLNonNull(GraphQLBoolean) }
         },
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
-            if (!req.session.manager) return 'Not authorized!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
 
             const data = Market.findOne({ name: req.session.user }).sort({ timestamp: -1 }).exec();
             return data.then(
@@ -279,7 +289,7 @@ const MarketMutations = {
                 },
                 err => {
                     console.error(err);
-                    return false;
+                    throw new Error('Could not save document to database: ' + err);
                 }
             )
         }

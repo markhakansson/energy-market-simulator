@@ -92,7 +92,8 @@ const UserMutations = {
                 await user.save();
 
                 const prosumer = new Prosumer({
-                    name: user.username
+                    name: user.username,
+                    market: 'none'
                 });
                 await prosumer.save();
                 await init.call();
