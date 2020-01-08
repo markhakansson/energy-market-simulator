@@ -11,10 +11,8 @@ $(document).ready(function () {
             }`
         }),
         success: function (res) {
-            
             res.data.users.forEach(obj => {
-                $("#users").append("<li><a href='/prosumer?username=" + obj.username + "'>" + obj.username + "</a></li>");
-            
+                $('#users').append("<li><a href='/prosumer?username=" + obj.username + "'>" + obj.username + '</a></li>');
             });
         }
     });
@@ -22,10 +20,9 @@ $(document).ready(function () {
         url: 'http://localhost:4000/online',
         contentType: 'application/json',
         type: 'GET',
-        success: function(res) {
+        success: function (res) {
             res.users.forEach(obj => {
-                $("#online").append("<li><a>" + obj +  "</a></li>");
-
+                $('#online').append('<li><a>' + obj + '</a></li>');
             });
         }
     });
@@ -40,10 +37,9 @@ $(document).ready(function () {
                     setMarketProduction(production: ${value})
                 }`
             }),
-            success: function() {
-                console.log("Production updated to " + value);
+            success: function () {
+                console.log('Production updated to ' + value);
                 $('#productionValue').html(value);
-
             }
         });
     });
@@ -59,15 +55,13 @@ $(document).ready(function () {
                 }`
             }),
             success: function() {
-                console.log("Production updated to " + value);
                 $('#productionValue').html(value);
                 $('#productionSlider').val(value);
             },
-            error: function(e) {
-                alert("Bad request, did you input digits?");
+            error: function (e) {
+                alert('Bad request, did you input digits?');
             }
         });
-
     });
     $('#bufferRatioSlider').change(function () {
         const value = this.value;
@@ -81,9 +75,7 @@ $(document).ready(function () {
                 }`
             }),
             success: function(e) {
-                console.log("BufferRatio updated to " + value + "%");
                 $('#bufferRatioValue').html(value);
-
             }
         });
     });
@@ -99,15 +91,13 @@ $(document).ready(function () {
                 }`
             }),
             success: function() {
-                console.log("BufferRatio updated to " + value + "%");
                 $('#bufferRatioValue').html(value);
                 $('#bufferRatioSlider').val(value);
             },
-            error: function(e) {
-                alert("Bad request, did you input digits?");
+            error: function (e) {
+                alert('Bad request, did you input digits?');
             }
         });
-
     });
     $('#marketPriceSlider').change(function () {
         const value = this.value;
@@ -121,9 +111,7 @@ $(document).ready(function () {
                 }`
             }),
             success: function() {
-                console.log("Price updated to " + value);
                 $('#priceRatioValue').html(value);
-
             }
         });
     });
@@ -139,18 +127,16 @@ $(document).ready(function () {
                 }`
             }),
             success: function() {
-                console.log("Price updated to " + value);
                 $('#priceRatioValue').html(value);
                 $('#marketPriceSlider').val(value);
             },
-            error: function(e) {
-                alert("Bad request, did you input digits?");
+            error: function (e) {
+                alert('Bad request, did you input digits?');
             }
         });
-
     });
-    $('#autopilot').change(function(e) {
-        if(!$(this).is(':checked')) {
+    $('#autopilot').change(function (e) {
+        if (!$(this).is(':checked')) {
             $.ajax({
                 url: 'http://localhost:4000/graphql',
                 contentType: 'application/json',
@@ -161,11 +147,9 @@ $(document).ready(function () {
                     }`
                 }),
                 success: function() {
-                    console.log("autopilot turned off");
                     $(this).prop('checked', false);
-    
                 }
-         
+
             });
         } else {
             $.ajax({
@@ -178,22 +162,18 @@ $(document).ready(function () {
                     }`
                 }),
                 success: function() {
-                    console.log("autopilot turned on");
                     $(this).prop('checked', true);
-    
                 }
-         
+
             });
         }
-
     })
-  
+
     updateInformation();
 
-    // setInterval(updateInformation, 5000);
+    setInterval(updateInformation, 5000);
     
 });
-
 
 function updateInformation () {
     $.ajax({
@@ -202,7 +182,7 @@ function updateInformation () {
         type: 'POST',
         data: JSON.stringify({
             query: `{
-                market{timestamp, status,production, consumption, demand, price, fillBatteryRatio, recommendedPrice, autopilot}
+                market{timestamp, status, production, consumption, demand, price, fillBatteryRatio, recommendedProduction, recommendedPrice, autopilot, manualPrice, manualProduction}
             }`
         }),
         success: function (res) {
@@ -213,25 +193,23 @@ function updateInformation () {
             $('#demand').html(market.demand);
             $('#price').html(market.price);
             $('#recPrice').html(market.recommendedPrice);
-            
+
             // Sliders
-            $('#productionSlider').val(market.production);
-            $('#productionValue').html(market.production);
+            $('#productionSlider').val(market.manualProduction);
+            $('#productionValue').html(market.manualProduction);
             $('#bufferRatioSlider').val(market.fillBatteryRatio * 100);
             $('#bufferRatioValue').html(market.fillBatteryRatio * 100);
-            $('#marketPriceSlider').val(market.price);
-            $('#priceRatioValue').html(market.price);
+            $('#marketPriceSlider').val(market.manualPrice);
+            $('#priceRatioValue').html(market.manualPrice);
             $('#autopilot').prop('checked', market.autopilot);
 
             // Chart
             if (marketChart !== null) {
                 marketChart.addData(market.demand, market.timestamp);
             }
-        
         },
         error: function (err) {
             console.log(err);
         }
     });
-    
 }

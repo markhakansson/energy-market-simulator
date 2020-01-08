@@ -126,9 +126,11 @@
           <div class = "img-thumbnail">
             <img src="" class="img-thumbnail" alt="Profile picture" id="profileImg">
           </div>
-          <input type="file" id="fileImg" accept="image/*" onchange="readUrl(this)"/>
-          <span>Max file size: 5mb</span>
-          <span id ="profileMessage"></span>
+          <input type="file" id="fileImg" accept="image/jpeg, image/png" onchange="readUrl(this)"/>
+          <div>
+            <span>Only JPEG and PNG! Max file size: 5mb</span>
+            <span id ="profileMessage"></span>
+          </div>
         </div>
       </div>  
 

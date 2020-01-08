@@ -47,20 +47,16 @@ class MarketSim {
     async fetchData () {
         const self = this;
         await Market.findOne({ name: self.market.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
-            // if (err) {
-            //     Logger.warn('Matching market with name [' + self.market.name + '] was not found in the database!');
-            //     self.market.save().catch((err) => {
-            //         throw err;
-            //     });
-            // } else {
-            //     console.log(doc);
-            //     self.market = doc;
-            // }
             if (err) throw err;
-            if(doc) {
+            if (doc) {
                 self.market = doc;
             } else {
-                self.market.save();
+                self.market.save((err) => {
+                    if (err) {
+                        Logger.error('Could not save market to database: ' + err);
+                        throw err;
+                    }
+                });
             }
         });
         this.marketOutput = 0;
@@ -79,28 +75,28 @@ class MarketSim {
         const self = this.market;
 
         if (demand < 0 || demand == null) {
-            Logger.warn(
+            Logger.error(
                 'In market [' + self.name + '] when receiving a buy order, expected postive Number. Recieved: ' +
                 demand + '.'
             );
-        }
-
-        this.demand += demand;
-
-        // Needs to reset the demand for each tick.
-        setTimeout(() => {
-            this.demand -= demand;
-        }, 1.05 * this.timeMultiplier);
-
-        // Use market output if possible, else try to use the battery
-        let usableEnergy = this.marketOutput - demand;
-        if (usableEnergy >= 0) {
-            this.marketOutput -= demand;
-            return demand;
         } else {
-            usableEnergy = this.marketOutput + this.useBattery(demand - this.marketOutput);
-            this.marketOutput = 0;
-            return usableEnergy;
+            this.demand += demand;
+
+            // Needs to reset the demand for each tick.
+            setTimeout(() => {
+                this.demand -= demand;
+            }, 1.05 * this.timeMultiplier);
+
+            // Use market output if possible, else try to use the battery
+            let usableEnergy = this.marketOutput - demand;
+            if (usableEnergy >= 0) {
+                this.marketOutput -= demand;
+                return demand;
+            } else {
+                usableEnergy = this.marketOutput + this.useBattery(demand - this.marketOutput);
+                this.marketOutput = 0;
+                return usableEnergy;
+            }
         }
     }
 
@@ -112,22 +108,21 @@ class MarketSim {
         const self = this.market;
 
         if (demand < 0 || demand == null) {
-            Logger.warn(
+            Logger.error(
                 'In market [' + self.name + '] when receiving a sell order, expected postive Number. Recieved: ' +
                 demand + '.'
             );
+        } else {
+            this.demand -= demand;
+
+            this.chargeBattery(self.fillBatteryRatio * demand);
+            this.marketOutput += ((1 - self.fillBatteryRatio) * demand);
+
+            // Needs to reset the demand for each tick.
+            setTimeout(() => {
+                this.demand += demand;
+            }, 1.05 * this.timeMultiplier);
         }
-
-        this.demand -= demand;
-
-        this.chargeBattery(self.fillBatteryRatio * demand);
-        this.marketOutput += ((1 - self.fillBatteryRatio) * demand);
-
-        // Needs to reset the demand for each tick.
-        setTimeout(() => {
-            this.demand += demand;
-        }, 1.05 * this.timeMultiplier);
-
         return 0;
     }
 
@@ -226,7 +221,6 @@ class MarketSim {
                 this.plantInOperation = true;
                 this.startupInitiated = false;
             }, 2 * this.timeMultiplier);
-
         }
     }
 
@@ -276,7 +270,7 @@ class MarketSim {
             manualProduction: self.manualProduction,
             manualPrice: self.manualPrice
         });
-
+        console.log(this.demand);
         self.save((err) => {
             if (err) {
                 Logger.error('Could not save market to database: ' + err);

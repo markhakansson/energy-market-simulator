@@ -12,8 +12,8 @@ const Logger = require('../../config/logger');
 const TIME_MULTIPLIER = 5000;
 
 // Lets make market have the same name as the manager?
-const MARKET = new MarketSim('1', 2, 5000, 100000, TIME_MULTIPLIER);
-const WEATHER = new WeatherSim('1', 10, 20);
+const MARKET = new MarketSim('Lulea', 2, 5000, 100000, TIME_MULTIPLIER);
+const WEATHER = new WeatherSim('Lulea', 10, 20);
 
 var prosumerNames = [];
 var consumerNames = [];
@@ -103,7 +103,7 @@ async function searchForNewUsers () {
 }
 
 function simLoop () {
-    setTimeout(async function () {
+    setInterval(async function () {
         searchForNewUsers();
         await MARKET.fetchData();
         await WEATHER.fetchData();
@@ -131,8 +131,6 @@ function simLoop () {
 
         MARKET.update();
         console.log('Wind speed: ' + WEATHER.weather.wind_speed);
-
-        simLoop();
     }, TIME_MULTIPLIER);
 }
 

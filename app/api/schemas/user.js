@@ -92,7 +92,8 @@ const UserMutations = {
                 await user.save();
 
                 const prosumer = new Prosumer({
-                    name: user.username
+                    name: user.username,
+                    market: 'none'
                 });
                 await prosumer.save();
                 await init.call();
@@ -152,6 +153,7 @@ const UserMutations = {
             }
             if (user.comparePassword(args.password)) {
                 user.deleteOne();
+                Prosumer.remove({ name: req.session.user }).exec();
                 return true;
             }
             return false;
