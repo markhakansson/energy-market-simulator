@@ -25,6 +25,13 @@
         <li class="nav-item" id="nav-profile">
           <a class="nav-link" >Profile</a>
         </li>
+        <li class="nax-item">
+          <form action="/logout" method="get">
+            <input type="submit" class="btn btn-primary" value="Log Out"/>
+          </form>
+        </li>
+
+        </li>
       </ul>
       <br>
     </div>
@@ -94,6 +101,11 @@
           </ol>
         </div>
         <div class="col-md">
+          <p>Blackout:</p>
+          <ol id="blackout">
+          </ol>
+        </div>
+        <div class="col-md">
           <p>Online:</p>
           <ol id="online">
           </ol>
@@ -138,13 +150,6 @@
       </div>  
 
     </div>
-    <div class="container">
-      <!-- Log out button -->
-      <form action="/logout" method="get">
-        <input type="submit" class="btn btn-primary" value="Log Out"/>
-      </form>
-    </div>
-
 
   </body>
 </html>
