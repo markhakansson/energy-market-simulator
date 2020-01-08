@@ -43,7 +43,7 @@
           <h2>Plant electricity settings</h2>
           
           <div>
-            <p>Electricity production <input type="text" id="productionValueText"><button id="setProductionValue">Set</button></p>
+            <p>Electricity manual production <input type="text" id="productionValueText"><button id="setProductionValue">Set</button></p>
             <input type="range" id="productionSlider" min="0" max="10000" />
             <p>Value: <span id="productionValue"></span></p>
           </div>
@@ -55,7 +55,7 @@
           </div>
 
           <div>
-            <p>Market price <input type="text" id="priceValueText"><button id="setPrice">Set</button></p>
+            <p>Market manual price <input type="text" id="priceValueText"><button id="setPrice">Set</button></p>
             <input type="range" id="marketPriceSlider" min="0" max="100" />
             <p>Value: <span id="priceRatioValue"></span></p>
           </div>
@@ -79,6 +79,7 @@
         <div class="col-md">
           <ul>
             <li>Current status: <span id="status"></span></li>
+            <li>Current electricity production: <span id="production"></span></li>
             <li>Current electricity consumption: <span id ="consumption"></span></li>
             <li>Current market demand: <span id="demand"></span></li>
             <li>Current market price: <span id="price"></span></li>

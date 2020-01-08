@@ -1,5 +1,3 @@
-const cookieParser = require("cookie-parser");
-
 $(document).ready(function () {
     $('#useBatteryRatioSlider').click(function () {
         const value = $('#useBatteryRatioValue').text();
@@ -178,7 +176,6 @@ function updateWindspeed (location) {
             }`
         }),
         success: function (result) {
-            console.log(result);
             $('#windspeed').html(result.data.weather.wind_speed.toFixed(2));
         },
         error: function (err) {

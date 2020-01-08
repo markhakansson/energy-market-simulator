@@ -210,6 +210,7 @@ function updateInformation () {
             const market = res.data.market;
             $('#timestamp').html(market.timestamp);
             $('#status').html(market.status);
+            $('#production').html(market.production);
             $('#consumption').html(market.consumption);
             $('#demand').html(market.demand);
             $('#price').html(market.price);
@@ -222,6 +223,7 @@ function updateInformation () {
             $('#bufferRatioValue').html(market.fillBatteryRatio * 100);
             $('#marketPriceSlider').val(market.manualPrice);
             $('#priceRatioValue').html(market.manualPrice);
+            
             $('#autopilot').prop('checked', market.autopilot);
 
             // Chart

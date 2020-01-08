@@ -48,6 +48,7 @@ const MarketQueries = ({
             return Market.findOne({ name: req.session.user }).sort({ timestamp: -1 });
         }
     },
+    
     markets: {
         type: new GraphQLList(MarketType),
         resolve (parent, args, req) {
