@@ -271,7 +271,6 @@ class ProsumerSim {
             blocked: this.blocked,
             blockTimer: this.blockTimer
         });
-
         self.save((err) => {
             if (err) {
                 Logger.error('Could not save prosumer to database: ' + err);

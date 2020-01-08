@@ -38,7 +38,6 @@ class ProsumerChart {
                 }
             }
         });
-        console.log(this.chart);
     }
 
     addData (data, label) {
