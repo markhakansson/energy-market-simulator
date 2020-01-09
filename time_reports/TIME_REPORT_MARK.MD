@@ -36,3 +36,6 @@
 | 2020-01-04 | 4 | Update market db model and sim to support manually set values. |
 | 2020-01-05 | 3 | Fix bugs where simulators would not save correct values to DB |
 | 2020-01-06 | 8 | Finish simulator so it supports all basic functionalities. |
+| 2020-01-07 | 6 | Update db models. Work on catching errors, find and fix bugs |
+| 2020-01-08 | 6 | Fix API to throw correct errors. Fix blackouts in prosumer sim |
+| 2020-01-09 | 6 | Work on settings up AWS. Add prettier things to front-end |
