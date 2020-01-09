@@ -38,6 +38,15 @@ const MarketType = new GraphQLObjectType({
 });
 
 const MarketQueries = ({
+    manager: {
+        type: MarketType,
+        resolve (parent, args, req) {
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
+
+            return Market.findOne({ name: req.session.user }).sort({ timestamp: -1 });
+        }
+    },
     market: {
         type: MarketType,
         args: { name: { type: GraphQLString } },
