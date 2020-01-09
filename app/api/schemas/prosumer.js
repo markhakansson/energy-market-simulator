@@ -2,6 +2,7 @@ const graphql = require('graphql');
 const Prosumer = require('../../db/model/prosumer');
 const graphqlIsoDate = require('graphql-iso-date');
 const errorMsg = require('./errors');
+const Logger = require('../../config/logger');
 
 const {
     GraphQLObjectType, GraphQLString, GraphQLFloat, GraphQLList,
@@ -128,7 +129,7 @@ const ProsumerMutations = {
                 doc => {
                     // If already blocked don't do anything
                     if (doc.blocked) {
-                        return "Already blocked!";
+                        return 'Already blocked!';
                     } else {
                         const prosumer = new Prosumer({
                             name: doc.name,
@@ -147,12 +148,17 @@ const ProsumerMutations = {
                             blocked: true,
                             blockedTimer: args.timeout
                         });
-                        prosumer.save();
-                        return "Blocked!";
+                        return prosumer.save().then(
+                            res => { return 'Blocked'; },
+                            err => {
+                                Logger.error('API ´blockProsumer´: ' + err);
+                                throw new Error(err);
+                            }
+                        );
                     }
                 },
                 err => {
-                    console.error(err);
+                    Logger.error('API ´blockProsumer´: ' + err);
                     throw new Error('Could not save document to database: ' + err);
                 }
             )
@@ -187,11 +193,16 @@ const ProsumerMutations = {
                         blocked: doc.blocked,
                         blockedTimer: doc.blockedTimer
                     });
-                    prosumer.save();
-                    return true;
+                    return prosumer.save().then(
+                        res => { return true; },
+                        err => {
+                            Logger.error('API ´updateFillBatteryRatio´: ' + err);
+                            throw new Error(err);
+                        }
+                    );
                 },
                 err => {
-                    console.error(err);
+                    Logger.error('API ´updateFillBatteryRatio´: ' + err);
                     throw new Error('Could not save document to database: ' + err);
                 }
             );
@@ -226,11 +237,16 @@ const ProsumerMutations = {
                         blocked: doc.blocked,
                         blockedTimer: doc.blockedTimer
                     });
-                    prosumer.save();
-                    return true;
+                    return prosumer.save().then(
+                        res => { return true; },
+                        err => {
+                            Logger.error('API ´updateUseBatteryRatio´: ' + err);
+                            throw new Error(err);
+                        }
+                    );
                 },
                 err => {
-                    console.error(err);
+                    Logger.error('API ´updateUseBatteryRatio´: ' + err);
                     throw new Error('Could not save document to database: ' + err);
                 }
             );
@@ -265,11 +281,16 @@ const ProsumerMutations = {
                         blocked: doc.blocked,
                         blockedTimer: doc.blockedTimer
                     });
-                    prosumer.save();
-                    return true;
+                    return prosumer.save().then(
+                        res => { return true; },
+                        err => {
+                            Logger.error('API ´updateProsumerProduction´: ' + err);
+                            throw new Error(err);
+                        }
+                    );
                 },
                 err => {
-                    console.error(err);
+                    Logger.error('API ´updateProsumerProduction´:' + err);
                     throw new Error('Could not save document to database: ' + err);
                 }
             );
@@ -304,11 +325,16 @@ const ProsumerMutations = {
                         blocked: doc.blocked,
                         blockedTimer: doc.blockedTimer
                     });
-                    prosumer.save();
-                    return true;
+                    return prosumer.save().then(
+                        res => { return true; },
+                        err => {
+                            Logger.error('API ´updateProsumerConsumption´: ' + err);
+                            throw new Error(err);
+                        }
+                    );
                 },
                 err => {
-                    console.error(err);
+                    Logger.error('API ´updateProsumerConsumption´:' + err);
                     throw new Error('Could not save document to database: ' + err);
                 }
             );
