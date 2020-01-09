@@ -114,7 +114,7 @@ const ProsumerMutations = {
         }
     },
     blockProsumer: {
-        type: GraphQLBoolean,
+        type: GraphQLString,
         args: {
             prosumerName: { type: new GraphQLNonNull(GraphQLString) },
             timeout: { type: new GraphQLNonNull(GraphQLFloat) }
@@ -128,7 +128,7 @@ const ProsumerMutations = {
                 doc => {
                     // If already blocked don't do anything
                     if (doc.blocked) {
-                        return false;
+                        return "Already blocked!";
                     } else {
                         const prosumer = new Prosumer({
                             name: doc.name,
@@ -148,7 +148,7 @@ const ProsumerMutations = {
                             blockedTimer: args.timeout
                         });
                         prosumer.save();
-                        return true;
+                        return "Blocked!";
                     }
                 },
                 err => {
