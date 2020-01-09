@@ -85,7 +85,7 @@ class MarketSim {
             // Needs to reset the demand for each tick.
             setTimeout(() => {
                 this.demand -= demand;
-            }, 1.05 * this.timeMultiplier);
+            }, 0.95 * this.timeMultiplier);
 
             // Use market output if possible, else try to use the battery
             let usableEnergy = this.marketOutput - demand;
@@ -121,7 +121,7 @@ class MarketSim {
             // Needs to reset the demand for each tick.
             setTimeout(() => {
                 this.demand += demand;
-            }, 1.05 * this.timeMultiplier);
+            }, 0.95 * this.timeMultiplier);
         }
         return 0;
     }
@@ -270,7 +270,6 @@ class MarketSim {
             manualProduction: self.manualProduction,
             manualPrice: self.manualPrice
         });
-        console.log(this.demand);
         self.save((err) => {
             if (err) {
                 Logger.error('Could not save market to database: ' + err);
