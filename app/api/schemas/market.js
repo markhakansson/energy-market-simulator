@@ -43,9 +43,8 @@ const MarketQueries = ({
         args: { name: { type: GraphQLString } },
         resolve (parent, args, req) {
             if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
-            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
 
-            return Market.findOne({ name: req.session.user }).sort({ timestamp: -1 });
+            return Market.findOne({ name: args.name }).sort({ timestamp: -1 });
         }
     },
     markets: {
