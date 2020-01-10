@@ -1,31 +1,4 @@
 $(document).ready(function () {
-    $.ajax({
-        url: 'http://localhost:4000/graphql',
-        contentType: 'application/json',
-        type: 'POST',
-        data: JSON.stringify({
-            query: `{
-                users {
-                    username
-                }
-            }`
-        }),
-        success: function (res) {
-            res.data.users.forEach(obj => {
-                $('#users').append("<li><a href='/prosumer?username=" + obj.username + "'>" + obj.username + '</a></li>');
-            });
-        }
-    });
-    $.ajax({
-        url: 'http://localhost:4000/online',
-        contentType: 'application/json',
-        type: 'GET',
-        success: function (res) {
-            res.users.forEach(obj => {
-                $('#online').append('<li><a>' + obj + '</a></li>');
-            });
-        }
-    });
     $('#productionSlider').change(function () {
         const value = this.value;
         $.ajax({
@@ -168,10 +141,16 @@ $(document).ready(function () {
             });
         }
     })
-
+    // TODO: Uncomment when moving to production!
     updateInformation();
+    // setInterval(updateInformation, 5000);
+    getBlackOut();
+    // setInterval(getBlackOut, 5000);
+    getUsers();
+    // setInterval(getUsers, 100000);
+    getOnlineUsers();
+    // setInterval(getOnlineUsers, 10000)
 
-    setInterval(updateInformation, 5000);
     
 });
 
@@ -189,6 +168,7 @@ function updateInformation () {
             const market = res.data.market;
             $('#timestamp').html(market.timestamp);
             $('#status').html(market.status);
+            $('#production').html(market.production);
             $('#consumption').html(market.consumption);
             $('#demand').html(market.demand);
             $('#price').html(market.price);
@@ -201,6 +181,7 @@ function updateInformation () {
             $('#bufferRatioValue').html(market.fillBatteryRatio * 100);
             $('#marketPriceSlider').val(market.manualPrice);
             $('#priceRatioValue').html(market.manualPrice);
+            
             $('#autopilot').prop('checked', market.autopilot);
 
             // Chart
@@ -210,6 +191,89 @@ function updateInformation () {
         },
         error: function (err) {
             console.log(err);
+        }
+    });
+
+}
+function getBlackOut() {
+    $.ajax({
+        url: 'http://localhost:4000/graphql',
+        contentType: 'application/json',
+        type: 'POST',
+        data: JSON.stringify({
+            query: `{
+                isBlocked {
+                    name,
+                    timestamp,
+                    blackout
+                }
+            }`
+        }),
+        success: function (res) {
+            res.data.isBlocked.forEach(obj => {
+                $('#blackout').empty();
+                if(obj.blackout) {
+                    $('#blackout').append('<li><a>' + obj.name + " at " + obj.timestamp + '</a></li>');
+                }
+            });
+        }
+    });
+}
+
+function getUsers() {
+    $.ajax({
+        url: 'http://localhost:4000/graphql',
+        contentType: 'application/json',
+        type: 'POST',
+        data: JSON.stringify({
+            query: `{
+                users {
+                    username
+                }
+            }`
+        }),
+        success: function (res) {
+            res.data.users.forEach(obj => {
+                $("#users").append("<li><a href='/prosumer?username=" + obj.username + "'>" + obj.username + "</a></li>");
+                $("#users").append("<button type=button id=" + obj.username + " > Block </button>");
+                $("#users").on("click", "#" + obj.username, function() {
+                    $.ajax({
+                        url: 'http://localhost:4000/graphql',
+                        contentType: 'application/json',
+                        type: 'POST',
+                        data: JSON.stringify({
+                            query: `mutation {
+                                blockProsumer(prosumerName: "${obj.username}", timeout: ${$("#timeBlock").val()})
+                            }`
+                        }),
+                        success: function(res) {
+                            $("#blockInfo").html(res.data.blockProsumer);
+                        },
+                        error: function(e) {
+                            $("#blockInfo").html("Error: " + e + "\n Did you provide digits?");
+                        }
+                    })                    
+
+                });
+            
+            });
+        }
+    });
+  
+}
+/**
+ * Only case we use REST API for simplicity
+ */
+function getOnlineUsers() {
+    $.ajax({
+        url: 'http://localhost:4000/online',
+        contentType: 'application/json',
+        type: 'GET',
+        success: function (res) {
+            $('#online').empty();
+            res.users.forEach(obj => {
+                $('#online').append('<li><a>' + obj + '</a></li>');
+            });
         }
     });
 }

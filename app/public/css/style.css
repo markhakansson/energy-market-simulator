@@ -1,44 +1,5 @@
-
-.main{ 
-    padding:20px; 
-    font-family: 'Helvetica', serif; 
-    box-shadow: 5px 5px 7px 5px #888888; 
-      
-} 
-.main h1{ 
-    font-size: 40px; 
-    text-align:center; 
-    font-family: 'Helvetica', serif; 
-      
-} 
-/* input{ 
-    font-family: 'Helvetica', serif; 
-    width: 100%; 
-    font-size: 20px; 
-    padding: 12px 20px; 
-    margin: 8px 0; 
-    border: none; 
-    border-bottom: 2px solid #767474; 
-}  */
-input[type=submit] { 
-    font-family: 'Helvetica', serif; 
-    width: 100%; 
-    background-color: #767474; 
-    border: none; 
-    color: white; 
-    padding: 16px 32px; 
-    margin: 4px 2px; 
-    border-radius: 10px; 
-} 
-.overlay {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    height: 200px;
-    width: 200px;
-    background: gray;
+body {
+  height: 100%;
 }
 
 /* https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_switch */
@@ -95,23 +56,3 @@ input[type=submit] {
     transform: translateX(26px);
   }
   
-
-/* 
-ol {
-    position: absolute;
-    top: 20px;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
-    overflow: scroll;
-    margin: 0;
-    padding: 0;
-    
-    border: 2px solid #ccc;
-    
-    font-size: 16px;
-    font-family: Arial, sans-serif;
-    
-    -webkit-overflow-scrolling: touch;
-  }
-   */

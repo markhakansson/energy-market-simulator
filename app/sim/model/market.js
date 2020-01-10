@@ -270,7 +270,6 @@ class MarketSim {
             manualProduction: self.manualProduction,
             manualPrice: self.manualPrice
         });
-        console.log(this.demand);
         self.save((err) => {
             if (err) {
                 Logger.error('Could not save market to database: ' + err);

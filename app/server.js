@@ -15,7 +15,7 @@ const Logger = require('./config/logger');
 // Loads the '.env' file in root to process.env.
 require('dotenv').config();
 
-require('./sim/controller/main').main();
+// require('./sim/controller/main').main();
 
 // See https://stackoverflow.com/a/42929869 on how to add user
 mongoose.connect(process.env.DB_HOST, {
@@ -34,26 +34,26 @@ mongoose.connect(process.env.DB_HOST, {
 mongoose.connection.on('error', console.log.bind(console, 'CONNECTION ERROR!'));
 mongoose.connection.on('disconnected', console.log.bind(console, 'CONNECTION DISCONNECTED!'))
 
-/* const user = new User({
-    username: 'Lulea',
-    password: 'Lulea',
-    manager: true
-});
-user.save();
+// const user = new User({
+//     username: 'Lulea',
+//     password: 'Lulea',
+//     manager: true
+// });
+// user.save();
 
-const market = new Market({
-    name: 'Lulea',
-    price: 2,
-    maxBatteryCap: 100000,
-    fillBatteryRatio: 0.5
-});
-market.save();
+// const market = new Market({
+//     name: 'Lulea',
+//     price: 2,
+//     maxBatteryCap: 100000,
+//     fillBatteryRatio: 0.5
+// });
+// market.save();
 
-const weather = new Weather({
-    name: 'Lulea',
-    market: 'Lulea'
-});
-weather.save(); */
+// const weather = new Weather({
+//     name: 'Lulea',
+//     market: 'Lulea'
+// });
+// weather.save(); 
 /**
  * Express
  */

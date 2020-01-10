@@ -151,9 +151,12 @@ const UserMutations = {
             if (!user) {
                 return false;
             }
+            if(user.manager) {
+                return "You cannot delete a Manager!";
+            }
             if (user.comparePassword(args.password)) {
                 user.deleteOne();
-                Prosumer.remove({ name: req.session.user }).exec();
+                Prosumer.remove({ name: req.session.user }).exec(); // Delete both user doc in users collection aswell as any prosumer docs!!
                 return true;
             }
             return false;
