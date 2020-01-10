@@ -19,24 +19,7 @@
 </head>
 
 <body>
-     <style>
-          body {
-               background-image: url('images/greenwindpower.jpeg');
-               background-repeat: no-repeat;
-               background-attachment: fixed;
-               background-size: cover;
-          }
-     </style>
-
-     <div class="page-header">
-          <div class="container">
-               <div class="row justify-content-center">
-                    <a class="display-4" style="text-decoration: none; color: inherit" href="/">GLE</a>
-                    <a class="font-italic" style="text-decoration: none; color: inherit" href="/">the future is here</a>
-               </div>
-          </div>
-     </div>
-
+     <%- include ("homeheader.ejs") %>
      <div class="container">
           <div class="row justify-content-center align-items-center" style="height:100vh">
                <div class="col-4">
@@ -54,9 +37,11 @@
                                    </div>
                                    <div>
                                         <hr class="my-4">
-                                        <p>By signing up you consent to sharing your personal data such as your household's
-                                           electric information. We may also store cookies on your computer with no sensitive
-                                           information.
+                                        <p>By signing up you consent to sharing your personal data such as your
+                                             household's
+                                             electric information. We may also store cookies on your computer with no
+                                             sensitive
+                                             information.
                                         </p>
                                         <input type="submit" value="Sign Up"><span id="signUpMsg"></span></input>
                                    </div>
@@ -66,15 +51,7 @@
                </div>
           </div>
      </div>
-
-     <footer class="footer">
-          <div class="container">
-               <span class="text-muted">🄯 <script>
-                         new Date().getFullYear() > 2010 && document.write(new Date().getFullYear());
-                    </script> Green Lean Electrics Inc.</span>
-          </div>
-     </footer>
-
+     <%- include ("footer.ejs") %>
 </body>
 
 </html>
