@@ -1,6 +1,5 @@
 node_modules
 app/logs
-app/public/images
 app/.env
 logs
 app/.nyc_output
