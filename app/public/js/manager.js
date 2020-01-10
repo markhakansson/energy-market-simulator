@@ -18,6 +18,10 @@ $(document).ready(function () {
     });
     $('#setProductionValue').click(function () {
         const value = $('#productionValueText').val();
+        if (isNaN(value) || value < 0 || value > 100) {
+            alert("You must provide positive digits (1-100)!");
+            return;
+        }
         $.ajax({
             url: 'http://localhost:4000/graphql',
             contentType: 'application/json',
@@ -54,6 +58,10 @@ $(document).ready(function () {
     });
     $('#setBufferRatio').click(function () {
         const value = $('#bufferValueText').val();
+        if (isNaN(value) || value < 0 || value > 100) {
+            alert("You must provide positive digits (1-100)!");
+            return;
+        }
         $.ajax({
             url: 'http://localhost:4000/graphql',
             contentType: 'application/json',
@@ -90,6 +98,10 @@ $(document).ready(function () {
     });
     $('#setPrice').click(function () {
         const value = $('#priceValueText').val();
+        if (isNaN(value) || value < 0) {
+            alert("You must provide positive digits!");
+            return;
+        }
         $.ajax({
             url: 'http://localhost:4000/graphql',
             contentType: 'application/json',
@@ -140,7 +152,10 @@ $(document).ready(function () {
 
             });
         }
-    })
+    });
+    $('#timeBlock').change(function() {
+        $('#timeBlockValue').html(this.value);
+    });
     // TODO: Uncomment when moving to production!
     updateInformation();
     // setInterval(updateInformation, 5000);
@@ -237,6 +252,7 @@ function getUsers() {
                 $("#users").append("<li><a href='/prosumer?username=" + obj.username + "'>" + obj.username + "</a></li>");
                 $("#users").append("<button type=button id=" + obj.username + " > Block </button>");
                 $("#users").on("click", "#" + obj.username, function() {
+                    console.log($("#timeBlock").val());
                     $.ajax({
                         url: 'http://localhost:4000/graphql',
                         contentType: 'application/json',
