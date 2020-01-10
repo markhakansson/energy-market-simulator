@@ -5,6 +5,7 @@ const schema = require('../api/schema');
 const auth = require('../api/auth/auth').auth;
 const isLoggedIn = require('../api/auth/auth').isLoggedIn;
 const isManager = require('../api/auth/auth').isManager;
+const Quote = require('inspirational-quotes');
 
 router.get('/', function (req, res, next) {
     return res.redirect('/login');
@@ -35,11 +36,15 @@ router.get('/prosumer', auth, async function (req, res, next) {
 });
 
 router.get('/signup', isLoggedIn, function (req, res) {
-    return res.render('signup.ejs');
+    return res.render('signup.ejs', {
+        quote: Quote.getRandomQuote()
+    });
 });
 
 router.get('/login', isLoggedIn, function (req, res) {
-    return res.render('login.ejs');
+    return res.render('login.ejs', {
+        quote: Quote.getRandomQuote()
+    });
 });
 
 router.get('/logout', function (req, res, next) {
@@ -64,8 +69,12 @@ router.get('/online', isManager, function (req, res, next) {
     req.sessionStore.all(function (err, sessions) {
         if (err) return next(err);
         const online = [];
-        Object.values(sessions).forEach(e => { online.push(e.user) });
-        return res.send({ users: online });
+        Object.values(sessions).forEach(e => {
+            online.push(e.user)
+        });
+        return res.send({
+            users: online
+        });
     });
 });
 
