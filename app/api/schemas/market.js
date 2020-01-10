@@ -57,6 +57,18 @@ const MarketQueries = ({
             return Market.findOne({ name: args.name }).sort({ timestamp: -1 });
         }
     },
+    /*
+    TODO: Currently all markets prices can be queried by prosumers (logged in), would rather see it stored in prosumer itself
+    */
+    marketPrice: {
+        type: GraphQLFloat,
+        args: { name: { type: GraphQLString } },
+        async resolve (parent, args, req) {
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            const market = await Market.findOne({ name: args.name }).sort({ timestamp: -1 });
+            return market.price;
+        }
+    },
     markets: {
         type: new GraphQLList(MarketType),
         resolve (parent, args, req) {
@@ -65,7 +77,7 @@ const MarketQueries = ({
             return Market.find({});
         }
     }
-})
+});
 
 const MarketMutations = {
     addMarket: {

@@ -21,7 +21,7 @@ $(document).ready(function () {
                         window.location.href = "/login";
                     }, 1500);
                 } else {
-                    $('#signUpMsg').html("User already exists!");
+                    $('#signUpMsg').html("User already exists or you did something wrong!");
                 }
 
             }

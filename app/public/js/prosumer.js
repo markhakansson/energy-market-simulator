@@ -108,12 +108,11 @@ function updateInformation () {
         type: 'POST',
         data: JSON.stringify({
             query: `{
-                prosumer{production,consumption, useBatteryRatio, fillBatteryRatio, currBatteryCap, market, timestamp}
+                prosumer{production,consumption,currBatteryCap, market, timestamp, fillBatteryRatio, useBatteryRatio}
             }`
         }),
-        success: function (result) {
-            console.log(result.data);
-            const prosumer = result.data.prosumer;
+        success: function (res) {
+            const prosumer = res.data.prosumer;
             const market = String(prosumer.market);
             $('#timestamp').html(prosumer.timestamp);
             $('#production').html(prosumer.production.toFixed(2));
@@ -122,6 +121,13 @@ function updateInformation () {
             $('#fillBatteryRatioValue').html(prosumer.fillBatteryRatio.toFixed(2));
             $('#netproduction').html((Number(prosumer.production) - Number(prosumer.consumption)).toFixed(2));
             $('#batterycap').html(prosumer.currBatteryCap.toFixed(2));
+
+            //Sliders
+            $('#useBatteryRatioValue').html(prosumer.useBatteryRatio);
+            $('#useBatteryRatioSlider').val(prosumer.useBatteryRatio);
+            $('#fillBatteryRatioValue').html(prosumer.fillBatteryRatio);
+            $('#fillBatteryRatioSlider').val(prosumer.fillBatteryRatio);
+
             updateMarketInformation(market);
             updateWindspeed(market);
             if (productionChart !== null) {
@@ -141,12 +147,11 @@ function updateMarketInformation (name) {
         type: 'POST',
         data: JSON.stringify({
             query: `{
-                market(name:"${name}"){price}
+                marketPrice(name:"${name}")
             }`
         }),
-        success: function (result) {
-            console.log(result);
-            $('#marketprice').html(result.data.market.price.toFixed(2));
+        success: function (res) {
+            $('#marketprice').html(res.data.marketPrice.toFixed(2));
         },
         error: function (err) {
             console.log(err);
@@ -165,7 +170,6 @@ function updateWindspeed (location) {
             }`
         }),
         success: function (result) {
-            console.log(result);
             $('#windspeed').html(result.data.weather.wind_speed.toFixed(2));
         },
         error: function (err) {
