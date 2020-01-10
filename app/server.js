@@ -15,7 +15,7 @@ const Logger = require('./config/logger');
 // Loads the '.env' file in root to process.env.
 require('dotenv').config();
 
-// require('./sim/controller/main').main();
+require('./sim/controller/main').main();
 
 // See https://stackoverflow.com/a/42929869 on how to add user
 mongoose.connect(process.env.DB_HOST, {
@@ -80,7 +80,10 @@ app.use(
         // A session is uninitialized when it is new but not modified.
         // Choosing false is useful for implementing login sessions, reducing server storage usage,
         //  or complying with laws that require permission before setting a cookie.
-        cookie: { maxAge: false }
+        cookie: {
+            maxAge: false,
+            httpOnly: true
+        }
     })
 );
 

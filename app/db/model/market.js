@@ -7,11 +7,31 @@ const market = new Schema({
     demand: { type: Number, default: 0 },
     status: { type: String, default: 'stopped' },
     startUp: { type: Boolean, default: true }, // use to turn plant on and off
-    price: { type: Number, default: 0 }, // real market value, can be set manually
-    production: { type: Number, default: 0 }, // real production value, can be set manually
-    consumption: { type: Number, default: 0 },
-    currBatteryCap: { type: Number, default: 0 },
-    maxBatteryCap: { type: Number, default: 10000 },
+    price: { // real market value, can be set manually
+        type: Number,
+        default: 0.0,
+        min: 0.0
+    },
+    production: { // real production value, can be set manually
+        type: Number,
+        default: 0.0,
+        min: 0.0
+    },
+    consumption: {
+        type: Number,
+        default: 0.0,
+        min: 0.0
+    },
+    currBatteryCap: {
+        type: Number,
+        default: 0.0,
+        min: 0.0
+    },
+    maxBatteryCap: {
+        type: Number,
+        default: 10000,
+        min: 0.0
+    },
     fillBatteryRatio: {
         type: Number,
         min: 0.0,
@@ -20,11 +40,27 @@ const market = new Schema({
     },
     // used to toggle manual control. No autopilot => price and production is fixed.
     autopilot: { type: Boolean, default: true },
-    recommendedPrice: { type: Number, default: 0 }, // sim value!
-    recommendedProduction: { type: Number, default: 0 }, // sim value!
+    recommendedPrice: { // sim value!
+        type: Number,
+        default: 0.0,
+        min: 0.0
+    },
+    recommendedProduction: { // sim value!
+        type: Number,
+        default: 0.0,
+        min: 0.0
+    },
     plantInOperation: { type: Boolean, default: true },
-    manualProduction: { type: Number, default: 0 }, // use to set production manually
-    manualPrice: { type: Number, default: 0 } // use to set price manually
+    manualProduction: { // use to set production manually
+        type: Number,
+        default: 0.0,
+        min: 0.0
+    },
+    manualPrice: { // use to set price manually
+        type: Number,
+        default: 0.0,
+        min: 0.0
+    }
 });
 
 module.exports = mongoose.model('Market', market);

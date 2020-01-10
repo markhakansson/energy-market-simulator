@@ -2,6 +2,7 @@ const graphql = require('graphql');
 const Market = require('../../db/model/market');
 const graphqlIsoDate = require('graphql-iso-date');
 const errorMsg = require('./errors');
+const Logger = require('../../config/logger')
 
 const {
     GraphQLObjectType, GraphQLString,
@@ -38,13 +39,22 @@ const MarketType = new GraphQLObjectType({
 });
 
 const MarketQueries = ({
-    market: {
+    manager: {
         type: MarketType,
         resolve (parent, args, req) {
             if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
             if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
 
             return Market.findOne({ name: req.session.user }).sort({ timestamp: -1 });
+        }
+    },
+    market: {
+        type: MarketType,
+        args: { name: { type: GraphQLString } },
+        resolve (parent, args, req) {
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+
+            return Market.findOne({ name: args.name }).sort({ timestamp: -1 });
         }
     },
     /*
@@ -67,7 +77,7 @@ const MarketQueries = ({
             return Market.find({});
         }
     }
-})
+});
 
 const MarketMutations = {
     addMarket: {
@@ -132,11 +142,16 @@ const MarketMutations = {
                         manualProduction: args.production,
                         manualPrice: doc.manualPrice
                     });
-                    market.save();
-                    return true;
+                    return market.save().then(
+                        res => { return true; },
+                        err => {
+                            Logger.error('API ´setMarketProduction´: ' + err);
+                            throw new Error(err);
+                        }
+                    );
                 },
                 err => {
-                    console.error(err);
+                    Logger.error('API ´setMarketProduction´: ' + err);
                     throw new Error('Could not save document to database: ' + err);
                 }
             )
@@ -173,11 +188,16 @@ const MarketMutations = {
                         manualProduction: doc.manualProduction,
                         manualPrice: args.price
                     });
-                    market.save();
-                    return true;
+                    return market.save().then(
+                        res => { return true; },
+                        err => {
+                            Logger.error('API ´setMarketPrice´: ' + err);
+                            throw new Error(err);
+                        }
+                    );
                 },
                 err => {
-                    console.error(err);
+                    Logger.error('API ´setMarketPrice´: ' + err);
                     throw new Error('Could not save document to database: ' + err);
                 }
             );
@@ -213,11 +233,16 @@ const MarketMutations = {
                         manualProduction: doc.manualProduction,
                         manualPrice: doc.manualPrice
                     });
-                    market.save();
-                    return true;
+                    return market.save().then(
+                        res => { return true; },
+                        err => {
+                            Logger.error('API ´setMarketFillBatteryRatio´: ' + err);
+                            throw new Error(err);
+                        }
+                    );
                 },
                 err => {
-                    console.error(err);
+                    Logger.error('API ´setMarketFillBatteryRatio´: ' + err);
                     throw new Error('Could not save document to database: ' + err);
                 }
             )
@@ -254,11 +279,16 @@ const MarketMutations = {
                         manualProduction: doc.manualProduction,
                         manualPrice: doc.manualPrice
                     });
-                    market.save();
-                    return true;
+                    return market.save().then(
+                        res => { return true; },
+                        err => {
+                            Logger.error('API ´setPowerPlantStatus´: ' + err);
+                            throw new Error(err);
+                        }
+                    );
                 },
                 err => {
-                    console.error(err);
+                    Logger.error('API ´setPowerPlantStatus´: ' + err);
                     throw new Error('Could not save document to database: ' + err);
                 }
             )
@@ -295,11 +325,16 @@ const MarketMutations = {
                         manualProduction: doc.manualProduction,
                         manualPrice: doc.manualPrice
                     });
-                    market.save();
-                    return true;
+                    return market.save().then(
+                        res => { return true; },
+                        err => {
+                            Logger.error('API ´useAutopilot´: ' + err);
+                            throw new Error(err);
+                        }
+                    );
                 },
                 err => {
-                    console.error(err);
+                    Logger.error('API ´useAutopilot´: ' + err);
                     throw new Error('Could not save document to database: ' + err);
                 }
             )

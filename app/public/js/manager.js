@@ -18,6 +18,10 @@ $(document).ready(function () {
     });
     $('#setProductionValue').click(function () {
         const value = $('#productionValueText').val();
+        if (isNaN(value) || value < 0 || value > 100) {
+            alert("You must provide positive digits (1-100)!");
+            return;
+        }
         $.ajax({
             url: 'http://localhost:4000/graphql',
             contentType: 'application/json',
@@ -27,7 +31,7 @@ $(document).ready(function () {
                     setMarketProduction(production: ${value})
                 }`
             }),
-            success: function() {
+            success: function () {
                 $('#productionValue').html(value);
                 $('#productionSlider').val(value);
             },
@@ -47,13 +51,17 @@ $(document).ready(function () {
                     setMarketFillBatteryRatio(fillBatteryRatio: ${value / 100})
                 }`
             }),
-            success: function(e) {
+            success: function (e) {
                 $('#bufferRatioValue').html(value);
             }
         });
     });
     $('#setBufferRatio').click(function () {
         const value = $('#bufferValueText').val();
+        if (isNaN(value) || value < 0 || value > 100) {
+            alert("You must provide positive digits (1-100)!");
+            return;
+        }
         $.ajax({
             url: 'http://localhost:4000/graphql',
             contentType: 'application/json',
@@ -63,7 +71,7 @@ $(document).ready(function () {
                     setMarketFillBatteryRatio(fillBatteryRatio: ${value / 100})
                 }`
             }),
-            success: function() {
+            success: function () {
                 $('#bufferRatioValue').html(value);
                 $('#bufferRatioSlider').val(value);
             },
@@ -83,13 +91,17 @@ $(document).ready(function () {
                     setMarketPrice(price: ${value})
                 }`
             }),
-            success: function() {
+            success: function () {
                 $('#priceRatioValue').html(value);
             }
         });
     });
     $('#setPrice').click(function () {
         const value = $('#priceValueText').val();
+        if (isNaN(value) || value < 0) {
+            alert("You must provide positive digits!");
+            return;
+        }
         $.ajax({
             url: 'http://localhost:4000/graphql',
             contentType: 'application/json',
@@ -99,7 +111,7 @@ $(document).ready(function () {
                     setMarketPrice(price: ${value})
                 }`
             }),
-            success: function() {
+            success: function () {
                 $('#priceRatioValue').html(value);
                 $('#marketPriceSlider').val(value);
             },
@@ -119,7 +131,7 @@ $(document).ready(function () {
                         useAutopilot(enable: ${false})
                     }`
                 }),
-                success: function() {
+                success: function () {
                     $(this).prop('checked', false);
                 }
 
@@ -134,13 +146,16 @@ $(document).ready(function () {
                         useAutopilot(enable: ${true})
                     }`
                 }),
-                success: function() {
+                success: function () {
                     $(this).prop('checked', true);
                 }
 
             });
         }
-    })
+    });
+    $('#timeBlock').change(function() {
+        $('#timeBlockValue').html(this.value);
+    });
     // TODO: Uncomment when moving to production!
     updateInformation();
     // setInterval(updateInformation, 5000);
@@ -150,8 +165,6 @@ $(document).ready(function () {
     // setInterval(getUsers, 100000);
     getOnlineUsers();
     // setInterval(getOnlineUsers, 10000)
-
-    
 });
 
 function updateInformation () {
@@ -161,11 +174,11 @@ function updateInformation () {
         type: 'POST',
         data: JSON.stringify({
             query: `{
-                market{timestamp, status, production, consumption, demand, price, fillBatteryRatio, recommendedProduction, recommendedPrice, autopilot, manualPrice, manualProduction}
+                manager{timestamp, status, production, consumption, demand, price, fillBatteryRatio, recommendedProduction, recommendedPrice, autopilot, manualPrice, manualProduction}
             }`
         }),
         success: function (res) {
-            const market = res.data.market;
+            const market = res.data.manager;
             $('#timestamp').html(market.timestamp);
             $('#status').html(market.status);
             $('#production').html(market.production);
@@ -181,7 +194,7 @@ function updateInformation () {
             $('#bufferRatioValue').html(market.fillBatteryRatio * 100);
             $('#marketPriceSlider').val(market.manualPrice);
             $('#priceRatioValue').html(market.manualPrice);
-            
+
             $('#autopilot').prop('checked', market.autopilot);
 
             // Chart
@@ -193,9 +206,9 @@ function updateInformation () {
             console.log(err);
         }
     });
-
 }
-function getBlackOut() {
+
+function getBlackOut () {
     $.ajax({
         url: 'http://localhost:4000/graphql',
         contentType: 'application/json',
@@ -212,15 +225,15 @@ function getBlackOut() {
         success: function (res) {
             res.data.isBlocked.forEach(obj => {
                 $('#blackout').empty();
-                if(obj.blackout) {
-                    $('#blackout').append('<li><a>' + obj.name + " at " + obj.timestamp + '</a></li>');
+                if (obj.blackout) {
+                    $('#blackout').append('<li><a>' + obj.name + ' at ' + obj.timestamp + '</a></li>');
                 }
             });
         }
     });
 }
 
-function getUsers() {
+function getUsers () {
     $.ajax({
         url: 'http://localhost:4000/graphql',
         contentType: 'application/json',
@@ -237,34 +250,32 @@ function getUsers() {
                 $("#users").append("<li><a href='/prosumer?username=" + obj.username + "'>" + obj.username + "</a></li>");
                 $("#users").append("<button type=button id=" + obj.username + " > Block </button>");
                 $("#users").on("click", "#" + obj.username, function() {
+                    console.log($("#timeBlock").val());
                     $.ajax({
                         url: 'http://localhost:4000/graphql',
                         contentType: 'application/json',
                         type: 'POST',
                         data: JSON.stringify({
                             query: `mutation {
-                                blockProsumer(prosumerName: "${obj.username}", timeout: ${$("#timeBlock").val()})
+                                blockProsumer(prosumerName: "${obj.username}", timeout: ${$('#timeBlock').val()})
                             }`
                         }),
-                        success: function(res) {
-                            $("#blockInfo").html(res.data.blockProsumer);
+                        success: function (res) {
+                            $('#blockInfo').html(res.data.blockProsumer);
                         },
-                        error: function(e) {
-                            $("#blockInfo").html("Error: " + e + "\n Did you provide digits?");
+                        error: function (e) {
+                            $('#blockInfo').html('Error: ' + e + '\n Did you provide digits?');
                         }
-                    })                    
-
+                    })
                 });
-            
             });
         }
     });
-  
 }
 /**
  * Only case we use REST API for simplicity
  */
-function getOnlineUsers() {
+function getOnlineUsers () {
     $.ajax({
         url: 'http://localhost:4000/online',
         contentType: 'application/json',

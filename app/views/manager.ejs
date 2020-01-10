@@ -50,21 +50,21 @@
           <h2>Plant electricity settings</h2>
           
           <div>
-            <p>Electricity manual production <input type="text" id="productionValueText"><button id="setProductionValue">Set</button></p>
+            <p>Electricity manual production <input type="text" id="productionValueText"> Wh <button id="setProductionValue">Set</button></p>
             <input type="range" id="productionSlider" min="0" max="10000" />
-            <p>Value: <span id="productionValue"></span></p>
+            <p>Value: <span id="productionValue"></span> Wh</p>
           </div>
 
           <div>
-            <p>Buffer ratio <input type="text" id="bufferValueText">%<button id="setBufferRatio">Set</button></p>
+            <p>Buffer ratio <input type="text" id="bufferValueText">% <button id="setBufferRatio">Set</button></p>
             <input type="range" id="bufferRatioSlider" min="0" max="100" />
             <p>Value: <span id="bufferRatioValue"></span>%</p>
           </div>
 
           <div>
-            <p>Market manual price <input type="text" id="priceValueText"><button id="setPrice">Set</button></p>
+            <p>Market manual price <input type="text" id="priceValueText"> SEK <button id="setPrice">Set</button></p>
             <input type="range" id="marketPriceSlider" min="0" max="100" />
-            <p>Value: <span id="priceRatioValue"></span></p>
+            <p>Value: <span id="priceRatioValue"></span> SEK</p>
           </div>
 
 
@@ -94,8 +94,9 @@
           </ul>
         </div>
         <div class="col-md">
-          <p>Users:</p>
-          <input type=text id="timeBlock" placeholder=Time />
+          <p>Prosumers:</p>
+          <input type=range id="timeBlock" min="10" max="100" />
+          <p>seconds: <span id="timeBlockValue">10 - 100</span> seconds</p>
           <p id="blockInfo"></p>
           <ol id="users">
           </ol>

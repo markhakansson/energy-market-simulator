@@ -36,3 +36,4 @@
 |    2020-01-06|   5      Data from API to front-end impl for manager (mostly AJAX), text input for better controll and fixes for the sliders 
 |    2020-01-07|   6      Prosumer fixes in API, added some more functionality for updating ratio, delete user now removes all docs assoc in db, implemented basic block prosumer functionality
 |    2020-01-08|   4      Fixed issues in prosumer (missing values), api fixes, and implementation of blackout prosumer in manager, improved login/signup ... 
+|    2020-01-09|   3      Discussing of project (issues, focus and what to mention in report). Report.
