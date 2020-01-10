@@ -15,9 +15,22 @@ const Logger = require('./config/logger');
 // Loads the '.env' file in root to process.env.
 require('dotenv').config();
 
-// require('./sim/controller/main').main();
+require('./sim/controller/main').main();
 
-mongoose.connect(process.env.DB_HOST, { useNewUrlParser: true, useUnifiedTopology: true });
+// See https://stackoverflow.com/a/42929869 on how to add user
+mongoose.connect(process.env.DB_HOST, {
+    user: process.env.DB_USER,
+    pass: process.env.DB_PASS,
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(
+    () => {
+        Logger.info('Successfully connected to database.');
+    },
+    err => {
+        Logger.error('Could not connect to database. Error ' + err);
+    }
+);
 mongoose.connection.on('error', console.log.bind(console, 'CONNECTION ERROR!'));
 mongoose.connection.on('disconnected', console.log.bind(console, 'CONNECTION DISCONNECTED!'))
 
@@ -67,7 +80,10 @@ app.use(
         // A session is uninitialized when it is new but not modified.
         // Choosing false is useful for implementing login sessions, reducing server storage usage,
         //  or complying with laws that require permission before setting a cookie.
-        cookie: { maxAge: false }
+        cookie: {
+            maxAge: false,
+            httpOnly: true
+        }
     })
 );
 

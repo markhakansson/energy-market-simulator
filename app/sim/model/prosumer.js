@@ -92,13 +92,13 @@ class ProsumerSim {
             );
         } else if (this.randomizeTurbineBreaking()) {
             self.production = windSpeed * 250;
-            const prodDiff = self.production - self.consumption;
+/*             const prodDiff = self.production - self.consumption;
 
             // Check if there is an excessive production of power
             if (prodDiff > 0) {
                 this.chargeBattery(self.fillBatteryRatio * prodDiff);
                 this.sellToMarket((1 - self.fillBatteryRatio) * prodDiff);
-            }
+            } */
         }
     }
 
@@ -122,16 +122,28 @@ class ProsumerSim {
                 Logger.error('When genereting gaussian distribution in consumer [' + self.prosumer.name + '] caught error: ' + err);
                 self.consumption = Math.random() * 5000;
             }
-
-            const consDiff = self.consumption - self.production;
-
-            // Check if household's demand exceeds production
-            if (consDiff > 0) {
-                this.useBattery(self.useBatteryRatio * consDiff);
-                this.buyFromMarket((1 - self.useBatteryRatio) * consDiff);
-            }
+        // Rare cases for when consumption is zero
         } else {
             self.consumption = Math.random() * 5000;
+        }
+
+        const consDiff = self.consumption - self.production;
+
+        // Check if household's demand exceeds production
+        if (consDiff > 0) {
+            this.useBattery(self.useBatteryRatio * consDiff);
+            this.buyFromMarket((1 - self.useBatteryRatio) * consDiff);
+        }
+    }
+
+    handleOverproduction () {
+        const self = this.prosumer;
+        const prodDiff = self.production - self.consumption;
+
+        // Check if there is an excessive production of power
+        if (prodDiff > 0) {
+            this.chargeBattery(self.fillBatteryRatio * prodDiff);
+            this.sellToMarket((1 - self.fillBatteryRatio) * prodDiff);
         }
     }
 
@@ -221,9 +233,9 @@ class ProsumerSim {
             );
             self.bought = 0;
         } else if (boughtEnergy < energy) {
-            self.consumption -= (energy - boughtEnergy);
+            // self.consumption -= (energy - boughtEnergy);
             self.bought = boughtEnergy;
-            self.blackout = false;
+            self.blackout = true;
         } else {
             self.bought = boughtEnergy;
             self.blackout = false;

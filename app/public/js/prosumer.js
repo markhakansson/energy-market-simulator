@@ -10,9 +10,8 @@ $(document).ready(function () {
                     updateUseBatteryRatio(useBatteryRatio: ${value / 100})
                 }`
             }),
-            success: function() {
+            success: function () {
                 $('#useBatteryRatioValue').html(value);
-
             }
         });
     });
@@ -31,16 +30,14 @@ $(document).ready(function () {
                     updateUseBatteryRatio(useBatteryRatio: ${value / 100})
                 }`
             }),
-            success: function() {
+            success: function () {
                 $('#useBatteryRatioValue').html(value);
                 $('#useBatteryRatioSlider').val(value);
-
             },
-            error: function(e) {
-                alert("Bad request, did you input digits?");
+            error: function (e) {
+                alert('Bad request, did you input digits?');
             }
         });
-
     });
     $('#fillBatteryRatioSlider').change(function () {
         const value = this.value;
@@ -53,9 +50,8 @@ $(document).ready(function () {
                     updateFillBatteryRatio(fillBatteryRatio: ${value / 100})
                 }`
             }),
-            success: function() {
+            success: function () {
                 $('#fillBatteryRatioValue').html(value);
-
             }
         });
     });
@@ -74,25 +70,17 @@ $(document).ready(function () {
                     updateFillBatteryRatio(fillBatteryRatio: ${value / 100})
                 }`
             }),
-            success: function() {
+            success: function () {
                 $('#fillBatteryRatioValue').html(value);
                 $('#fillBatteryRatioSlider').val(value);
-
             },
-            error: function(e) {
+            error: function (e) {
                 console.log(e);
-                alert("Bad request, did you input digits?");
+                alert('Bad request, did you input digits?');
             }
         });
-
     });
- 
-    // mutation { updatePassword(oldPassword: "test", newPassword: "f") }
-    updateInformation();
-
-    // setInterval(updateInformation, 5000);
-    // setInterval(updateInformation, 100);
-    
+    setInterval(updateInformation, 5000);
 });
 
 function updateInformation () {
@@ -111,6 +99,8 @@ function updateInformation () {
             $('#timestamp').html(prosumer.timestamp);
             $('#production').html(prosumer.production.toFixed(2));
             $('#consumption').html(prosumer.consumption.toFixed(2));
+            $('#useBatteryRatioValue').html(prosumer.useBatteryRatio.toFixed(2));
+            $('#fillBatteryRatioValue').html(prosumer.fillBatteryRatio.toFixed(2));
             $('#netproduction').html((Number(prosumer.production) - Number(prosumer.consumption)).toFixed(2));
             $('#batterycap').html(prosumer.currBatteryCap.toFixed(2));
 
@@ -130,7 +120,6 @@ function updateInformation () {
             console.log(err);
         }
     });
-    
 }
 
 function updateMarketInformation (name) {
@@ -171,10 +160,10 @@ function updateWindspeed (location) {
     });
 }
 
-function deleteUser() {
+function deleteUser () {
     const password = $('#pass').val();
-    if(password == null || password == "") {
-        $('#deleteUserMsg').html("Please provide your password!");
+    if (password == null || password == '') {
+        $('#deleteUserMsg').html('Please provide your password!');
         return;
     }
     $.ajax({
@@ -187,16 +176,14 @@ function deleteUser() {
            }`
         }),
         success: function (res) {
-            if(res.data.deleteUser) {
-                $('#deleteUserMsg').html("User deleted! Redirecting...");
-                setTimeout(function() {
-                    window.location.href = "logout"
+            if (res.data.deleteUser) {
+                $('#deleteUserMsg').html('User deleted! Redirecting...');
+                setTimeout(function () {
+                    window.location.href = 'logout'
                 }, 2000);
             } else {
-                $('#deleteUserMsg').html("Incorrect password!");
-
+                $('#deleteUserMsg').html('Incorrect password!');
             }
-            
         }
     });
 }
