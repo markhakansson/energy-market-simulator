@@ -47,8 +47,11 @@ const UserQueries = {
             if (!req.session.user) return 'Not authenticated!';
             if (!req.session.manager) return 'Not authorized!';
 
-            const users = await User.find({}, { username: 1, _id: 0 });
-            return users;
+            // all users
+            // const users = await User.find({}, { username: 1, _id: 0 }); 
+
+            // only prosumers
+            return User.aggregate([ { $match: { manager: false } }, { $project: { _id: 0, username: 1 } } ]);
         }
     }
 };

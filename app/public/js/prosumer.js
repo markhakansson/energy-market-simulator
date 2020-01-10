@@ -1,30 +1,4 @@
 $(document).ready(function () {
-    $('#useBatteryRatioSlider').click(function () {
-        const value = $('#useBatteryRatioValue').text();
-        $.ajax({
-            url: 'http://localhost:4000/graphql',
-            contentType: 'application/json',
-            type: 'POST',
-            data: JSON.stringify({
-                query: `mutation {
-                    updateUseBatteryRatio(useBatteryRatio: ${value / 100})
-                }`
-            })
-        });
-    });
-    $('#fillBatteryRatioSlider').click(function () {
-        const value = $('#fillBatteryRatioValue').text();
-        $.ajax({
-            url: 'http://localhost:4000/graphql',
-            contentType: 'application/json',
-            type: 'POST',
-            data: JSON.stringify({
-                query: `mutation {
-                    updateFillBatteryRatio(fillBatteryRatio: ${value / 100})
-                }`
-            })
-        });
-    });
     $('#useBatteryRatioSlider').change(function () {
         const value = this.value;
         $.ajax({
@@ -43,6 +17,10 @@ $(document).ready(function () {
     });
     $('#setUseBatteryRatioValue').click(function () {
         const value = $('#useBatteryRatioText').val();
+        if (isNaN(value) || value < 0 || value > 100) {
+            alert("You must provide positive digits (1-100)!");
+            return;
+        }
         $.ajax({
             url: 'http://localhost:4000/graphql',
             contentType: 'application/json',
@@ -79,6 +57,10 @@ $(document).ready(function () {
     });
     $('#setFillBatteryRatio').click(function () {
         const value = $('#fillBatteryRatioText').val();
+        if (isNaN(value) || value < 0 || value > 100) {
+            alert("You must provide positive digits (1-100)!");
+            return;
+        }
         $.ajax({
             url: 'http://localhost:4000/graphql',
             contentType: 'application/json',
@@ -123,10 +105,10 @@ function updateInformation () {
             $('#batterycap').html(prosumer.currBatteryCap.toFixed(2));
 
             //Sliders
-            $('#useBatteryRatioValue').html(prosumer.useBatteryRatio);
-            $('#useBatteryRatioSlider').val(prosumer.useBatteryRatio);
-            $('#fillBatteryRatioValue').html(prosumer.fillBatteryRatio);
-            $('#fillBatteryRatioSlider').val(prosumer.fillBatteryRatio);
+            $('#useBatteryRatioValue').html(prosumer.useBatteryRatio * 100);
+            $('#useBatteryRatioSlider').val(prosumer.useBatteryRatio * 100);
+            $('#fillBatteryRatioValue').html(prosumer.fillBatteryRatio * 100);
+            $('#fillBatteryRatioSlider').val(prosumer.fillBatteryRatio * 100);
 
             updateMarketInformation(market);
             updateWindspeed(market);
