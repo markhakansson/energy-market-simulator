@@ -15,7 +15,7 @@ const Logger = require('./config/logger');
 // Loads the '.env' file in root to process.env.
 require('dotenv').config();
 
-// require('./sim/controller/main').main();
+require('./sim/controller/main').main();
 
 // See https://stackoverflow.com/a/42929869 on how to add user
 mongoose.connect(process.env.DB_HOST, {
