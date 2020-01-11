@@ -20,7 +20,7 @@ class ProsumerSim {
             blackout: false,
             turbineStatus: 'WORKING',
             turbineWorking: true,
-            turbineBreakagePercent: 0.2,
+            turbineBreakPercent: 0.2,
             blocked: false,
             blockedTimer: 0.0
         });
@@ -71,7 +71,7 @@ class ProsumerSim {
         if (this.turbineWorking) {
             const rand = Math.random();
 
-            if (rand <= self.turbineBreakagePercent) {
+            if (rand <= self.turbineBreakPercent) {
                 self.production = 0;
                 this.turbineWorking = false;
                 this.turbineStatus = 'BROKEN! REPAIRMAN CALLED!';
@@ -279,7 +279,7 @@ class ProsumerSim {
             blackout: self.blackout,
             turbineStatus: this.turbineStatus,
             turbineWorking: this.turbineWorking,
-            turbineBreakPercent: self.turbineBreakagePercent,
+            turbineBreakPercent: self.turbineBreakPercent,
             blocked: this.blocked,
             blockTimer: this.blockTimer
         });
@@ -294,12 +294,14 @@ class ProsumerSim {
                 '\n Consuming: ' + self.consumption + ' Wh' +
                 '\n Bought energy: ' + self.bought + ' Wh' +
                 '\n Price per Wh is: ' + this.market.market.price + ' SEK' +
-                '\n Battery: ' + self.currBatteryCap + ' Wh' +
+                '\n Battery cap: ' + self.currBatteryCap + ' Wh' +
+                '\n Max battery cap: ' + self.maxBatteryCap + ' Wh' + 
                 '\n Blackout: ' + self.blackout +
                 '\n Turbine status: ' + this.turbineStatus +
                 '\n Fill battery ratio: ' + self.fillBatteryRatio +
                 '\n Use battery ratio: ' + self.useBatteryRatio +
-                '\n Blocked from market: ' + this.blocked
+                '\n Blocked from market: ' + this.blocked + 
+                '\n Turbine break percent: ' + self.turbineBreakPercent
                 )
             }
         });
