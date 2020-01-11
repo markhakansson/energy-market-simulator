@@ -39,3 +39,4 @@
 | 2020-01-07 | 6 | Update db models. Work on catching errors, find and fix bugs |
 | 2020-01-08 | 6 | Fix API to throw correct errors. Fix blackouts in prosumer sim |
 | 2020-01-09 | 6 | Work on settings up AWS. Add prettier things to front-end |
+| 2020-01-10 | 6 | Update login and signup with new design. Update everything to use bootstrap |
