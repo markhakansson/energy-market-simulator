@@ -102,6 +102,12 @@ async function searchForNewUsers () {
     }
 }
 
+async function removeUser (name) {
+    const index = prosumerNames.indexOf(name);
+    prosumerNames.splice(index, 1);
+    prosumerMap.delete(name);
+}
+
 function simLoop () {
     setInterval(async function () {
         searchForNewUsers();
@@ -111,10 +117,14 @@ function simLoop () {
         MARKET.generateProduction();
 
         for (const [_, prosumer] of prosumerMap) {
-            await prosumer.fetchData();
+            await prosumer.fetchData().catch(
+                async (err) => {
+                    Logger.warn('User has been deleted from simulator because of error: ' + err);
+                    await removeUser(prosumer.prosumer.name);
+                }
+            );
             prosumer.generateProduction(WEATHER.weather.wind_speed);
             prosumer.generateConsumption();
-            prosumer.handleOverproduction();
         }
 
         for (const [_, consumer] of consumerMap) {
