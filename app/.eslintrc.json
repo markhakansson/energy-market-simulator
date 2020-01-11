@@ -48,6 +48,7 @@
         "key-spacing": "warn",
         "spaced-comment": "warn",
         "no-new": "warn",
-        "no-global-assign": "warn"
+        "no-global-assign": "warn",
+        "array-bracket-spacing": "warn"
     }
 }
