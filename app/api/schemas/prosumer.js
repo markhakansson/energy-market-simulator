@@ -86,7 +86,7 @@ const ProsumerQueries = {
         resolve (parent, args, req) {
             if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
             if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
-            return Prosumer.aggregate([ { $sort:  { name: 1, timestamp: 1} }, { $group:  { _id:'$name', name: {$last: '$name'}, timestamp: {$last: '$timestamp'}, blackout: {$last: '$blackout' } } } ]);
+            return Prosumer.aggregate([{ $sort: { name: 1, timestamp: 1 } }, { $group: { _id: '$name', name: { $last: '$name' }, timestamp: { $last: '$timestamp' }, blackout: { $last: '$blackout' } } }]);
         }
     }
 };
