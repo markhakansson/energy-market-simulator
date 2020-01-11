@@ -13,7 +13,7 @@ class ProsumerSim {
             consumption: 0,
             production: 0,
             currBatteryCap: 0,
-            maxBatteryCap: 0,
+            maxBatteryCap: 10000,
             fillBatteryRatio: 0.0,
             useBatteryRatio: 0.0,
             bought: 0.0,
@@ -40,17 +40,30 @@ class ProsumerSim {
      */
     async fetchData () {
         const self = this;
-        await Prosumer.findOne({ name: this.prosumer.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
-            if (doc.market === 'none' || err) {
-                Logger.error('Matching prosumer with name [' + self.prosumer.name + '] was not found in the database!');
-                self.prosumer.save().catch((err) => {
+
+        await Prosumer.findOne({ name: this.prosumer.name }).sort({ timestamp: -1 }).exec()
+            .then(
+                async doc => {
+                    if (doc == null) {
+                        throw new Error('Prosumer does not exist');
+                    } else if (doc.market === 'none') {
+                        Logger.error('Matching prosumer with name [' + self.prosumer.name + '] was not found in the database!');
+                        await self.prosumer.save().catch((err) => {
+                            throw err;
+                        })
+                    } else {
+                        self.prosumer = doc;
+                    }
+                },
+                async err => {
+                    throw new Error(err);
+                }
+            )
+            .catch(
+                async err => {
                     throw err;
-                });
-                // throw new Error('Matching prosumer with name [' + self.prosumer.name + '] was not found in the database!');
-            } else {
-                self.prosumer = doc;
-            }
-        });
+                }
+            )
 
         if (self.blocked && !this.blockTimerStarted) {
             this.blocked = true;
@@ -92,13 +105,13 @@ class ProsumerSim {
             );
         } else if (this.randomizeTurbineBreaking()) {
             self.production = windSpeed * 250;
-/*             const prodDiff = self.production - self.consumption;
+            const prodDiff = self.production - self.consumption;
 
             // Check if there is an excessive production of power
             if (prodDiff > 0) {
                 this.chargeBattery(self.fillBatteryRatio * prodDiff);
                 this.sellToMarket((1 - self.fillBatteryRatio) * prodDiff);
-            } */
+            }
         }
     }
 
@@ -173,15 +186,19 @@ class ProsumerSim {
     chargeBattery (energy) {
         const self = this.prosumer;
 
+        console.log('# Charge battery energy: ' + energy);
+
         if (energy < 0 || energy == null) {
             Logger.error(
                 'When charging battery in prosumer [' + self.name +
                 '], expected positive Number. Recieved ' + energy + '.'
             );
         } else if (self.currBatteryCap + energy >= self.maxBatteryCap) {
+            console.log('# Battery is full, selling to market');
             self.currBatteryCap = self.maxBatteryCap;
             this.sellToMarket(self.currBatteryCap + energy - self.maxBatteryCap);
         } else {
+            console.log('# Adding to energy to battery');
             self.currBatteryCap += energy;
         }
     }
@@ -295,12 +312,12 @@ class ProsumerSim {
                 '\n Bought energy: ' + self.bought + ' Wh' +
                 '\n Price per Wh is: ' + this.market.market.price + ' SEK' +
                 '\n Battery cap: ' + self.currBatteryCap + ' Wh' +
-                '\n Max battery cap: ' + self.maxBatteryCap + ' Wh' + 
+                '\n Max battery cap: ' + self.maxBatteryCap + ' Wh' +
                 '\n Blackout: ' + self.blackout +
                 '\n Turbine status: ' + this.turbineStatus +
                 '\n Fill battery ratio: ' + self.fillBatteryRatio +
                 '\n Use battery ratio: ' + self.useBatteryRatio +
-                '\n Blocked from market: ' + this.blocked + 
+                '\n Blocked from market: ' + this.blocked +
                 '\n Turbine break percent: ' + self.turbineBreakPercent
                 )
             }
