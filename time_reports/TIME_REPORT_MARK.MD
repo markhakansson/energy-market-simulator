@@ -40,3 +40,5 @@
 | 2020-01-08 | 6 | Fix API to throw correct errors. Fix blackouts in prosumer sim |
 | 2020-01-09 | 6 | Work on settings up AWS. Add prettier things to front-end |
 | 2020-01-10 | 6 | Update login and signup with new design. Update everything to use bootstrap |
+| 2020-01-11 | 2 | Fix bugs. Work on frontend to make it prettier. |
+| 2020-01-12 | 2 | Fix bugs. |
