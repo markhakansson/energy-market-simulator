@@ -1,6 +1,6 @@
 $(document).ready(function () {
-    $('#useBatteryRatioSlider').click(function () {
-        const value = $('#useBatteryRatioValue').text();
+    $('#useBatteryRatioSlider').change(function () {
+        const value = this.value;
         $.ajax({
             url: 'http://localhost:4000/graphql',
             contentType: 'application/json',
@@ -9,11 +9,38 @@ $(document).ready(function () {
                 query: `mutation {
                     updateUseBatteryRatio(useBatteryRatio: ${value / 100})
                 }`
-            })
+            }),
+            success: function () {
+                $('#useBatteryRatioValue').html(value);
+            }
         });
     });
-    $('#fillBatteryRatioSlider').click(function () {
-        const value = $('#fillBatteryRatioValue').text();
+    $('#setUseBatteryRatioValue').click(function () {
+        const value = $('#useBatteryRatioText').val();
+        if (isNaN(value) || value < 0 || value > 100) {
+            alert("You must provide positive digits (1-100)!");
+            return;
+        }
+        $.ajax({
+            url: 'http://localhost:4000/graphql',
+            contentType: 'application/json',
+            type: 'POST',
+            data: JSON.stringify({
+                query: `mutation {
+                    updateUseBatteryRatio(useBatteryRatio: ${value / 100})
+                }`
+            }),
+            success: function () {
+                $('#useBatteryRatioValue').html(value);
+                $('#useBatteryRatioSlider').val(value);
+            },
+            error: function (e) {
+                alert('Bad request, did you input digits?');
+            }
+        });
+    });
+    $('#fillBatteryRatioSlider').change(function () {
+        const value = this.value;
         $.ajax({
             url: 'http://localhost:4000/graphql',
             contentType: 'application/json',
@@ -22,34 +49,69 @@ $(document).ready(function () {
                 query: `mutation {
                     updateFillBatteryRatio(fillBatteryRatio: ${value / 100})
                 }`
-            })
+            }),
+            success: function () {
+                $('#fillBatteryRatioValue').html(value);
+            }
         });
     });
-    // mutation { updatePassword(oldPassword: "test", newPassword: "f") }
-    setInterval(updateInformation, 5000);
-    // setInterval(updateInformation, 100);
+    $('#setFillBatteryRatio').click(function () {
+        const value = $('#fillBatteryRatioText').val();
+        if (isNaN(value) || value < 0 || value > 100) {
+            alert("You must provide positive digits (1-100)!");
+            return;
+        }
+        $.ajax({
+            url: 'http://localhost:4000/graphql',
+            contentType: 'application/json',
+            type: 'POST',
+            data: JSON.stringify({
+                query: `mutation {
+                    updateFillBatteryRatio(fillBatteryRatio: ${value / 100})
+                }`
+            }),
+            success: function () {
+                $('#fillBatteryRatioValue').html(value);
+                $('#fillBatteryRatioSlider').val(value);
+            },
+            error: function (e) {
+                console.log(e);
+                alert('Bad request, did you input digits?');
+            }
+        });
+    });
     updateInformation();
-    
+    setInterval(updateInformation, 5000);
 });
 
-function updateInformation (user) {
+function updateInformation () {
     $.ajax({
         url: 'http://localhost:4000/graphql',
         contentType: 'application/json',
         type: 'POST',
         data: JSON.stringify({
             query: `{
-                prosumer{production,consumption,currBatteryCap, market, timestamp}
+                prosumer{production,consumption,currBatteryCap, market, timestamp, fillBatteryRatio, useBatteryRatio, turbineStatus}
             }`
         }),
-        success: function (result) {
-            const prosumer = result.data.prosumer;
+        success: function (res) {
+            const prosumer = res.data.prosumer;
             const market = String(prosumer.market);
             $('#timestamp').html(prosumer.timestamp);
             $('#production').html(prosumer.production.toFixed(2));
             $('#consumption').html(prosumer.consumption.toFixed(2));
+            $('#useBatteryRatioValue').html(prosumer.useBatteryRatio.toFixed(2));
+            $('#fillBatteryRatioValue').html(prosumer.fillBatteryRatio.toFixed(2));
             $('#netproduction').html((Number(prosumer.production) - Number(prosumer.consumption)).toFixed(2));
             $('#batterycap').html(prosumer.currBatteryCap.toFixed(2));
+            $('#turbinestatus').html(prosumer.turbineStatus);
+
+            //Sliders
+            $('#useBatteryRatioValue').html(prosumer.useBatteryRatio * 100);
+            $('#useBatteryRatioSlider').val(prosumer.useBatteryRatio * 100);
+            $('#fillBatteryRatioValue').html(prosumer.fillBatteryRatio * 100);
+            $('#fillBatteryRatioSlider').val(prosumer.fillBatteryRatio * 100);
+
             updateMarketInformation(market);
             updateWindspeed(market);
             if (productionChart !== null) {
@@ -60,7 +122,6 @@ function updateInformation (user) {
             console.log(err);
         }
     });
-    
 }
 
 function updateMarketInformation (name) {
@@ -70,12 +131,11 @@ function updateMarketInformation (name) {
         type: 'POST',
         data: JSON.stringify({
             query: `{
-                market(name:"${name}"){price}
+                marketPrice(name:"${name}")
             }`
         }),
-        success: function (result) {
-            console.log(result);
-            $('#marketprice').html(result.data.market.price.toFixed(2));
+        success: function (res) {
+            $('#marketprice').html(res.data.marketPrice.toFixed(2));
         },
         error: function (err) {
             console.log(err);
@@ -94,7 +154,6 @@ function updateWindspeed (location) {
             }`
         }),
         success: function (result) {
-            console.log(result);
             $('#windspeed').html(result.data.weather.wind_speed.toFixed(2));
         },
         error: function (err) {
@@ -103,10 +162,11 @@ function updateWindspeed (location) {
     });
 }
 
-function deleteUser() {
-    let password = prompt("Please enter your password");
-    if(password == null || password == "") {
-        $('#deleteUserMsg').html("Please provide your password");
+function deleteUser () {
+    const password = $('#pass').val();
+    if (password == null || password == '') {
+        $('#deleteUserMsg').html('Please provide your password!');
+        return;
     }
     $.ajax({
         url: 'http://localhost:4000/graphql',
@@ -118,16 +178,14 @@ function deleteUser() {
            }`
         }),
         success: function (res) {
-            if(res.data.deleteUser) {
-                $('#deleteUserMsg').html("User deleted! Redirecting...");
-                setTimeout(function() {
-                    window.location.href = "logout"
+            if (res.data.deleteUser) {
+                $('#deleteUserMsg').html('User deleted! Redirecting...');
+                setTimeout(function () {
+                    window.location.href = 'logout'
                 }, 2000);
             } else {
-                $('#deleteUserMsg').html("Incorrect password!");
-
+                $('#deleteUserMsg').html('Incorrect password!');
             }
-            
         }
     });
 }

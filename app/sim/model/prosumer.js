@@ -13,14 +13,14 @@ class ProsumerSim {
             consumption: 0,
             production: 0,
             currBatteryCap: 0,
-            maxBatteryCap: 0,
+            maxBatteryCap: 10000,
             fillBatteryRatio: 0.0,
             useBatteryRatio: 0.0,
             bought: 0.0,
             blackout: false,
             turbineStatus: 'WORKING',
             turbineWorking: true,
-            turbineBreakagePercent: 0.2,
+            turbineBreakPercent: 0.05,
             blocked: false,
             blockedTimer: 0.0
         });
@@ -40,25 +40,42 @@ class ProsumerSim {
      */
     async fetchData () {
         const self = this;
-        await Prosumer.findOne({ name: this.prosumer.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
-            if (err) {
-                Logger.error('Matching prosumer with name [' + self.prosumer.name + '] was not found in the database!');
-                self.prosumer.save().catch((err) => {
-                    throw err;
-                });
-                // throw new Error('Matching prosumer with name [' + self.prosumer.name + '] was not found in the database!');
-            } else {
-                self.prosumer = doc;
-            }
-        });
 
-        if (self.blocked && !this.blockTimerStarted) {
-            this.blocked = true;
-            this.blockTimerStarted = true;
+        await Prosumer.findOne({ name: this.prosumer.name }).sort({ timestamp: -1 }).exec()
+            .then(
+                async doc => {
+                    if (doc == null) {
+                        throw new Error('Prosumer does not exist');
+                    } else if (doc.market === 'none') {
+                        Logger.error('Matching prosumer with name [' + self.prosumer.name + '] was not found in the database!');
+                        await self.prosumer.save().catch((err) => {
+                            throw err;
+                        })
+                    } else {
+                        self.prosumer = doc;
+                    }
+                },
+                async err => {
+                    throw new Error(err);
+                }
+            )
+            .catch(
+                async err => {
+                    throw err;
+                }
+            )
+
+        if (self.prosumer.blocked && !self.blockTimerStarted) {
+            self.blocked = true;
+            self.blockTimerStarted = true;
+
             setTimeout(() => {
-                this.blocked = false;
-                this.blockTimerStarted = false;
-            }, this.market.blockTimer);
+                self.blocked = false;
+                // Needs the second timeout or else it will break
+                setTimeout(() => {
+                    self.blockTimerStarted = false;
+                }, this.timeMultiplier);
+            }, self.prosumer.blockedTimer * 1000);
         }
     }
 
@@ -71,7 +88,7 @@ class ProsumerSim {
         if (this.turbineWorking) {
             const rand = Math.random();
 
-            if (rand <= self.turbineBreakagePercent) {
+            if (rand <= self.turbineBreakPercent) {
                 self.production = 0;
                 this.turbineWorking = false;
                 this.turbineStatus = 'BROKEN! REPAIRMAN CALLED!';
@@ -90,9 +107,7 @@ class ProsumerSim {
                 'When generating production in prosumer [' + self.name +
                 '], expected positive Number. Received: ' + windSpeed + '.'
             );
-        }
-
-        if (this.randomizeTurbineBreaking()) {
+        } else if (this.randomizeTurbineBreaking()) {
             self.production = windSpeed * 250;
             const prodDiff = self.production - self.consumption;
 
@@ -112,7 +127,9 @@ class ProsumerSim {
 
         // Threshold of 4 kWh. If it reaches over that point the distribution will favor smaller wind speeds.
         if (consumption > 0) {
-            if (consumption < 40) {
+            if (consumption < 10) {
+                arr = [0.8 * consumption, 1.2 * consumption, 1.4 * consumption];
+            } else if (consumption < 40) {
                 arr = [0.8 * consumption, consumption, 1.2 * consumption];
             } else {
                 arr = [0.8 * consumption, 0.9 * consumption, 0.95 * consumption, 1.1 * consumption];
@@ -121,19 +138,31 @@ class ProsumerSim {
             try {
                 self.consumption = gauss.gaussLimit(arr, 4, 0.05, 0, 60) * 100;
             } catch (err) {
-                Logger.error('When genereting gaussian distribution in consumer [' + self.prosumer.name + '] caught error: ' + err);
+                Logger.error('When genereting gaussian distribution in prosumer [' + self.prosumer.name + '] caught error: ' + err);
                 self.consumption = Math.random() * 5000;
             }
-
-            const consDiff = self.consumption - self.production;
-
-            // Check if household's demand exceeds production
-            if (consDiff > 0) {
-                this.useBattery(self.useBatteryRatio * consDiff);
-                this.buyFromMarket((1 - self.useBatteryRatio) * consDiff);
-            }
+        // Rare cases for when consumption is zero
         } else {
             self.consumption = Math.random() * 5000;
+        }
+
+        const consDiff = self.consumption - self.production;
+
+        // Check if household's demand exceeds production
+        if (consDiff > 0) {
+            this.useBattery(self.useBatteryRatio * consDiff);
+            this.buyFromMarket((1 - self.useBatteryRatio) * consDiff);
+        }
+    }
+
+    handleOverproduction () {
+        const self = this.prosumer;
+        const prodDiff = self.production - self.consumption;
+
+        // Check if there is an excessive production of power
+        if (prodDiff > 0) {
+            this.chargeBattery(self.fillBatteryRatio * prodDiff);
+            this.sellToMarket((1 - self.fillBatteryRatio) * prodDiff);
         }
     }
 
@@ -150,7 +179,7 @@ class ProsumerSim {
         });
         tools.sleep(5 * this.timeMultiplier).then(() => {
             this.turbineWorking = true;
-            this.turbineStatus = 'WORKING!';
+            this.turbineStatus = 'WORKING';
         });
     }
 
@@ -163,15 +192,19 @@ class ProsumerSim {
     chargeBattery (energy) {
         const self = this.prosumer;
 
+        console.log('# Charge battery energy: ' + energy);
+
         if (energy < 0 || energy == null) {
             Logger.error(
                 'When charging battery in prosumer [' + self.name +
                 '], expected positive Number. Recieved ' + energy + '.'
             );
         } else if (self.currBatteryCap + energy >= self.maxBatteryCap) {
+            console.log('# Battery is full, selling to market');
             self.currBatteryCap = self.maxBatteryCap;
             this.sellToMarket(self.currBatteryCap + energy - self.maxBatteryCap);
         } else {
+            console.log('# Adding to energy to battery');
             self.currBatteryCap += energy;
         }
     }
@@ -211,7 +244,7 @@ class ProsumerSim {
         const boughtEnergy = this.market.buy(energy);
 
         if (boughtEnergy == null) {
-            Logger.warn(
+            Logger.error(
                 'When buying energy from market in prosumer [' + self.name +
                 '], expected Number but received "null".'
             );
@@ -223,9 +256,9 @@ class ProsumerSim {
             );
             self.bought = 0;
         } else if (boughtEnergy < energy) {
-            self.consumption -= (energy - boughtEnergy);
+            // self.consumption -= (energy - boughtEnergy);
             self.bought = boughtEnergy;
-            self.blackout = false;
+            self.blackout = true;
         } else {
             self.bought = boughtEnergy;
             self.blackout = false;
@@ -269,11 +302,10 @@ class ProsumerSim {
             blackout: self.blackout,
             turbineStatus: this.turbineStatus,
             turbineWorking: this.turbineWorking,
-            turbineBreakPercent: self.turbineBreakagePercent,
+            turbineBreakPercent: self.turbineBreakPercent,
             blocked: this.blocked,
-            blockTimer: this.blockTimer
+            blockedTimer: self.blockedTimer
         });
-
         self.save((err) => {
             if (err) {
                 Logger.error('Could not save prosumer to database: ' + err);
@@ -285,12 +317,14 @@ class ProsumerSim {
                 '\n Consuming: ' + self.consumption + ' Wh' +
                 '\n Bought energy: ' + self.bought + ' Wh' +
                 '\n Price per Wh is: ' + this.market.market.price + ' SEK' +
-                '\n Battery: ' + self.currBatteryCap + ' Wh' +
+                '\n Battery cap: ' + self.currBatteryCap + ' Wh' +
+                '\n Max battery cap: ' + self.maxBatteryCap + ' Wh' +
                 '\n Blackout: ' + self.blackout +
                 '\n Turbine status: ' + this.turbineStatus +
                 '\n Fill battery ratio: ' + self.fillBatteryRatio +
                 '\n Use battery ratio: ' + self.useBatteryRatio +
-                '\n Blocked from market: ' + this.blocked
+                '\n Blocked from market: ' + this.blocked +
+                '\n Turbine break percent: ' + self.turbineBreakPercent
                 )
             }
         });

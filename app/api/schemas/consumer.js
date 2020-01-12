@@ -1,6 +1,7 @@
 const graphql = require('graphql');
 const Consumer = require('../../db/model/consumer');
 const graphqlIsoDate = require('graphql-iso-date');
+const errorMsg = require('./errors');
 
 const {
     GraphQLObjectType, GraphQLString, GraphQLID, GraphQLList,
@@ -32,19 +33,34 @@ const ConsumerQueries = {
         type: ConsumerType,
         args: { name: { type: GraphQLString } },
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
-            if (!req.session.manager) return 'Not authorized!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
 
             return Consumer.findOne({ name: args.name }).sort({ timestamp: -1 });
         }
     },
     consumers: {
         type: new GraphQLList(ConsumerType),
-        resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
-            if (!req.session.manager) return 'Not authorized!';
+        async resolve (parent, args, req) {
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
 
-            return Consumer.find().sort({ timestamp: -1 });
+            let names = [];
+            const consumers = [];
+
+            await Consumer.distinct('name')
+                .then(res => {
+                    names = res;
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+
+            for (const name of names) {
+                consumers.push(await Consumer.findOne({ name: name }).sort({ timestamp: -1 }));
+            }
+
+            return consumers;
         }
     }
 }
@@ -57,8 +73,8 @@ const ConsumerMutations = {
             market: { type: new GraphQLNonNull(GraphQLString) }
         },
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
-            if (!req.session.manager) return 'Not authorized!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
 
             const consumer = new Consumer({
                 name: args.name,
@@ -80,8 +96,8 @@ const ConsumerMutations = {
             consumption: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
-            if (!req.session.manager) return 'Not authorized!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
 
             const filter = { name: args.name };
             const data = Consumer.findOne(filter).sort({ timestamp: -1 }).exec();
@@ -102,7 +118,7 @@ const ConsumerMutations = {
                 },
                 function (err) {
                     console.error(err);
-                    return false;
+                    throw new Error('Could not save document to database: ' + err);
                 }
             );
         }

@@ -47,8 +47,11 @@ const UserQueries = {
             if (!req.session.user) return 'Not authenticated!';
             if (!req.session.manager) return 'Not authorized!';
 
-            const users = await User.find({}, { username: 1, _id: 0 });
-            return users;
+            // all users
+            // const users = await User.find({}, { username: 1, _id: 0 }); 
+
+            // only prosumers
+            return User.aggregate([ { $match: { manager: false } }, { $project: { _id: 0, username: 1 } } ]);
         }
     }
 };
@@ -92,7 +95,8 @@ const UserMutations = {
                 await user.save();
 
                 const prosumer = new Prosumer({
-                    name: user.username
+                    name: user.username,
+                    market: 'none'
                 });
                 await prosumer.save();
                 await init.call();
@@ -150,8 +154,12 @@ const UserMutations = {
             if (!user) {
                 return false;
             }
+            if(user.manager) {
+                return "You cannot delete a Manager!";
+            }
             if (user.comparePassword(args.password)) {
                 user.deleteOne();
+                Prosumer.deleteMany({ name: req.session.user }).exec(); // Delete both user doc in users collection aswell as any prosumer docs!!
                 return true;
             }
             return false;

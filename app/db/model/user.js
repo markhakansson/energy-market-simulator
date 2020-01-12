@@ -8,7 +8,6 @@ const user = new Schema({
     manager: { type: Boolean, default: false },
     timestamp: { type: Date, default: Date.now() },
     image: { data: Buffer, type: String },
-    online: { type: Boolean, default: false }
 });
 
 /**

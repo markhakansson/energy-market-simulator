@@ -9,7 +9,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="js/slider.js"></script>  
     <script src="js/charts.js"></script>
     <script src="js/profile.js"></script>
     <script src="js/manager.js"></script>
@@ -17,7 +16,8 @@
  
   <body>
     <div class="container" id="navbar">      
-      <h1><%= message %>'s Dashboard <span id="timestamp"></span></h1>
+      <h1><%= message %>'s Dashboard</span></h1>
+      <p>Last updated: <span id="timestamp"></span></p>
       <ul class="nav nav-tabs">
         <li class="nav-item" id="nav-monitor">
           <a class="nav-link active" >Monitor</a>
@@ -25,28 +25,57 @@
         <li class="nav-item" id="nav-profile">
           <a class="nav-link" >Profile</a>
         </li>
+        <li class="nax-item">
+          <form action="/logout" method="get">
+            <input type="submit" class="btn btn-primary" value="Log Out"/>
+          </form>
+        </li>
+
+        </li>
       </ul>
       <br>
     </div>
 
+
     <div class="container" id="monitor"> 
+      <p>Autopilot</p>
+      <label class="switch">
+        <input type="checkbox" id="autopilot">
+        <span class="slider"></span>
+      </label>
+    
       <div class="row">
 
-        <div class="col-md" id="useBatteryRatio" style="width: 100%" display="table">
+        <div class="col-md" style="width: 100%" display="table">
           <h2>Plant electricity settings</h2>
           
-          <p>Buffer ratio</p>
-          
+          <div>
+            <p>Electricity manual production <input type="text" id="productionValueText"> Wh <button id="setProductionValue">Set</button></p>
+            <input type="range" id="productionSlider" min="0" max="10000" />
+            <p>Value: <span id="productionValue"></span> Wh</p>
+          </div>
 
-          <p>Market price</p>
-        
+          <div>
+            <p>Buffer ratio <input type="text" id="bufferValueText">% <button id="setBufferRatio">Set</button></p>
+            <input type="range" id="bufferRatioSlider" min="0" max="100" />
+            <p>Value: <span id="bufferRatioValue"></span>%</p>
+          </div>
+
+          <div>
+            <p>Market manual price <input type="text" id="priceValueText"> SEK <button id="setPrice">Set</button></p>
+            <input type="range" id="marketPriceSlider" min="0" max="100" />
+            <p>Value: <span id="priceRatioValue"></span> SEK</p>
+          </div>
 
 
         </div>
 
         <div class="col-lg">
-          <h2>Production</h2>
+          <h2>Demand</h2>
           <canvas id="chart"></canvas>
+          <!--<script>productionChart('#chart');</script>-->
+          <script>let marketChart = new MarketChart('#chart');</script>
+        
         </div>
 
       </div>
@@ -56,18 +85,29 @@
         <!-- Display wind, production etc. as values! -->  
         <div class="col-md">
           <ul>
-            <li>Current electricity production:</li><span id="production"></span>
-            <li>Current market demand:</li><span id="demand"></span>
-            <li>Current modelled market price:</li><span id="price"></span>
+            <li>Current status: <span id="status"></span></li>
+            <li>Current electricity production: <span id="production"></span></li>
+            <li>Current electricity consumption: <span id ="consumption"></span></li>
+            <li>Current market demand: <span id="demand"></span></li>
+            <li>Current market price: <span id="price"></span></li>
+            <li>Recommended market price: <span id="recPrice"></span></li>
           </ul>
         </div>
         <div class="col-md">
-          <p>Users</p>
-            <ol id="users">
-            </ol>
+          <p>Prosumers:</p>
+          <input type=range id="timeBlock" min="10" max="100" />
+          <p>seconds: <span id="timeBlockValue">10 - 100</span> seconds</p>
+          <p id="blockInfo"></p>
+          <ol id="users">
+          </ol>
         </div>
         <div class="col-md">
-          <p>Online</p>
+          <p>Blackout:</p>
+          <ol id="blackout">
+          </ol>
+        </div>
+        <div class="col-md">
+          <p>Online:</p>
           <ol id="online">
           </ol>
         </div>
@@ -102,20 +142,15 @@
           <div class = "img-thumbnail">
             <img src="" class="img-thumbnail" alt="Profile picture" id="profileImg">
           </div>
-          <input type="file" id="fileImg" accept="image/*" onchange="readUrl(this)"/>
-          <span>Max file size: 5mb</span>
-          <span id ="profileMessage"></span>
+          <input type="file" id="fileImg" accept="image/jpeg, image/png" onchange="readUrl(this)"/>
+          <div>
+            <span>Only JPEG and PNG! Max file size: 5mb</span>
+            <span id ="profileMessage"></span>
+          </div>
         </div>
       </div>  
 
     </div>
-    <div class="container">
-      <!-- Log out button -->
-      <form action="/logout" method="get">
-        <input type="submit" class="btn btn-primary" value="Log Out"/>
-      </form>
-    </div>
-
 
   </body>
 </html>

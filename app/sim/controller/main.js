@@ -11,6 +11,7 @@ const Logger = require('../../config/logger');
 // Set simulation speed (in ms)
 const TIME_MULTIPLIER = 5000;
 
+// Lets make market have the same name as the manager?
 const MARKET = new MarketSim('Lulea', 2, 5000, 100000, TIME_MULTIPLIER);
 const WEATHER = new WeatherSim('Lulea', 10, 20);
 
@@ -58,6 +59,10 @@ function mapConsumer (name, market) {
     }
 }
 
+/**
+ * Updates the internal simulation arrays that holds the users and
+ * their household.
+ */
 async function updateNameArrays () {
     await Prosumer.distinct('name')
         .then(res => {
@@ -101,8 +106,18 @@ async function searchForNewUsers () {
     }
 }
 
-function simLoop () {
-    setTimeout(async function () {
+/**
+ * Removes a user/prosumer from the simulation.
+ * @param {} name Name of the user to remove.
+ */
+async function removeUser (name) {
+    const index = prosumerNames.indexOf(name);
+    prosumerNames.splice(index, 1);
+    prosumerMap.delete(name);
+}
+
+async function simLoop () {
+    setInterval(async function () {
         searchForNewUsers();
         await MARKET.fetchData();
         await WEATHER.fetchData();
@@ -110,7 +125,12 @@ function simLoop () {
         MARKET.generateProduction();
 
         for (const [_, prosumer] of prosumerMap) {
-            await prosumer.fetchData();
+            await prosumer.fetchData().catch(
+                async (err) => {
+                    Logger.warn('User has been deleted from simulator because of error: ' + err);
+                    await removeUser(prosumer.prosumer.name);
+                }
+            );
             prosumer.generateProduction(WEATHER.weather.wind_speed);
             prosumer.generateConsumption();
         }
@@ -130,8 +150,6 @@ function simLoop () {
 
         MARKET.update();
         console.log('Wind speed: ' + WEATHER.weather.wind_speed);
-
-        simLoop();
     }, TIME_MULTIPLIER);
 }
 
@@ -139,7 +157,7 @@ async function main () {
     await init();
     console.log('Simulator now running... ');
     try {
-        simLoop();
+        await simLoop();
     } catch (err) {
         Logger.error('Simulation crashed with the following error: ' + err + ' Restarting now.');
         main();

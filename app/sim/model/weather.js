@@ -26,7 +26,8 @@ class WeatherSim {
             name: name,
             timestamp: Date.now(),
             wind_speed: wind_speed,
-            temperature: temperature
+            temperature: temperature,
+            market: name
         });
     }
 
@@ -62,11 +63,20 @@ class WeatherSim {
             arr = [0.8 * self.wind_speed, 0.9 * self.wind_speed, 0.95 * self.wind_speed, 1.1 * self.wind_speed];
         }
 
+        let wind;
+        try {
+            wind = gauss.gaussLimit(arr, 2, 0.1, 1, 40);
+        } catch (err) {
+            Logger.error('When generating wind speed for [' + self.name + '], received error: ' + err);
+            wind = Math.random() * 5;
+        }
+
         this.weather = new Weather({
             name: self.name,
             timestamp: Date.now(),
-            wind_speed: gauss.gaussLimit(arr, 2, 0.1, 1, 40),
-            temperature: self.temperature
+            wind_speed: wind,
+            temperature: self.temperature,
+            market: self.market
         });
 
         this.weather.save((err) => {

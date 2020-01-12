@@ -1,9 +1,11 @@
 const graphql = require('graphql');
 const Prosumer = require('../../db/model/prosumer');
 const graphqlIsoDate = require('graphql-iso-date');
+const errorMsg = require('./errors');
+const Logger = require('../../config/logger');
 
 const {
-    GraphQLObjectType, GraphQLString, GraphQLFloat,
+    GraphQLObjectType, GraphQLString, GraphQLFloat, GraphQLList,
     GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLBoolean
 } = graphql;
 
@@ -39,20 +41,53 @@ const ProsumerQueries = {
         type: ProsumerType,
         args: { name: { type: GraphQLString } },
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
-            if (!req.session.manager) return 'Not authorized!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
 
-            return Prosumer.findOne({ name: args.name });
+            return Prosumer.findOne({ name: args.name }).sort({ timestamp: -1 });
         }
     },
     prosumer: {
         type: ProsumerType,
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
 
-            return Prosumer.findOne({ name: req.user.user }).sort({ timestamp: -1 });
+            return Prosumer.findOne({ name: req.session.user }).sort({ timestamp: -1 });
         }
 
+    },
+    prosumers: {
+        type: new GraphQLList(ProsumerType),
+        async resolve (parent, args, req) {
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
+
+            let names = [];
+            const prosumers = [];
+
+            await Prosumer.distinct('name')
+                .then(res => {
+                    names = res;
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+
+            for (const name of names) {
+                prosumers.push(await Prosumer.findOne({ name: name }).sort({ timestamp: -1 }));
+            }
+
+            return prosumers;
+        }
+    },
+    // Returns name, timestamp and blackout for each prosumer. Timestamp to assure query is correct. _id is must exist.
+    isBlocked: {
+        type: new GraphQLList(ProsumerType),
+        resolve (parent, args, req) {
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
+            return Prosumer.aggregate([{ $sort: { name: 1, timestamp: 1 } }, { $group: { _id: '$name', name: { $last: '$name' }, timestamp: { $last: '$timestamp' }, blackout: { $last: '$blackout' } } }]);
+        }
     }
 };
 
@@ -65,8 +100,8 @@ const ProsumerMutations = {
             maxBatteryCap: { type: new GraphQLNonNull(GraphQLInt) }
         },
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
-            if (!req.session.manager) return 'Not authorized!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
 
             const prosumer = new Prosumer({
                 name: args.name,
@@ -89,20 +124,21 @@ const ProsumerMutations = {
         }
     },
     blockProsumer: {
+        type: GraphQLString,
         args: {
             prosumerName: { type: new GraphQLNonNull(GraphQLString) },
             timeout: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
-            if (!req.session.manager) return 'Not authorized!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
+            if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
 
             const data = Prosumer.findOne({ name: args.prosumerName }).sort({ timestamp: -1 }).exec();
             return data.then(
                 doc => {
                     // If already blocked don't do anything
                     if (doc.blocked) {
-                        return false;
+                        return 'Already blocked!';
                     } else {
                         const prosumer = new Prosumer({
                             name: doc.name,
@@ -121,13 +157,18 @@ const ProsumerMutations = {
                             blocked: true,
                             blockedTimer: args.timeout
                         });
-                        prosumer.save();
-                        return true;
+                        return prosumer.save().then(
+                            res => { return 'Blocked'; },
+                            err => {
+                                Logger.error('API ´blockProsumer´: ' + err);
+                                throw new Error(err);
+                            }
+                        );
                     }
                 },
                 err => {
-                    console.error(err);
-                    return false;
+                    Logger.error('API ´blockProsumer´: ' + err);
+                    throw new Error('Could not save document to database: ' + err);
                 }
             )
         }
@@ -138,7 +179,7 @@ const ProsumerMutations = {
             fillBatteryRatio: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
 
             const filter = { name: req.session.user };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
@@ -161,12 +202,17 @@ const ProsumerMutations = {
                         blocked: doc.blocked,
                         blockedTimer: doc.blockedTimer
                     });
-                    prosumer.save();
-                    return true;
+                    return prosumer.save().then(
+                        res => { return true; },
+                        err => {
+                            Logger.error('API ´updateFillBatteryRatio´: ' + err);
+                            throw new Error(err);
+                        }
+                    );
                 },
                 err => {
-                    console.error(err);
-                    return false;
+                    Logger.error('API ´updateFillBatteryRatio´: ' + err);
+                    throw new Error('Could not save document to database: ' + err);
                 }
             );
         }
@@ -177,7 +223,7 @@ const ProsumerMutations = {
             useBatteryRatio: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
 
             const filter = { name: req.session.user };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
@@ -200,12 +246,17 @@ const ProsumerMutations = {
                         blocked: doc.blocked,
                         blockedTimer: doc.blockedTimer
                     });
-                    prosumer.save();
-                    return true;
+                    return prosumer.save().then(
+                        res => { return true; },
+                        err => {
+                            Logger.error('API ´updateUseBatteryRatio´: ' + err);
+                            throw new Error(err);
+                        }
+                    );
                 },
                 err => {
-                    console.error(err);
-                    return false;
+                    Logger.error('API ´updateUseBatteryRatio´: ' + err);
+                    throw new Error('Could not save document to database: ' + err);
                 }
             );
         }
@@ -216,7 +267,7 @@ const ProsumerMutations = {
             production: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
 
             const filter = { name: req.session.user };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
@@ -239,12 +290,17 @@ const ProsumerMutations = {
                         blocked: doc.blocked,
                         blockedTimer: doc.blockedTimer
                     });
-                    prosumer.save();
-                    return true;
+                    return prosumer.save().then(
+                        res => { return true; },
+                        err => {
+                            Logger.error('API ´updateProsumerProduction´: ' + err);
+                            throw new Error(err);
+                        }
+                    );
                 },
                 err => {
-                    console.error(err);
-                    return false;
+                    Logger.error('API ´updateProsumerProduction´:' + err);
+                    throw new Error('Could not save document to database: ' + err);
                 }
             );
         }
@@ -255,7 +311,7 @@ const ProsumerMutations = {
             consumption: { type: new GraphQLNonNull(GraphQLFloat) }
         },
         resolve (parent, args, req) {
-            if (!req.session.user) return 'Not authenticated!';
+            if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
 
             const filter = { name: req.session.user };
             const data = Prosumer.findOne(filter).sort({ timestamp: -1 }).exec();
@@ -278,12 +334,17 @@ const ProsumerMutations = {
                         blocked: doc.blocked,
                         blockedTimer: doc.blockedTimer
                     });
-                    prosumer.save();
-                    return true;
+                    return prosumer.save().then(
+                        res => { return true; },
+                        err => {
+                            Logger.error('API ´updateProsumerConsumption´: ' + err);
+                            throw new Error(err);
+                        }
+                    );
                 },
                 err => {
-                    console.error(err);
-                    return false;
+                    Logger.error('API ´updateProsumerConsumption´:' + err);
+                    throw new Error('Could not save document to database: ' + err);
                 }
             );
         }
