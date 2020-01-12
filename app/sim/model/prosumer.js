@@ -65,13 +65,17 @@ class ProsumerSim {
                 }
             )
 
-        if (self.blocked && !this.blockTimerStarted) {
-            this.blocked = true;
-            this.blockTimerStarted = true;
+        if (self.prosumer.blocked && !self.blockTimerStarted) {
+            self.blocked = true;
+            self.blockTimerStarted = true;
+
             setTimeout(() => {
-                this.blocked = false;
-                this.blockTimerStarted = false;
-            }, this.market.blockTimer);
+                self.blocked = false;
+                // Needs the second timeout or else it will break
+                setTimeout(() => {
+                    self.blockTimerStarted = false;
+                }, this.timeMultiplier);
+            }, self.prosumer.blockedTimer * 1000);
         }
     }
 
@@ -123,7 +127,9 @@ class ProsumerSim {
 
         // Threshold of 4 kWh. If it reaches over that point the distribution will favor smaller wind speeds.
         if (consumption > 0) {
-            if (consumption < 40) {
+            if (consumption < 10) {
+                arr = [0.8 * consumption, 1.2 * consumption, 1.4 * consumption];
+            } else if (consumption < 40) {
                 arr = [0.8 * consumption, consumption, 1.2 * consumption];
             } else {
                 arr = [0.8 * consumption, 0.9 * consumption, 0.95 * consumption, 1.1 * consumption];
@@ -132,7 +138,7 @@ class ProsumerSim {
             try {
                 self.consumption = gauss.gaussLimit(arr, 4, 0.05, 0, 60) * 100;
             } catch (err) {
-                Logger.error('When genereting gaussian distribution in consumer [' + self.prosumer.name + '] caught error: ' + err);
+                Logger.error('When genereting gaussian distribution in prosumer [' + self.prosumer.name + '] caught error: ' + err);
                 self.consumption = Math.random() * 5000;
             }
         // Rare cases for when consumption is zero
@@ -298,7 +304,7 @@ class ProsumerSim {
             turbineWorking: this.turbineWorking,
             turbineBreakPercent: self.turbineBreakPercent,
             blocked: this.blocked,
-            blockTimer: this.blockTimer
+            blockedTimer: self.blockedTimer
         });
         self.save((err) => {
             if (err) {
