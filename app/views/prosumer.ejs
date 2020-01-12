@@ -1,54 +1,85 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Prosumer Page</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="css/style.css"> 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="js/charts.js"></script>
-    <script src="js/profile.js"></script>
-    <script src="js/prosumer.js"></script>
-  </head>
- 
-  <body>
-    <div class="container" id="navbar">      
-      <h1><%= message %>'s Dashboard</span></h1>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Prosumer Page</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link rel="stylesheet" type="text/css" href="css/prosumer.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+  </script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+  </script>
+  <script src="js/charts.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/prosumer.js"></script>
+</head>
+
+<body>
+  <div class="box">
+    <div class="container" id="navbar">
+      <h1><%= message %>'s Dashboard</h1>
       <p>Last updated: <span id="timestamp"></span></p>
       <ul class="nav nav-tabs">
         <li class="nav-item" id="nav-monitor">
-          <a class="nav-link active" >Monitor</a>
+          <a class="nav-link active">Monitor</a>
         </li>
         <li class="nav-item" id="nav-profile">
-          <a class="nav-link" >Profile</a>
+          <a class="nav-link">Profile</a>
         </li>
         <li class="nax-item">
           <form action="/logout" method="get">
-            <input type="submit" class="btn btn-primary" value="Log Out"/>
+            <input type="submit" class="btn btn-primary" value="Log Out" />
           </form>
         </li>
       </ul>
       <br>
     </div>
 
-    <div class="container" id="monitor"> 
+    <div class="container" id="monitor">
       <div class="row">
 
         <div class="col-md" style="width: 100%" display="table">
           <h2>Battery settings</h2>
-          
-          <div>
-            <p>Use Battery Ratio <input type="text" id="useBatteryRatioText">%<button type="button" class="btn btn-secondary" id="setUseBatteryRatioValue">Set</button type="button" class="btn btn-light"></p>
-            <input type="range" id="useBatteryRatioSlider" min="0" max="100" />
+
+          <label for="useBatteryRatioText">Use Battery Ratio</label>
+          <div class="row">
+            <div class="input-group">
+              <input type="text" class="form-control" id="useBatteryRatioText" placeholder="Ratio 0-100">
+              <div class="input-group-append">
+                <span class="input-group-text">%</span>
+                <button type="button" class="btn btn-outline-secondary" id="setUseBatteryRatioValue">Set</button>
+              </div>
+            </div>
+          </div>
+
+          <br>
+          <div class="row">
+            <input type="range" id="useBatteryRatioSlider" min="0" max="100" style="width: 100%;" />
             <p>Value: <span id="useBatteryRatioValue"></span>%</p>
           </div>
 
-          <div>
-            <p>Fill Battery Ratio <input type="text" id="fillBatteryRatioText">%<button type="button" class="btn btn-secondary" id="setFillBatteryRatio">Set</button></p>
-            <input type="range" id="fillBatteryRatioSlider" min="0" max="100" />
+          <hr class="my-4">
+          <label for="fillBatteryRatioText">Fill Battery Ratio</label>
+          <div class="row">
+            <div class="input-group">
+              <input type="text" class="form-control" id="fillBatteryRatioText" placeholder="Ratio 0-100">
+              <div class="input-group-append">
+                <span class="input-group-text">%</span>
+                <button type="button" class="btn btn-outline-secondary" id="setFillBatteryRatio">Set</button>
+              </div>
+            </div>
+          </div>
+
+          <br>
+          <div class="row">
+            <input type="range" id="fillBatteryRatioSlider" min="0" max="100" style="width: 100%" />
             <p>Value: <span id="fillBatteryRatioValue"></span>%</p>
           </div>
 
@@ -58,19 +89,22 @@
           <h2>Production</h2>
           <canvas id="chart"></canvas>
           <!--<script>productionChart('#chart');</script>-->
-          <script>let productionChart = new ProsumerChart('#chart');</script>
+          <script>
+            let productionChart = new ProsumerChart('#chart');
+          </script>
         </div>
 
       </div>
 
       <h2>Information</h2>
       <div class="row">
-        <!-- Display wind, production etc. as values! -->  
+        <!-- Display wind, production etc. as values! -->
         <div class="col-md">
           <ul>
             <li>Current wind speed: <span id="windspeed"></span></li>
             <li>Current production: <span id="production"></span></li>
             <li>Current consumption: <span id="consumption"></span></li>
+            <li>Current status: <span id="turbinestatus"></span></li>
           </ul>
         </div>
 
@@ -87,7 +121,7 @@
 
     <div class="container" id="profile" style="display:none">
       <h2>Profile</h2>
-      <input type="password" id="pass" placeholder="Provide your password"> 
+      <input type="password" id="pass" placeholder="Provide your password">
       <button type="submit" class="btn btn-primary" onclick="deleteUser()">Delete me!</button>
       <span id="deleteUserMsg"></span>
 
@@ -99,7 +133,7 @@
               <label for="oldPassword">Enter current password</label>
               <input type="password" class="form-control" name="oldPassword" placeholder="Current password">
             </div>
-            
+
             <div class="form-group">
               <label for="newPassword">New password</label>
               <input type="password" class="form-control" name="newPassword" placeholder="Enter new password">
@@ -112,18 +146,22 @@
         </div>
 
         <div class="col-sm">
-          <div class = "img-thumbnail">
+          <div class="img-thumbnail">
             <img src="" class="img-thumbnail" alt="Profile picture" id="profileImg">
           </div>
-          <input type="file" id="fileImg" accept="image/jpeg, image/png" onchange="readUrl(this)"/>
+          <input type="file" id="fileImg" accept="image/jpeg, image/png" onchange="readUrl(this)" />
           <div>
             <span>Only JPEG and PNG! Max file size: 5mb</span>
-            <span id ="profileMessage"></span>
+            <span id="profileMessage"></span>
           </div>
         </div>
 
-      </div>  
-
+      </div>
     </div>
-  </body>
+  </div>
+
+  <%- include ('footer.ejs') %>
+
+</body>
+
 </html>

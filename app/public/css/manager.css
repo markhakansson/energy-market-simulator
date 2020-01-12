@@ -1,0 +1,19 @@
+body {
+    background-image: url('../images/greenwindpower.jpeg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+}
+
+body>* {
+    flex-shrink: 0;
+}
+
+.box {
+    width: 80%;
+    background-color: rgba(255, 255, 255, 0.9);
+    margin: auto;
+    flex: 1 0 auto;
+}

@@ -80,6 +80,7 @@ $(document).ready(function () {
             }
         });
     });
+    updateInformation();
     setInterval(updateInformation, 5000);
 });
 
@@ -90,7 +91,7 @@ function updateInformation () {
         type: 'POST',
         data: JSON.stringify({
             query: `{
-                prosumer{production,consumption,currBatteryCap, market, timestamp, fillBatteryRatio, useBatteryRatio}
+                prosumer{production,consumption,currBatteryCap, market, timestamp, fillBatteryRatio, useBatteryRatio, turbineStatus}
             }`
         }),
         success: function (res) {
@@ -103,6 +104,7 @@ function updateInformation () {
             $('#fillBatteryRatioValue').html(prosumer.fillBatteryRatio.toFixed(2));
             $('#netproduction').html((Number(prosumer.production) - Number(prosumer.consumption)).toFixed(2));
             $('#batterycap').html(prosumer.currBatteryCap.toFixed(2));
+            $('#turbinestatus').html(prosumer.turbineStatus);
 
             //Sliders
             $('#useBatteryRatioValue').html(prosumer.useBatteryRatio * 100);

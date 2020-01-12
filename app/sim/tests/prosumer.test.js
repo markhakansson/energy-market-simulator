@@ -8,8 +8,7 @@ describe('#randomizeTurbineBreaking', function () {
         // name, market, wind, fillBattRatio, useBattRatio, batterySize
         const MarketSimTest = new MarketSim('test', 2, 1000, 10000, 1);
         const ProsumerSimTest = new ProsumerSim('test', MarketSimTest, 1);
-        ProsumerSimTest.prosumer.turbineBreakagePercent = 1;
-        ProsumerSimTest.turbineWorking = true;
+        ProsumerSimTest.prosumer.turbineBreakPercent = 1;
         ProsumerSimTest.randomizeTurbineBreaking();
         assert.strictEqual(ProsumerSimTest.prosumer.production, 0);
         assert.strictEqual(ProsumerSimTest.turbineWorking, false);
