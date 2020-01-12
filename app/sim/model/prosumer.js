@@ -20,7 +20,7 @@ class ProsumerSim {
             blackout: false,
             turbineStatus: 'WORKING',
             turbineWorking: true,
-            turbineBreakPercent: 0.2,
+            turbineBreakPercent: 0.05,
             blocked: false,
             blockedTimer: 0.0
         });

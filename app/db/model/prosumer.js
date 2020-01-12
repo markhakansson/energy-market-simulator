@@ -49,7 +49,7 @@ const prosumer = new Schema({
         type: Number,
         min: 0.0,
         max: 1.0,
-        default: 0.2
+        default: 0.05
     },
     blocked: { type: Boolean, default: false },
     blockedTimer: {
