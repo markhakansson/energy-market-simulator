@@ -59,6 +59,10 @@ function mapConsumer (name, market) {
     }
 }
 
+/**
+ * Updates the internal simulation arrays that holds the users and
+ * their household.
+ */
 async function updateNameArrays () {
     await Prosumer.distinct('name')
         .then(res => {
@@ -102,13 +106,17 @@ async function searchForNewUsers () {
     }
 }
 
+/**
+ * Removes a user/prosumer from the simulation.
+ * @param {} name Name of the user to remove.
+ */
 async function removeUser (name) {
     const index = prosumerNames.indexOf(name);
     prosumerNames.splice(index, 1);
     prosumerMap.delete(name);
 }
 
-function simLoop () {
+async function simLoop () {
     setInterval(async function () {
         searchForNewUsers();
         await MARKET.fetchData();
@@ -149,7 +157,7 @@ async function main () {
     await init();
     console.log('Simulator now running... ');
     try {
-        simLoop();
+        await simLoop();
     } catch (err) {
         Logger.error('Simulation crashed with the following error: ' + err + ' Restarting now.');
         main();
