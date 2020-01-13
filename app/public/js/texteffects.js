@@ -11,7 +11,7 @@ function textFadeInOut (text, id, delayMultiplier) {
         loop: false
     })
         .add({
-            targets: '.ml12 .letter',
+            targets: '.letter',
             translateX: [40, 0],
             translateZ: 0,
             opacity: [0, 1],
@@ -19,7 +19,7 @@ function textFadeInOut (text, id, delayMultiplier) {
             duration: 1200 * delayMultiplier,
             delay: (el, i) => 500 + 30 * i
         }).add({
-            targets: '.ml12 .letter',
+            targets: '.letter',
             translateX: [0, -30],
             opacity: [1, 0],
             easing: 'easeInExpo',
@@ -37,7 +37,7 @@ function textFadeIn (text, id, delayMultiplier) {
         loop: false
     })
         .add({
-            targets: '.ml12 .letter',
+            targets: '.letter',
             translateX: [40, 0],
             translateZ: 0,
             opacity: [0, 1],

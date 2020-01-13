@@ -91,7 +91,11 @@ router.get('/online', isManager, function (req, res, next) {
 });
 
 router.get('*', function (req, res) {
-    return res.render('404');
+    const randomQuote = Quote.getQuote();
+    return res.render('404', {
+        quote: randomQuote.text,
+        author: randomQuote.author
+    });
 });
 
 module.exports = router;
