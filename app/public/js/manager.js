@@ -158,13 +158,13 @@ $(document).ready(function () {
     });
     // TODO: Uncomment when moving to production!
     updateInformation();
-    // setInterval(updateInformation, 5000);
+    setInterval(updateInformation, 5000);
     getBlackOut();
-    // setInterval(getBlackOut, 5000);
+    setInterval(getBlackOut, 5000);
     getUsers();
-    // setInterval(getUsers, 100000);
+    setInterval(getUsers, 100000);
     getOnlineUsers();
-    // setInterval(getOnlineUsers, 10000)
+    setInterval(getOnlineUsers, 10000)
 });
 
 function updateInformation () {

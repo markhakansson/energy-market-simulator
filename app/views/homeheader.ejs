@@ -1,15 +1,15 @@
-<video autoplay muted loop id="bg-video">
+<video autoplay muted loop oncontextmenu="return false;" id="bg-video">
     <source src="videos/windpowersky.mp4" type="video/mp4">
 </video>
 
 <div class="container">
     <nav class="navbar navbar-expand-lg navbar-light fixed-top justify-content-center"
         style="background-color:#ffe;opacity:0.7">
-        <a class="navbar-brand" href="/">Grean Lean Electrics ⒼⓁⒺ</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMenu"
             aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+        <a class="navbar-brand" href="/">Grean Lean Electrics ⒼⓁⒺ</a>
         <div class="collapse navbar-collapse" id="navbarMenu">
             <div class="navbar-nav">
                 <a class="nav-item nav-link active" href="/">Home <span class="sr-only">(current)</span></a>
@@ -18,7 +18,7 @@
             </div>
         </div>
         <span class="navbar-quote" style="opacity: 0.8;">
-            <i>❝<%= quote %>❞</i>
+            <i>❝<%= quote %>❞ -<%= author %></i>
         </span>
     </nav>
 </div>
