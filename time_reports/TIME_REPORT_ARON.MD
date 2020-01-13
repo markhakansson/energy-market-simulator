@@ -38,3 +38,4 @@
 |    2020-01-08|   4      Fixed issues in prosumer (missing values), api fixes, and implementation of blackout prosumer in manager, improved login/signup ... 
 |    2020-01-09|   3      Discussing of project (issues, focus and what to mention in report). Report.
 |    2020-01-10|   2      Sanitation to client side, sliders error fix and slider 10-100s block
+|    2020-01-13|   2      Report
