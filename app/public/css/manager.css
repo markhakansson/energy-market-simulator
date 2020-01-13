@@ -1,5 +1,5 @@
 body {
-    background-image: url('../images/greenwindpower.jpeg');
+    background-image: url('../images/coalplant.jpg');
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
@@ -11,9 +11,17 @@ body>* {
     flex-shrink: 0;
 }
 
+.footer {
+    opacity: 0.8;
+    background-color: #f5f5f5;
+    text-align: center;
+    line-height: 60px;
+    flex-shrink: 0;
+}
+
 .box {
     width: 80%;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.8);
     margin: auto;
     flex: 1 0 auto;
 }
