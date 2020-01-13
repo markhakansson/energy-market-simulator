@@ -53,6 +53,7 @@ class ProsumerSim {
                         })
                     } else {
                         self.prosumer = doc;
+                        self.prosumer.bought = 0;
                     }
                 },
                 async err => {
@@ -248,19 +249,17 @@ class ProsumerSim {
                 'When buying energy from market in prosumer [' + self.name +
                 '], expected Number but received "null".'
             );
-            self.bought = 0;
         } else if (boughtEnergy < 0) {
             Logger.error(
                 'When buying energy from market in prosumer [' + self.name +
                 '], expected 0 or positive Number. Received negative Number.'
             );
-            self.bought = 0;
         } else if (boughtEnergy < energy) {
             // self.consumption -= (energy - boughtEnergy);
-            self.bought = boughtEnergy;
+            self.bought += boughtEnergy;
             self.blackout = true;
         } else {
-            self.bought = boughtEnergy;
+            self.bought += boughtEnergy;
             self.blackout = false;
 
             if (self.currBatteryCap === 0) {
