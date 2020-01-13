@@ -193,19 +193,15 @@ class ProsumerSim {
     chargeBattery (energy) {
         const self = this.prosumer;
 
-        console.log('# Charge battery energy: ' + energy);
-
         if (energy < 0 || energy == null) {
             Logger.error(
                 'When charging battery in prosumer [' + self.name +
                 '], expected positive Number. Recieved ' + energy + '.'
             );
         } else if (self.currBatteryCap + energy >= self.maxBatteryCap) {
-            console.log('# Battery is full, selling to market');
             self.currBatteryCap = self.maxBatteryCap;
             this.sellToMarket(self.currBatteryCap + energy - self.maxBatteryCap);
         } else {
-            console.log('# Adding to energy to battery');
             self.currBatteryCap += energy;
         }
     }
