@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+     <title>GLE Home</title>
+     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+     <link rel="stylesheet" href="css/style.css">
+     <link rel="stylesheet" href="css/home.css">
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+          integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+     </script>
+     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+          integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
+     </script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js"></script>
+     <script src="js/home.js"></script>
+
+</head>
+
+<body>
+     <%- include ('homeheader.ejs', { quote: quote, author: author }) %>
+     <h1 class="ml12" id="bigtext"></h1>
+     <script>
+          const time = 2300;
+
+          textFadeInOut("Welcome to the green revolution.", "#bigtext", 3);
+
+          setTimeout(function () {
+               textFadeInOut("Breezing wind.", "#bigtext", 2);
+          }, 3 * time + 10);
+          setTimeout(function () {
+               textFadeInOut("Streaming water.", "#bigtext", 2);
+          }, 5* time + 10);
+          setTimeout(function () {
+               textFadeInOut("Sunny solar.", "#bigtext", 2);
+          }, 7 * time + 10);
+          setTimeout(function () {
+               textFadeInOut("Burning coal.", "#bigtext", 2);
+          }, 9 * time + 10);
+          setTimeout(function () {
+               textFadeInOut("The power of Mother Earth.", "#bigtext", 2);
+          }, 11 * time + 10);
+          setTimeout(function () {
+               textFadeIn("100% Green Lean Electrics", "#bigtext", 3);
+          }, 13* time + 10);
+     </script>
+     <%- include ("footer.ejs") %>
+</body>
+
+</html>
