@@ -65,7 +65,7 @@ router.get('/logout', function (req, res, next) {
             if (err) return next(err);
         });
     }
-    return res.redirect('/login');
+    return res.redirect('/');
 });
 
 router.use('/graphql', expressGraphql(req => ({
