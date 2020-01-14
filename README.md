@@ -8,7 +8,7 @@ A web system to simulate and control a small scale electricity market. Has front
 
 ## Getting started
 ### Running tests
-To run the tests and generate code coverage with Mocha and Instanbul, run
+To run the tests and generate code coverage with Mocha and Instanbul, inside **/app** run
 ```
 npm test
 ```
@@ -27,7 +27,7 @@ In the same directory, install all necessary dependencies:
 npm install
 ```
 ### Usage
-To startup the server use
+To startup the server use the follwing command inside **/app**
 ```
 npm start
 ```
