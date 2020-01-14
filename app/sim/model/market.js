@@ -22,7 +22,7 @@ class MarketSim {
             recommendedProduction: production,
             plantInOperation: true,
             manualProduction: 0,
-            manualPrice: 0
+            manualPrice: price
         });
 
         // Public simulation variables
@@ -46,7 +46,13 @@ class MarketSim {
      */
     async fetchData () {
         const self = this;
-        await Market.findOne({ name: self.market.name }, null, { sort: { timestamp: -1 } }, function (err, doc) {
+        await Market.findOne({
+            name: self.market.name
+        }, null, {
+            sort: {
+                timestamp: -1
+            }
+        }, function (err, doc) {
             if (err) throw err;
             if (doc) {
                 self.market = doc;
@@ -189,7 +195,7 @@ class MarketSim {
             this.plantInOperation = false;
             this.status = 'stopped!';
 
-        // Power plant is running
+            // Power plant is running
         } else if (this.plantInOperation || this.startupInitiated) {
             if (self.autopilot) {
                 self.price = self.recommendedPrice;
@@ -212,7 +218,7 @@ class MarketSim {
                 this.marketOutput = (1 - self.fillBatteryRatio) * this.production;
                 this.chargeBattery(self.fillBatteryRatio * this.production);
             }, 2 * this.timeMultiplier);
-        // Startup sequence initiated
+            // Startup sequence initiated
         } else if (self.startUp && !this.startupInitiated) {
             this.status = 'starting up...';
             this.startupInitiated = true;
@@ -231,13 +237,13 @@ class MarketSim {
     setRecommendations () {
         const self = this.market;
 
-        if (this.demand > 0) {
-            self.recommendedProduction = 5.0 * this.demand;
+        if (this.prevDemand > 0) {
+            self.recommendedProduction = 5.0 * this.prevDemand;
         } else {
             self.recommendedProduction = 0;
         }
         // Recommended price is previous price plus 1 percent of delta demand
-        const recommendedPrice = self.price + 0.01 * (this.prevDemand - this.demand);
+        const recommendedPrice = self.manualPrice + 0.01 * this.deltaDemand;
         if (recommendedPrice > 0) {
             self.recommendedPrice = recommendedPrice;
         } else {
@@ -250,6 +256,8 @@ class MarketSim {
 
         this.deltaDemand = this.prevDemand - this.demand;
         this.prevDemand = this.demand;
+
+        console.log(this.deltaDemand);
 
         self = new Market({
             name: self.name,

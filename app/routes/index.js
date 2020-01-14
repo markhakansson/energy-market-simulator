@@ -8,7 +8,11 @@ const isManager = require('../api/auth/auth').isManager;
 const Quote = require('inspirational-quotes');
 
 router.get('/', function (req, res, next) {
-    return res.redirect('/login');
+    const randomQuote = Quote.getQuote();
+    return res.render('home.ejs', {
+        quote: randomQuote.text,
+        author: randomQuote.author
+    });
 });
 
 router.get('/success', auth, function (req, res, next) {
@@ -35,15 +39,23 @@ router.get('/prosumer', auth, async function (req, res, next) {
     });
 });
 
+router.get('/home', function (req, res) {
+    return res.redirect('/');
+});
+
 router.get('/signup', isLoggedIn, function (req, res) {
+    const randomQuote = Quote.getQuote();
     return res.render('signup.ejs', {
-        quote: Quote.getRandomQuote()
+        quote: randomQuote.text,
+        author: randomQuote.author
     });
 });
 
 router.get('/login', isLoggedIn, function (req, res) {
+    const randomQuote = Quote.getQuote();
     return res.render('login.ejs', {
-        quote: Quote.getRandomQuote()
+        quote: randomQuote.text,
+        author: randomQuote.author
     });
 });
 
@@ -53,7 +65,7 @@ router.get('/logout', function (req, res, next) {
             if (err) return next(err);
         });
     }
-    return res.redirect('/login');
+    return res.redirect('/');
 });
 
 router.use('/graphql', expressGraphql(req => ({

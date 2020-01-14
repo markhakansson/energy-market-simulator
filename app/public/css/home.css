@@ -1,0 +1,27 @@
+.footer {
+    opacity: 0.8;
+    background-color: #f5f5f5;
+    text-align: center;
+    line-height: 60px;
+    margin-top: auto;
+}
+
+.ml12 {
+    font-weight: 200;
+    font-size: 5em;
+    color: #f5f5f5;
+    letter-spacing: 0.25em;
+    width: 100%;
+}
+
+.ml12 .letter {
+    display: inline-block;
+    line-height: 1em;
+}
+
+h1 {
+    left: 0;
+    position: relative;
+    text-align: center;
+    top: 40%;
+}
