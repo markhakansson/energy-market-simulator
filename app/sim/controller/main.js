@@ -26,7 +26,10 @@ var consumerMap = new Map();
  * Currently only support a single market.
  */
 async function init () {
-    console.log('Initializing simulator...');
+    if (process.env.NODE_ENV === 'development') {
+        Logger.info('Initializing simulator...');
+    }
+
     // Get all unique names of prosumers and consumers from DB
     await updateNameArrays();
 
@@ -39,8 +42,10 @@ async function init () {
         mapConsumer(name, MARKET);
     }
 
-    console.log('Prosumers: ' + prosumerNames);
-    console.log('Consumers: ' + consumerNames);
+    if (process.env.NODE_ENV === 'development') {
+        Logger.info('Prosumers: ' + prosumerNames);
+        Logger.info('Consumers: ' + consumerNames);
+    }
 }
 
 function mapProsumer (name, market) {
@@ -149,13 +154,16 @@ async function simLoop () {
         }
 
         MARKET.update();
-        console.log('Wind speed: ' + WEATHER.weather.wind_speed);
+        if (process.env.NODE_ENV === 'development') {
+            Logger.info('Wind speed: ' + WEATHER.weather.wind_speed);
+        }
     }, TIME_MULTIPLIER);
 }
 
 async function main () {
     await init();
-    console.log('Simulator now running... ');
+
+    Logger.info('Simulator now running... ');
     try {
         await simLoop();
     } catch (err) {

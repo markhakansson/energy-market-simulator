@@ -1,9 +1,10 @@
-$(document).ready(function () {
+const graphqUrl = 'http://34.238.115.161:4000/graphql';
 
-    $("#loginForm").submit(function(e) {
+$(document).ready(function () {
+    $('#loginForm').submit(function (e) {
         e.preventDefault();
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -18,12 +19,9 @@ $(document).ready(function () {
                 if (res.data.login) {
                     window.location.reload();
                 } else {
-                    $('#loginMsg').html("Incorrect username or password!");
+                    $('#loginMsg').html('Incorrect username or password!');
                 }
-
             }
         });
-
     });
 });
-

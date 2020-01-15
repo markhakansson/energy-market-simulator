@@ -1,3 +1,5 @@
+const graphqUrl = 'http://34.238.115.161:4000/graphql';
+
 $(document).ready(function () {
     $('#nav-monitor').click(function () {
         $('a').removeClass('active');
@@ -14,7 +16,7 @@ $(document).ready(function () {
     $('#update').submit(function (e) {
         e.preventDefault();
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -28,7 +30,7 @@ $(document).ready(function () {
         });
     });
     $.ajax({
-        url: 'http://localhost:4000/graphql',
+        url: graphqUrl,
         contentType: 'application/json',
         type: 'POST',
         data: JSON.stringify({
@@ -51,7 +53,7 @@ function readUrl (input) {
             $('#profileImg').attr('src', e.target.result);
 
             $.ajax({
-                url: 'http://localhost:4000/graphql',
+                url: graphqUrl,
                 contentType: 'application/json',
                 type: 'POST',
                 data: JSON.stringify({

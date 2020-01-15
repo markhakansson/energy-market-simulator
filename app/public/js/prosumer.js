@@ -1,8 +1,10 @@
+const graphqUrl = 'http://34.238.115.161:4000/graphql';
+
 $(document).ready(function () {
     $('#useBatteryRatioSlider').change(function () {
         const value = this.value;
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -18,11 +20,11 @@ $(document).ready(function () {
     $('#setUseBatteryRatioValue').click(function () {
         const value = $('#useBatteryRatioText').val();
         if (isNaN(value) || value < 0 || value > 100) {
-            alert("You must provide positive digits (1-100)!");
+            alert('You must provide positive digits (1-100)!');
             return;
         }
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -42,7 +44,7 @@ $(document).ready(function () {
     $('#fillBatteryRatioSlider').change(function () {
         const value = this.value;
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -58,11 +60,11 @@ $(document).ready(function () {
     $('#setFillBatteryRatio').click(function () {
         const value = $('#fillBatteryRatioText').val();
         if (isNaN(value) || value < 0 || value > 100) {
-            alert("You must provide positive digits (1-100)!");
+            alert('You must provide positive digits (1-100)!');
             return;
         }
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -86,7 +88,7 @@ $(document).ready(function () {
 
 function updateInformation () {
     $.ajax({
-        url: 'http://localhost:4000/graphql',
+        url: graphqUrl,
         contentType: 'application/json',
         type: 'POST',
         data: JSON.stringify({
@@ -106,7 +108,7 @@ function updateInformation () {
             $('#batterycap').html(prosumer.currBatteryCap.toFixed(2));
             $('#turbinestatus').html(prosumer.turbineStatus);
 
-            //Sliders
+            // Sliders
             $('#useBatteryRatioValue').html(prosumer.useBatteryRatio * 100);
             $('#useBatteryRatioSlider').val(prosumer.useBatteryRatio * 100);
             $('#fillBatteryRatioValue').html(prosumer.fillBatteryRatio * 100);
@@ -126,7 +128,7 @@ function updateInformation () {
 
 function updateMarketInformation (name) {
     $.ajax({
-        url: 'http://localhost:4000/graphql',
+        url: graphqUrl,
         contentType: 'application/json',
         type: 'POST',
         data: JSON.stringify({
@@ -145,7 +147,7 @@ function updateMarketInformation (name) {
 
 function updateWindspeed (location) {
     $.ajax({
-        url: 'http://localhost:4000/graphql',
+        url: graphqUrl,
         contentType: 'application/json',
         type: 'POST',
         data: JSON.stringify({
@@ -169,7 +171,7 @@ function deleteUser () {
         return;
     }
     $.ajax({
-        url: 'http://localhost:4000/graphql',
+        url: graphqUrl,
         contentType: 'application/json',
         type: 'POST',
         data: JSON.stringify({
