@@ -8,7 +8,31 @@ if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir);
 }
 
-const options = {
+let logger;
+
+const prodOptions = {
+    error: {
+        level: 'error',
+        filename: rootPath + '/logs/%DATE%-error.log',
+        dataPattern: 'YYYY-MM-DD',
+        format: format.combine(
+            format.timestamp({
+                format: 'YYYY-MM-DD HH:mm:ss'
+            })
+        )
+    },
+    warn: {
+        level: 'warn',
+        filename: rootPath + '/logs/%DATE%-warning.log',
+        format: format.combine(
+            format.timestamp({
+                format: 'YYYY-MM-DD HH:mm:ss'
+            })
+        )
+    }
+}
+
+const devOptions = {
     error: {
         level: 'error',
         filename: rootPath + '/logs/%DATE%-error.log',
@@ -32,7 +56,7 @@ const options = {
     },
     warn: {
         level: 'warn',
-        filename: rootPath + '/logs/warnings.log',
+        filename: rootPath + '/logs/%DATE%-warning.log',
         format: format.combine(
             format.timestamp({
                 format: 'YYYY-MM-DD HH:mm:ss'
@@ -47,12 +71,21 @@ const options = {
  * 'logger.debug('debug message') to log debug messages to the console.
  * 'logger.error('error message') to log error message to console and to file.
  */
-const logger = createLogger({
-    transports: [
-        new transports.DailyRotateFile(options.error),
-        new transports.Console(options.debug),
-        new transports.File(options.warn)
-    ]
-});
+if (process.env.NODE_ENV === 'production') {
+    logger = createLogger({
+        transports: [
+            new transports.DailyRotateFile(prodOptions.error),
+            new transports.DailyRotateFile(prodOptions.warn)
+        ]
+    });
+} else {
+    logger = createLogger({
+        transports: [
+            new transports.DailyRotateFile(devOptions.error),
+            new transports.Console(devOptions.debug),
+            new transports.DailyRotateFile(devOptions.warn)
+        ]
+    });
+}
 
 module.exports = logger;

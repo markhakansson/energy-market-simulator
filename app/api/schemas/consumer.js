@@ -2,6 +2,7 @@ const graphql = require('graphql');
 const Consumer = require('../../db/model/consumer');
 const graphqlIsoDate = require('graphql-iso-date');
 const errorMsg = require('./errors');
+const Logger = require('../../config/logger');
 
 const {
     GraphQLObjectType, GraphQLString, GraphQLID, GraphQLList,
@@ -53,7 +54,7 @@ const ConsumerQueries = {
                     names = res;
                 })
                 .catch(err => {
-                    console.log(err);
+                    Logger.error(err);
                 });
 
             for (const name of names) {
@@ -117,7 +118,7 @@ const ConsumerMutations = {
                     return true;
                 },
                 function (err) {
-                    console.error(err);
+                    Logger.error(err);
                     throw new Error('Could not save document to database: ' + err);
                 }
             );

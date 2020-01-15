@@ -257,8 +257,6 @@ class MarketSim {
         this.deltaDemand = this.prevDemand - this.demand;
         this.prevDemand = this.demand;
 
-        console.log(this.deltaDemand);
-
         self = new Market({
             name: self.name,
             timestamp: Date.now(),
@@ -282,8 +280,8 @@ class MarketSim {
             if (err) {
                 Logger.error('Could not save market to database: ' + err);
                 throw err;
-            } else {
-                console.log('Market ' + self.name +
+            } else if (process.env.NODE_ENV !== 'production') {
+                Logger.info('Market ' + self.name +
                     '\n current demand: ' + this.demand +
                     '\n status: ' + this.status +
                     '\n startup: ' + self.startUp +
