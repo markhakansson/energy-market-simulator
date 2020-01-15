@@ -1,8 +1,11 @@
+const graphqUrl = 'http://34.238.115.161/graphql';
+const restOnline = 'http://34.238.115.161/online';
+
 $(document).ready(function () {
     $('#productionSlider').change(function () {
         const value = this.value;
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -19,11 +22,11 @@ $(document).ready(function () {
     $('#setProductionValue').click(function () {
         const value = $('#productionValueText').val();
         if (isNaN(value) || value < 0 || value > 100) {
-            alert("You must provide positive digits (1-100)!");
+            alert('You must provide positive digits (1-100)!');
             return;
         }
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -43,7 +46,7 @@ $(document).ready(function () {
     $('#bufferRatioSlider').change(function () {
         const value = this.value;
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -59,11 +62,11 @@ $(document).ready(function () {
     $('#setBufferRatio').click(function () {
         const value = $('#bufferValueText').val();
         if (isNaN(value) || value < 0 || value > 100) {
-            alert("You must provide positive digits (1-100)!");
+            alert('You must provide positive digits (1-100)!');
             return;
         }
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -83,7 +86,7 @@ $(document).ready(function () {
     $('#marketPriceSlider').change(function () {
         const value = this.value;
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -99,11 +102,11 @@ $(document).ready(function () {
     $('#setPrice').click(function () {
         const value = $('#priceValueText').val();
         if (isNaN(value) || value < 0) {
-            alert("You must provide positive digits!");
+            alert('You must provide positive digits!');
             return;
         }
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -123,7 +126,7 @@ $(document).ready(function () {
     $('#autopilot').change(function (e) {
         if (!$(this).is(':checked')) {
             $.ajax({
-                url: 'http://localhost:4000/graphql',
+                url: graphqUrl,
                 contentType: 'application/json',
                 type: 'POST',
                 data: JSON.stringify({
@@ -138,7 +141,7 @@ $(document).ready(function () {
             });
         } else {
             $.ajax({
-                url: 'http://localhost:4000/graphql',
+                url: graphqUrl,
                 contentType: 'application/json',
                 type: 'POST',
                 data: JSON.stringify({
@@ -153,7 +156,7 @@ $(document).ready(function () {
             });
         }
     });
-    $('#timeBlock').change(function() {
+    $('#timeBlock').change(function () {
         $('#timeBlockValue').html(this.value);
     });
     // TODO: Uncomment when moving to production!
@@ -169,7 +172,7 @@ $(document).ready(function () {
 
 function updateInformation () {
     $.ajax({
-        url: 'http://localhost:4000/graphql',
+        url: graphqUrl,
         contentType: 'application/json',
         type: 'POST',
         data: JSON.stringify({
@@ -210,7 +213,7 @@ function updateInformation () {
 
 function getBlackOut () {
     $.ajax({
-        url: 'http://localhost:4000/graphql',
+        url: graphqUrl,
         contentType: 'application/json',
         type: 'POST',
         data: JSON.stringify({
@@ -235,7 +238,7 @@ function getBlackOut () {
 
 function getUsers () {
     $.ajax({
-        url: 'http://localhost:4000/graphql',
+        url: graphqUrl,
         contentType: 'application/json',
         type: 'POST',
         data: JSON.stringify({
@@ -247,12 +250,12 @@ function getUsers () {
         }),
         success: function (res) {
             res.data.users.forEach(obj => {
-                $("#users").append("<li><a href='/prosumer?username=" + obj.username + "'>" + obj.username + "</a></li>");
-                $("#users").append("<button type=button id=" + obj.username + " > Block </button>");
-                $("#users").on("click", "#" + obj.username, function() {
-                    console.log($("#timeBlock").val());
+                $('#users').append("<li><a href='/prosumer?username=" + obj.username + "'>" + obj.username + '</a></li>');
+                $('#users').append('<button type=button id=' + obj.username + ' > Block </button>');
+                $('#users').on('click', '#' + obj.username, function () {
+                    console.log($('#timeBlock').val());
                     $.ajax({
-                        url: 'http://localhost:4000/graphql',
+                        url: graphqUrl,
                         contentType: 'application/json',
                         type: 'POST',
                         data: JSON.stringify({
@@ -277,7 +280,7 @@ function getUsers () {
  */
 function getOnlineUsers () {
     $.ajax({
-        url: 'http://localhost:4000/online',
+        url: restOnline,
         contentType: 'application/json',
         type: 'GET',
         success: function (res) {

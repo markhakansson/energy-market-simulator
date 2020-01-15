@@ -305,8 +305,8 @@ class ProsumerSim {
             if (err) {
                 Logger.error('Could not save prosumer to database: ' + err);
                 throw err;
-            } else {
-                console.log(self.name + ' is connected to ' + self.market +
+            } else if (process.env.NODE_ENV !== 'production') {
+                Logger.info(self.name + ' is connected to ' + self.market +
                 '\n Time: ' + self.timestamp.toString() +
                 '\n Producing: ' + self.production + ' Wh' +
                 '\n Consuming: ' + self.consumption + ' Wh' +

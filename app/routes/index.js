@@ -68,14 +68,25 @@ router.get('/logout', function (req, res, next) {
     return res.redirect('/');
 });
 
-router.use('/graphql', expressGraphql(req => ({
-    schema,
-    graphiql: true,
-    context: req,
-    customFormatErrorFn: err => ({
-        message: err.message
-    })
-})));
+if (process.env === 'production') {
+    router.use('/graphql', expressGraphql(req => ({
+        schema,
+        graphiql: false,
+        context: req,
+        customFormatErrorFn: err => ({
+            message: err.message
+        })
+    })));
+} else {
+    router.use('/graphql', expressGraphql(req => ({
+        schema,
+        graphiql: true,
+        context: req,
+        customFormatErrorFn: err => ({
+            message: err.message
+        })
+    })));
+}
 
 router.get('/online', isManager, function (req, res, next) {
     req.sessionStore.all(function (err, sessions) {
@@ -91,7 +102,11 @@ router.get('/online', isManager, function (req, res, next) {
 });
 
 router.get('*', function (req, res) {
-    return res.render('404');
+    const randomQuote = Quote.getQuote();
+    return res.render('404', {
+        quote: randomQuote.text,
+        author: randomQuote.author
+    });
 });
 
 module.exports = router;

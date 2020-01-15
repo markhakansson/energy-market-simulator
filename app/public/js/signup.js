@@ -1,9 +1,10 @@
-$(document).ready(function () {
+const graphqUrl = 'http://34.238.115.161/graphql';
 
-    $("#signForm").submit(function(e) {
+$(document).ready(function () {
+    $('#signForm').submit(function (e) {
         e.preventDefault();
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -16,17 +17,14 @@ $(document).ready(function () {
             }),
             success: function (res) {
                 if (res.data.signUp) {
-                    $('#signUpMsg').html("User created! Redirecting...");
-                    setTimeout(function() {
-                        window.location.href = "/login";
+                    $('#signUpMsg').html('User created! Redirecting...');
+                    setTimeout(function () {
+                        window.location.href = '/login';
                     }, 1500);
                 } else {
-                    $('#signUpMsg').html("User already exists or you did something wrong!");
+                    $('#signUpMsg').html('User already exists or you did something wrong!');
                 }
-
             }
         });
-
     });
 });
-

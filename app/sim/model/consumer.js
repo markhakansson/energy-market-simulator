@@ -130,8 +130,8 @@ class ConsumerSim {
             if (err) {
                 Logger.error('Could not save consumer to database: ' + err);
                 throw err;
-            } else {
-                console.log('Consumer ' + self.name + ' is connected to ' + self.market +
+            } else if (process.env.NODE_ENV !== 'production') {
+                Logger.info('Consumer ' + self.name + ' is connected to ' + self.market +
                     '\n Time: ' + self.timestamp.toString() +
                     '\n Consuming: ' + self.consumption + ' Wh' +
                     '\n Bought energy: ' + self.bought + ' Wh' +
