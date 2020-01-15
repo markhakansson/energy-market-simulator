@@ -1,6 +1,5 @@
-const graphqUrl = 'http://34.238.115.161:4000/graphql';
-const restOnline = 'http://34.238.115.161:4000/online';
-
+const graphqUrl = 'http://34.238.115.161/graphql';
+const restOnline = 'http://34.238.115.161/online';
 
 $(document).ready(function () {
     $('#productionSlider').change(function () {

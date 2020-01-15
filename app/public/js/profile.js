@@ -1,5 +1,3 @@
-const graphqUrl = 'http://34.238.115.161:4000/graphql';
-
 $(document).ready(function () {
     $('#nav-monitor').click(function () {
         $('a').removeClass('active');
