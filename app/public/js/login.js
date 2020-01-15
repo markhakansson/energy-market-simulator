@@ -1,4 +1,4 @@
-const graphqUrl = 'http://34.238.115.161:4000/graphql';
+const graphqUrl = 'http://34.238.115.161/graphql';
 
 $(document).ready(function () {
     $('#loginForm').submit(function (e) {
