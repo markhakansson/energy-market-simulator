@@ -1,5 +1,5 @@
-const graphqUrl = 'http://34.238.115.161/graphql';
-const restOnline = 'http://34.238.115.161/online';
+var graphqUrl = window.location.origin + '/graphql';
+var restOnline = window.location.origin + '/online';
 
 $(document).ready(function () {
     $('#productionSlider').change(function () {

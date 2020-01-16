@@ -1,4 +1,4 @@
-const graphqUrl = 'http://34.238.115.161/graphql';
+var graphqUrl = window.location.origin + '/graphql';
 
 $(document).ready(function () {
     $('#signForm').submit(function (e) {

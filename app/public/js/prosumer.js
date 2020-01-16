@@ -1,4 +1,4 @@
-const graphqUrl = 'http://34.238.115.161/graphql';
+var graphqUrl = window.location.origin + '/graphql';
 
 $(document).ready(function () {
     $('#useBatteryRatioSlider').change(function () {
@@ -93,7 +93,7 @@ function updateInformation () {
         type: 'POST',
         data: JSON.stringify({
             query: `{
-                prosumer{production,consumption,currBatteryCap, market, timestamp, fillBatteryRatio, useBatteryRatio, turbineStatus}
+                prosumer{production, consumption, currBatteryCap, market, timestamp, fillBatteryRatio, useBatteryRatio, turbineStatus, bought, blocked}
             }`
         }),
         success: function (res) {
@@ -107,6 +107,8 @@ function updateInformation () {
             $('#netproduction').html((Number(prosumer.production) - Number(prosumer.consumption)).toFixed(2));
             $('#batterycap').html(prosumer.currBatteryCap.toFixed(2));
             $('#turbinestatus').html(prosumer.turbineStatus);
+            $('#blocked').html(prosumer.blocked.toString());
+            $('#bought').html(prosumer.bought.toFixed(2));
 
             // Sliders
             $('#useBatteryRatioValue').html(prosumer.useBatteryRatio * 100);
