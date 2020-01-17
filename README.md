@@ -33,6 +33,18 @@ npm start
 ```
 This will start the database, API and server.
 
+
+### Usage systemd
+To start the app as a service on an OS that uses systemd, add the required information to the template **m7011e.service**, you might need to change the path where npm and the project is located. After that place the file at
+```
+/etc/systemd/system/m7011e.service
+```
+Then reload the daemon and start the service
+```
+sudo systemctl daemon-reload
+sudo systemctl start m7011e.service
+```
+
 ## Authors
 Group: **rustislife**
 * Aron Strandberg - arostr-5@student.ltu.se - [bugmana](https://github.com/dynematic)
