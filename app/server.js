@@ -6,6 +6,7 @@ const routes = require('./routes/index');
 const cookieParser = require('cookie-parser');
 
 const Logger = require('./config/logger');
+const path = require('path');
 
 // Loads the '.env' file in root to process.env.
 require('dotenv').config();
@@ -32,6 +33,8 @@ mongoose.connect(process.env.DB_HOST, {
  */
 const app = express();
 app.set('view engine', 'ejs');
+app.set("views", path.join(__dirname, "./views"));
+
 app.use(bodyParser.json({
     limit: '5mb', // Image size restriction
     extended: true
