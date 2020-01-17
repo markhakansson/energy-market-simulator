@@ -177,18 +177,20 @@ function updateInformation () {
         type: 'POST',
         data: JSON.stringify({
             query: `{
-                manager{timestamp, status, production, consumption, demand, price, fillBatteryRatio, recommendedProduction, recommendedPrice, autopilot, manualPrice, manualProduction}
+                manager{timestamp, status, production, consumption, demand, price, fillBatteryRatio, recommendedProduction, recommendedPrice, autopilot, manualPrice, manualProduction, currBatteryCap}
             }`
         }),
         success: function (res) {
             const market = res.data.manager;
             $('#timestamp').html(market.timestamp);
             $('#status').html(market.status);
-            $('#production').html(market.production);
-            $('#consumption').html(market.consumption);
-            $('#demand').html(market.demand);
-            $('#price').html(market.price);
-            $('#recPrice').html(market.recommendedPrice);
+            $('#production').html(market.production.toFixed(2));
+            $('#consumption').html(market.consumption.toFixed(2));
+            $('#demand').html(market.demand.toFixed(2));
+            $('#price').html(market.price.toFixed(2));
+            $('#recPrice').html(market.recommendedPrice.toFixed(2));
+            $('#recProduction').html(market.recommendedProduction.toFixed(2));
+            $('#batterycap').html(market.currBatteryCap.toFixed(2));
 
             // Sliders
             $('#productionSlider').val(market.manualProduction);
