@@ -1,0 +1,21 @@
+[Unit]
+Description=m7011e
+# Require=After=mongod.service
+
+[Service]
+ExecStart=/usr/bin/npm start --prefix /home/ubuntu/m7011e-dynamic-web-systems/app
+Restart=always
+RestartSec=10
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=m7011e-app
+
+Environment=DB_HOST=<path to mongodb>
+Environment=DB_USER=<user>
+Environment=DB_PASS=<pass>
+Environment=SESSION_SECRET=<session secret>
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
