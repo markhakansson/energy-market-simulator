@@ -46,7 +46,7 @@
 
 
     <div class="container" id="monitor">
-      <p>Autopilot</p>
+      <p>Automatic price/production (OFF/ON)</p>
       <label class="switch">
         <input type="checkbox" id="autopilot">
         <span class="slider"></span>
@@ -60,7 +60,6 @@
           <div>
             <p>Electricity manual production <input type="text" id="productionValueText"> Wh <button
                 id="setProductionValue">Set</button></p>
-            <input type="range" id="productionSlider" min="0" max="10000" />
             <p>Value: <span id="productionValue"></span> Wh</p>
           </div>
 
@@ -129,10 +128,8 @@
     </div>
 
     <div class="container" id="profile" style="display:none">
-      <h2>Profile</h2>
-
-      <div class="row">
-
+    <h2>Profile</h2>
+    <div class="row">
         <div class="col-md">
           <form id="update">
             <div class="form-group">
@@ -150,7 +147,10 @@
             <span id="updateMessage"></span>
           </form>
         </div>
-
+        <div class="col-sm">
+          <select id="deleteProsumers"></select>
+          <button class="btn btn-primary" onclick="deleteProsumer()">Delete prosumer</button>
+        </div>
         <div class="col-sm">
           <div class="img-thumbnail">
             <img src="" class="img-thumbnail" alt="Profile picture" id="profileImg">

@@ -258,9 +258,9 @@ class ProsumerSim {
             self.bought += boughtEnergy;
             self.blackout = false;
 
-            if (self.currBatteryCap === 0) {
-                self.blackout = true;
-            }
+            // if (self.currBatteryCap === 0) {
+            //     self.blackout = true;
+            // }
         }
     }
 

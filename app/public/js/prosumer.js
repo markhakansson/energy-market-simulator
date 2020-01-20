@@ -166,7 +166,7 @@ function updateWindspeed (location) {
     });
 }
 
-function deleteUser () {
+function deleteMe () {
     const password = $('#pass').val();
     if (password == null || password == '') {
         $('#deleteUserMsg').html('Please provide your password!');
@@ -178,11 +178,11 @@ function deleteUser () {
         type: 'POST',
         data: JSON.stringify({
             query: `mutation {
-                deleteUser(password:"${password}")
+                deleteMe(password:"${password}")
            }`
         }),
         success: function (res) {
-            if (res.data.deleteUser) {
+            if (res.data.deleteMe) {
                 $('#deleteUserMsg').html('User deleted! Redirecting...');
                 setTimeout(function () {
                     window.location.href = 'logout'
