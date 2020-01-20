@@ -143,7 +143,7 @@ const UserMutations = {
             return 'Password failed to update!';
         }
     },
-    deleteUser: {
+    deleteMe: {
         type: GraphQLBoolean,
         args: {
             password: { type: new GraphQLNonNull(GraphQLString) }
@@ -151,11 +151,8 @@ const UserMutations = {
         async resolve (parent, args, req) {
             if (!req.session.user) return 'Not authenticated!';
             const user = await User.findOne({ username: req.session.user });
-            if (!user) {
+            if (!user || user.manager) {
                 return false;
-            }
-            if(user.manager) {
-                return "You cannot delete a Manager!";
             }
             if (user.comparePassword(args.password)) {
                 user.deleteOne();
@@ -163,6 +160,23 @@ const UserMutations = {
                 return true;
             }
             return false;
+        }
+    },
+    deleteProsumer: {
+        type: GraphQLBoolean,
+        args: {
+            prosumer: { type: new GraphQLNonNull(GraphQLString) }
+        },
+        async resolve (parent, args, req) {
+            if (!req.session.user) return 'Not authenticated!';
+            if(!req.session.manager) return 'Not authorized!';
+            const user = await User.findOne({ username: args.prosumer });
+            if (!user || user.manager) {
+                return false;
+            }
+            user.deleteOne();
+            Prosumer.deleteMany({ name: args.prosumer }).exec();
+            return true;
         }
     }
 };

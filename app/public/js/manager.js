@@ -2,27 +2,10 @@ var graphqUrl = window.location.origin + '/graphql';
 var restOnline = window.location.origin + '/online';
 
 $(document).ready(function () {
-    $('#productionSlider').change(function () {
-        const value = this.value;
-        $.ajax({
-            url: graphqUrl,
-            contentType: 'application/json',
-            type: 'POST',
-            data: JSON.stringify({
-                query: `mutation {
-                    setMarketProduction(production: ${value})
-                }`
-            }),
-            success: function () {
-                console.log('Production updated to ' + value);
-                $('#productionValue').html(value);
-            }
-        });
-    });
     $('#setProductionValue').click(function () {
         const value = $('#productionValueText').val();
-        if (isNaN(value) || value < 0 || value > 100) {
-            alert('You must provide positive digits (1-100)!');
+        if (isNaN(value) || value < 0) {
+            alert('You must provide positive digits!');
             return;
         }
         $.ajax({
@@ -36,7 +19,6 @@ $(document).ready(function () {
             }),
             success: function () {
                 $('#productionValue').html(value);
-                $('#productionSlider').val(value);
             },
             error: function (e) {
                 alert('Bad request, did you input digits?');
@@ -193,12 +175,11 @@ function updateInformation () {
             $('#batterycap').html(market.currBatteryCap.toFixed(2));
 
             // Sliders
-            $('#productionSlider').val(market.manualProduction);
-            $('#productionValue').html(market.manualProduction);
+            $('#productionValue').html(market.manualProduction.toFixed(2));
             $('#bufferRatioSlider').val(market.fillBatteryRatio * 100);
             $('#bufferRatioValue').html(market.fillBatteryRatio * 100);
-            $('#marketPriceSlider').val(market.manualPrice);
-            $('#priceRatioValue').html(market.manualPrice);
+            $('#marketPriceSlider').val(market.manualPrice.toFixed(2));
+            $('#priceRatioValue').html(market.manualPrice.toFixed(2));
 
             $('#autopilot').prop('checked', market.autopilot);
 
@@ -228,8 +209,8 @@ function getBlackOut () {
             }`
         }),
         success: function (res) {
+            $('#blackout').empty();
             res.data.isBlocked.forEach(obj => {
-                $('#blackout').empty();
                 if (obj.blackout) {
                     $('#blackout').append('<li><a>' + obj.name + ' at ' + obj.timestamp + '</a></li>');
                 }
@@ -251,11 +232,13 @@ function getUsers () {
             }`
         }),
         success: function (res) {
+            $('#users').empty();
+            $('#deleteProsumers').empty();
             res.data.users.forEach(obj => {
+                $('#deleteProsumers').append(`<option value="${obj.username}">${obj.username}</option>`);
                 $('#users').append("<li><a href='/prosumer?username=" + obj.username + "'>" + obj.username + '</a></li>');
                 $('#users').append('<button type=button id=' + obj.username + ' > Block </button>');
                 $('#users').on('click', '#' + obj.username, function () {
-                    console.log($('#timeBlock').val());
                     $.ajax({
                         url: graphqUrl,
                         contentType: 'application/json',
@@ -266,7 +249,7 @@ function getUsers () {
                             }`
                         }),
                         success: function (res) {
-                            $('#blockInfo').html(res.data.blockProsumer);
+                            alert("User " + obj.username + " is " + res.data.blockProsumer + " for " + $('#timeBlock').val() + "s");
                         },
                         error: function (e) {
                             $('#blockInfo').html('Error: ' + e + '\n Did you provide digits?');
@@ -292,4 +275,27 @@ function getOnlineUsers () {
             });
         }
     });
+}
+
+function deleteProsumer() {
+    let prosumer = $("#deleteProsumers").val();
+    $.ajax({
+        url: graphqUrl,
+        contentType: 'application/json',
+        type: 'POST',
+        data: JSON.stringify({
+            query: `mutation {
+                deleteProsumer(prosumer:"${prosumer}")
+           }`
+        }),
+        success: function (res) {
+            if (res.data.deleteProsumer) {
+                $("#deleteProsumers option[value=" + prosumer + "]").remove();
+                alert("Prosumer " + prosumer + " deleted!");
+            } else {
+                $('#deleteProsumerMsg').html('Something went wrong...');
+            }
+        }
+    });
+
 }

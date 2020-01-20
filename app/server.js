@@ -13,6 +13,16 @@ require('dotenv').config();
 
 require('./sim/controller/main').main();
 
+// For creating admin
+// const User = require('./db/model/user');
+
+// let user = new User( {
+//     username: "Lulea",
+//     password: "Lulea",
+//     manager: true
+// });
+// user.save();
+
 // See https://stackoverflow.com/a/42929869 on how to add user
 mongoose.connect(process.env.DB_HOST, {
     user: process.env.DB_USER,
