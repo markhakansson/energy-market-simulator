@@ -14,7 +14,7 @@ $(document).ready(function () {
     $('#update').submit(function (e) {
         e.preventDefault();
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -28,7 +28,7 @@ $(document).ready(function () {
         });
     });
     $.ajax({
-        url: 'http://localhost:4000/graphql',
+        url: graphqUrl,
         contentType: 'application/json',
         type: 'POST',
         data: JSON.stringify({
@@ -51,7 +51,7 @@ function readUrl (input) {
             $('#profileImg').attr('src', e.target.result);
 
             $.ajax({
-                url: 'http://localhost:4000/graphql',
+                url: graphqUrl,
                 contentType: 'application/json',
                 type: 'POST',
                 data: JSON.stringify({

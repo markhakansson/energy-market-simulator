@@ -1,8 +1,10 @@
+var graphqUrl = window.location.origin + '/graphql';
+
 $(document).ready(function () {
     $('#useBatteryRatioSlider').change(function () {
         const value = this.value;
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -18,11 +20,11 @@ $(document).ready(function () {
     $('#setUseBatteryRatioValue').click(function () {
         const value = $('#useBatteryRatioText').val();
         if (isNaN(value) || value < 0 || value > 100) {
-            alert("You must provide positive digits (1-100)!");
+            alert('You must provide positive digits (1-100)!');
             return;
         }
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -42,7 +44,7 @@ $(document).ready(function () {
     $('#fillBatteryRatioSlider').change(function () {
         const value = this.value;
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -58,11 +60,11 @@ $(document).ready(function () {
     $('#setFillBatteryRatio').click(function () {
         const value = $('#fillBatteryRatioText').val();
         if (isNaN(value) || value < 0 || value > 100) {
-            alert("You must provide positive digits (1-100)!");
+            alert('You must provide positive digits (1-100)!');
             return;
         }
         $.ajax({
-            url: 'http://localhost:4000/graphql',
+            url: graphqUrl,
             contentType: 'application/json',
             type: 'POST',
             data: JSON.stringify({
@@ -86,12 +88,12 @@ $(document).ready(function () {
 
 function updateInformation () {
     $.ajax({
-        url: 'http://localhost:4000/graphql',
+        url: graphqUrl,
         contentType: 'application/json',
         type: 'POST',
         data: JSON.stringify({
             query: `{
-                prosumer{production,consumption,currBatteryCap, market, timestamp, fillBatteryRatio, useBatteryRatio, turbineStatus}
+                prosumer{production, consumption, currBatteryCap, market, timestamp, fillBatteryRatio, useBatteryRatio, turbineStatus, bought, blocked}
             }`
         }),
         success: function (res) {
@@ -105,8 +107,10 @@ function updateInformation () {
             $('#netproduction').html((Number(prosumer.production) - Number(prosumer.consumption)).toFixed(2));
             $('#batterycap').html(prosumer.currBatteryCap.toFixed(2));
             $('#turbinestatus').html(prosumer.turbineStatus);
+            $('#blocked').html(prosumer.blocked.toString());
+            $('#bought').html(prosumer.bought.toFixed(2));
 
-            //Sliders
+            // Sliders
             $('#useBatteryRatioValue').html(prosumer.useBatteryRatio * 100);
             $('#useBatteryRatioSlider').val(prosumer.useBatteryRatio * 100);
             $('#fillBatteryRatioValue').html(prosumer.fillBatteryRatio * 100);
@@ -126,7 +130,7 @@ function updateInformation () {
 
 function updateMarketInformation (name) {
     $.ajax({
-        url: 'http://localhost:4000/graphql',
+        url: graphqUrl,
         contentType: 'application/json',
         type: 'POST',
         data: JSON.stringify({
@@ -145,7 +149,7 @@ function updateMarketInformation (name) {
 
 function updateWindspeed (location) {
     $.ajax({
-        url: 'http://localhost:4000/graphql',
+        url: graphqUrl,
         contentType: 'application/json',
         type: 'POST',
         data: JSON.stringify({
@@ -162,23 +166,23 @@ function updateWindspeed (location) {
     });
 }
 
-function deleteUser () {
+function deleteMe () {
     const password = $('#pass').val();
     if (password == null || password == '') {
         $('#deleteUserMsg').html('Please provide your password!');
         return;
     }
     $.ajax({
-        url: 'http://localhost:4000/graphql',
+        url: graphqUrl,
         contentType: 'application/json',
         type: 'POST',
         data: JSON.stringify({
             query: `mutation {
-                deleteUser(password:"${password}")
+                deleteMe(password:"${password}")
            }`
         }),
         success: function (res) {
-            if (res.data.deleteUser) {
+            if (res.data.deleteMe) {
                 $('#deleteUserMsg').html('User deleted! Redirecting...');
                 setTimeout(function () {
                     window.location.href = 'logout'

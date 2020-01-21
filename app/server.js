@@ -1,21 +1,27 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-// const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose');
 const routes = require('./routes/index');
 const cookieParser = require('cookie-parser');
 
-const User = require('./db/model/user');
-const Market = require('./db/model/market');
-const Weather = require('./db/model/weather');
-
 const Logger = require('./config/logger');
+const path = require('path');
 
 // Loads the '.env' file in root to process.env.
 require('dotenv').config();
 
 require('./sim/controller/main').main();
+
+// For creating admin
+// const User = require('./db/model/user');
+
+// let user = new User( {
+//     username: "Lulea",
+//     password: "Lulea",
+//     manager: true
+// });
+// user.save();
 
 // See https://stackoverflow.com/a/42929869 on how to add user
 mongoose.connect(process.env.DB_HOST, {
@@ -31,34 +37,14 @@ mongoose.connect(process.env.DB_HOST, {
         Logger.error('Could not connect to database. Error ' + err);
     }
 );
-mongoose.connection.on('error', console.log.bind(console, 'CONNECTION ERROR!'));
-mongoose.connection.on('disconnected', console.log.bind(console, 'CONNECTION DISCONNECTED!'))
 
-// const user = new User({
-//     username: 'Lulea',
-//     password: 'Lulea',
-//     manager: true
-// });
-// user.save();
-
-// const market = new Market({
-//     name: 'Lulea',
-//     price: 2,
-//     maxBatteryCap: 100000,
-//     fillBatteryRatio: 0.5
-// });
-// market.save();
-
-// const weather = new Weather({
-//     name: 'Lulea',
-//     market: 'Lulea'
-// });
-// weather.save(); 
 /**
  * Express
  */
 const app = express();
 app.set('view engine', 'ejs');
+app.set("views", path.join(__dirname, "./views"));
+
 app.use(bodyParser.json({
     limit: '5mb', // Image size restriction
     extended: true
@@ -97,4 +83,4 @@ app.use((req, res, next) => {
 
 app.use('/', routes);
 
-app.listen(4000, () => console.log('Express GraphQL Server Now Running On localhost:4000/graphql'));
+app.listen(4000, () => Logger.info('Express GraphQL Server Now Running On localhost:4000/graphql'));

@@ -3,7 +3,7 @@
 
 <head>
      <meta charset="UTF-8" />
-     <title>Sign up</title>
+     <title>GLE Sign up</title>
      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
      <link rel="stylesheet" href="css/style.css">
@@ -19,9 +19,9 @@
 </head>
 
 <body>
-     <%- include ('homeheader.ejs', { quote: quote}) %>
+     <%- include ('homeheader.ejs', { quote: quote, author: author }) %>
      <div class="container">
-          <div class="row justify-content-center align-items-center" style="height:100vh">
+          <div class="row justify-content-center align-items-center" style="height:92vh">
                <div class="col-4">
                     <div class="card">
                          <div class="card-body">
@@ -43,7 +43,7 @@
                                              sensitive
                                              information.
                                         </p>
-                                        <input type="submit" value="Sign Up"><span id="signUpMsg"></span></input>
+                                        <input type="submit" value="Sign Up"><span id="signUpMsg"></span>
                                    </div>
                               </form>
                          </div>

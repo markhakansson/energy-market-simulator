@@ -16,15 +16,35 @@
      </script>
      <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js"></script>
      <script src="js/texteffects.js"></script>
+
 </head>
 
 <body>
      <%- include ('homeheader.ejs', { quote: quote, author: author }) %>
-     <h1 class="ml12" id="bigtext" style="font-weight: bold;"></h1>
-     <h1 class="ml11" id="bigtext2"></h1>
+     <h1 class="ml12" id="bigtext"></h1>
      <script>
-         textFadeIn('404!', '#bigtext', 3);
-         textFadeIn('Page could not be found!', '#bigtext2', 3);
+          const time = 2300;
+
+          textFadeInOut("Welcome to the green revolution.", "#bigtext", 3);
+
+          setTimeout(function () {
+               textFadeInOut("Breezing wind.", "#bigtext", 2);
+          }, 3 * time + 10);
+          setTimeout(function () {
+               textFadeInOut("Streaming water.", "#bigtext", 2);
+          }, 5* time + 10);
+          setTimeout(function () {
+               textFadeInOut("Sunny solar.", "#bigtext", 2);
+          }, 7 * time + 10);
+          setTimeout(function () {
+               textFadeInOut("Burning coal.", "#bigtext", 2);
+          }, 9 * time + 10);
+          setTimeout(function () {
+               textFadeInOut("The power of Mother Earth.", "#bigtext", 2);
+          }, 11 * time + 10);
+          setTimeout(function () {
+               textFadeIn("100% Green Lean Electrics", "#bigtext", 3);
+          }, 13* time + 10);
      </script>
      <%- include ("footer.ejs") %>
 </body>

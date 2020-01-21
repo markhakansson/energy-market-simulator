@@ -53,6 +53,7 @@ class ProsumerSim {
                         })
                     } else {
                         self.prosumer = doc;
+                        self.prosumer.bought = 0;
                     }
                 },
                 async err => {
@@ -192,19 +193,15 @@ class ProsumerSim {
     chargeBattery (energy) {
         const self = this.prosumer;
 
-        console.log('# Charge battery energy: ' + energy);
-
         if (energy < 0 || energy == null) {
             Logger.error(
                 'When charging battery in prosumer [' + self.name +
                 '], expected positive Number. Recieved ' + energy + '.'
             );
         } else if (self.currBatteryCap + energy >= self.maxBatteryCap) {
-            console.log('# Battery is full, selling to market');
             self.currBatteryCap = self.maxBatteryCap;
             this.sellToMarket(self.currBatteryCap + energy - self.maxBatteryCap);
         } else {
-            console.log('# Adding to energy to battery');
             self.currBatteryCap += energy;
         }
     }
@@ -248,24 +245,22 @@ class ProsumerSim {
                 'When buying energy from market in prosumer [' + self.name +
                 '], expected Number but received "null".'
             );
-            self.bought = 0;
         } else if (boughtEnergy < 0) {
             Logger.error(
                 'When buying energy from market in prosumer [' + self.name +
                 '], expected 0 or positive Number. Received negative Number.'
             );
-            self.bought = 0;
         } else if (boughtEnergy < energy) {
             // self.consumption -= (energy - boughtEnergy);
-            self.bought = boughtEnergy;
+            self.bought += boughtEnergy;
             self.blackout = true;
         } else {
-            self.bought = boughtEnergy;
+            self.bought += boughtEnergy;
             self.blackout = false;
 
-            if (self.currBatteryCap === 0) {
-                self.blackout = true;
-            }
+            // if (self.currBatteryCap === 0) {
+            //     self.blackout = true;
+            // }
         }
     }
 
@@ -310,8 +305,8 @@ class ProsumerSim {
             if (err) {
                 Logger.error('Could not save prosumer to database: ' + err);
                 throw err;
-            } else {
-                console.log(self.name + ' is connected to ' + self.market +
+            } else if (process.env.NODE_ENV !== 'production') {
+                Logger.info(self.name + ' is connected to ' + self.market +
                 '\n Time: ' + self.timestamp.toString() +
                 '\n Producing: ' + self.production + ' Wh' +
                 '\n Consuming: ' + self.consumption + ' Wh' +

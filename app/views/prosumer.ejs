@@ -101,18 +101,20 @@
         <!-- Display wind, production etc. as values! -->
         <div class="col-md">
           <ul>
-            <li>Current wind speed: <span id="windspeed"></span></li>
-            <li>Current production: <span id="production"></span></li>
-            <li>Current consumption: <span id="consumption"></span></li>
+            <li>Current wind speed: <span id="windspeed"></span> m/s</li>
+            <li>Current production: <span id="production"></span> Wh</li>
+            <li>Current consumption: <span id="consumption"></span> Wh</li>
+            <li>Bought electricity: <span id="bought"></span> Wh</li>
             <li>Current status: <span id="turbinestatus"></span></li>
           </ul>
         </div>
 
         <div class="col-md">
           <ul>
-            <li>Net production: <span id="netproduction"></span></li>
-            <li>Battery capacity: <span id="batterycap"></span></li>
-            <li>Market price: <span id="marketprice"></span></li>
+            <li>Net production: <span id="netproduction"></span> Wh</li>
+            <li>Battery capacity: <span id="batterycap"></span> Wh</li>
+            <li>Market price: <span id="marketprice"></span> SEK</li>
+            <li>Blocked from market: <span id="blocked"></span></li>
           </ul>
         </div>
 
@@ -122,7 +124,7 @@
     <div class="container" id="profile" style="display:none">
       <h2>Profile</h2>
       <input type="password" id="pass" placeholder="Provide your password">
-      <button type="submit" class="btn btn-primary" onclick="deleteUser()">Delete me!</button>
+      <button type="submit" class="btn btn-primary" onclick="deleteMe()">Delete me!</button>
       <span id="deleteUserMsg"></span>
 
       <div class="row">

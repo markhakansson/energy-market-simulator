@@ -70,7 +70,7 @@ const ProsumerQueries = {
                     names = res;
                 })
                 .catch(err => {
-                    console.log(err);
+                    Logger.error(err);
                 });
 
             for (const name of names) {
