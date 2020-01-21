@@ -16,6 +16,7 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
   </script>
+  <script src="https://unpkg.com/feather-icons"></script>
   <script src="js/charts.js"></script>
   <script src="js/profile.js"></script>
   <script src="js/manager.js"></script>
@@ -46,16 +47,26 @@
 
 
     <div class="container" id="monitor">
-      <p>Automatic price/production (OFF/ON)</p>
-      <label class="switch">
+      <div class="row">
+        <p>Set automatic price/production <b>(OFF | ON)</b></p>
+        <i data-feather="help-circle" data-toggle="tooltip" data-placement="right"
+          title="If enabled the market price and power plant production will be set to recommended values."></i>
+      </div>
+
+      <label class="switch" data-toggle="tooltip" data-placement="top"
+        title="If enabled the market price and power plant production will be set to recommended values.">
         <input type="checkbox" id="autopilot">
         <span class="slider"></span>
       </label>
 
       <div class="row">
-
         <div class="col-md" style="width: 100%" display="table">
-          <h2>Plant electricity settings</h2>
+          <div class="row">
+            <h2>Plant electricity settings </h2>
+            <i data-feather="help-circle" data-toggle="tooltip" data-placement="right" title="NOTE: The power plant cannot change production instantenously, there will be a slight delay before changes can
+              be
+              noticed."></i>
+          </div>
 
           <div>
             <p>Electricity manual production <input type="text" id="productionValueText"> Wh <button
@@ -74,23 +85,27 @@
             <input type="range" id="marketPriceSlider" min="0" max="100" />
             <p>Value: <span id="priceRatioValue"></span> SEK</p>
           </div>
-
-
         </div>
 
         <div class="col-lg">
-          <h2>Demand</h2>
+          <div class="row">
+            <h2>Electricity demand </h2>
+            <i data-feather="help-circle" data-toggle="tooltip" data-placement="right"
+              title="Positive demand is how much electricity the households needs from the market. Negative demand means that there is a surplus of electricity produced by the households to the market."></i>
+          </div>
           <canvas id="chart"></canvas>
           <!--<script>productionChart('#chart');</script>-->
           <script>
             let marketChart = new MarketChart('#chart');
           </script>
-
         </div>
 
       </div>
 
-      <h2>Information and online users</h2>
+      <div class="row">
+        <h2>Information and online users</h2>
+      </div>
+
       <div class="row">
         <!-- Display wind, production etc. as values! -->
         <div class="col-md">
@@ -105,21 +120,36 @@
             <li>Recommended production: <span id="recProduction"></span> Wh</li>
           </ul>
         </div>
+
         <div class="col-md">
-          <p>Prosumers:</p>
+          <div class="row">
+            <p>Prosumers:</p>
+            <i data-feather="help-circle" data-toggle="tooltip" data-placement="right"
+              title="Shows prosuming households connected to the market. Individual households can be blocked from selling to the market for x seconds."></i>
+          </div>
           <input type=range id="timeBlock" min="10" max="100" />
           <p>seconds: <span id="timeBlockValue">10 - 100</span> seconds</p>
           <p id="blockInfo"></p>
           <ol id="users">
           </ol>
         </div>
+
         <div class="col-md">
-          <p>Blackout:</p>
+          <div class="row">
+            <p>Blackout:</p>
+            <i data-feather="help-circle" data-toggle="tooltip" data-placement="right"
+              title="Show the households currently experiencing blackouts."></i>
+          </div>
           <ol id="blackout">
           </ol>
         </div>
+
         <div class="col-md">
-          <p>Online:</p>
+          <div class="row">
+            <p>Online:</p>
+            <i data-feather="help-circle" data-toggle="tooltip" data-placement="right"
+              title="Shows the current online users."></i>
+          </div>
           <ol id="online">
           </ol>
         </div>
@@ -128,8 +158,8 @@
     </div>
 
     <div class="container" id="profile" style="display:none">
-    <h2>Profile</h2>
-    <div class="row">
+      <h2>Profile</h2>
+      <div class="row">
         <div class="col-md">
           <form id="update">
             <div class="form-group">
@@ -165,6 +195,9 @@
 
     </div>
   </div>
+  <script>
+    feather.replace()
+  </script>
   <%- include ('footer.ejs') %>
 </body>
 
