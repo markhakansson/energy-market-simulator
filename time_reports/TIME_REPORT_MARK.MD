@@ -31,3 +31,14 @@
 | 2019-12-22 | 4 | Get the simulator to only use database values, and catch errors in simulator |
 | 2019-12-29 | 5 | Update API schemas to support new auth methods. Start working on getting the market simulator to support manager interaction |
 | 2020-01-01 | 5 | Work on simulator generating recommendations for the manager. Generation of production complete. |
+| 2020-01-02 | 4 | Clean up code in simulator. Market sim uses demand to set price. |
+| 2020-01-03 | 5 | Update market API, fix bugs where values did not save to DB. |
+| 2020-01-04 | 4 | Update market db model and sim to support manually set values. |
+| 2020-01-05 | 3 | Fix bugs where simulators would not save correct values to DB |
+| 2020-01-06 | 8 | Finish simulator so it supports all basic functionalities. |
+| 2020-01-07 | 6 | Update db models. Work on catching errors, find and fix bugs |
+| 2020-01-08 | 6 | Fix API to throw correct errors. Fix blackouts in prosumer sim |
+| 2020-01-09 | 6 | Work on settings up AWS. Add prettier things to front-end |
+| 2020-01-10 | 6 | Update login and signup with new design. Update everything to use bootstrap |
+| 2020-01-11 | 2 | Fix bugs. Work on frontend to make it prettier. |
+| 2020-01-12 | 2 | Fix bugs. |
