@@ -2,6 +2,8 @@ var graphqUrl = window.location.origin + '/graphql';
 var restOnline = window.location.origin + '/online';
 
 $(document).ready(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+    
     $('#setProductionValue').click(function () {
         const value = $('#productionValueText').val();
         if (isNaN(value) || value < 0) {
