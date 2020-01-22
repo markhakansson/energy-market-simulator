@@ -83,10 +83,32 @@ const ProsumerQueries = {
     // Returns name, timestamp and blackout for each prosumer. Timestamp to assure query is correct. _id is must exist.
     isBlocked: {
         type: new GraphQLList(ProsumerType),
-        resolve (parent, args, req) {
+        async resolve (parent, args, req) {
             if (!req.session.user) throw new Error(errorMsg.notAuthenticated);
             if (!req.session.manager) throw new Error(errorMsg.notAuthorized);
-            return Prosumer.aggregate([{ $sort: { name: 1, timestamp: 1 } }, { $group: { _id: '$name', name: { $last: '$name' }, timestamp: { $last: '$timestamp' }, blackout: { $last: '$blackout' } } }]);
+
+            let prosumerNames = [];
+            const prosumers = [];
+
+            await Prosumer.distinct('name')
+                .then(res => {
+                    prosumerNames = res;
+                })
+                .catch(err => {
+                    Logger.error(err);
+                });
+
+            for (const name of prosumerNames) {
+                const prosumer = await Prosumer.findOne({ name: name }).sort({ timestamp: -1 });
+
+                if (prosumer.blackout === true) {
+                    prosumers.push(prosumer);
+                }
+            }
+
+            return prosumers;
+
+            // return Prosumer.aggregate([{ $sort: { name: 1, timestamp: 1 } }, { $group: { _id: '$name', name: { $last: '$name' }, timestamp: { $last: '$timestamp' }, blackout: { $last: '$blackout' } } }]);
         }
     }
 };
