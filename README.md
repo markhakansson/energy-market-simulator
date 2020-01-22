@@ -35,7 +35,19 @@ This will start the database, API and server.
 
 
 ### Usage systemd
-To start the app as a service on an OS that uses systemd, add the required information to the template **m7011e.service**, you might need to change the path where npm and the project is located. After that place the file at
+To start the app as a service on an OS that uses systemd, add the required information to the template **m7011e.service**, you might need to change the path where npm and the project is located. 
+```
+# in m7011e.service
+...
+Environment=DB_HOST=<path to mongodb>
+Enivronment=DB_USER=<user>
+Environment=DB_PASS=<pass>
+Environment=SESSION_SECRET=<session secret>
+Environtment=NODE_ENV=production
+...
+
+```
+After that place the file at
 ```
 /etc/systemd/system/m7011e.service
 ```
@@ -43,6 +55,24 @@ Then reload the daemon and start the service
 ```
 sudo systemctl daemon-reload
 sudo systemctl start m7011e.service
+```
+## Known issues
+If too much data is collected during a long period of time, queries will be quite slow. This is due to the collections in the database not being indexed. When querying for certain documents MongoDB will need to check all documents in the collection. To fix this add the following indexes in mongo:
+```
+$ mongo
+
+---------
+
+use <db name>
+
+db.prosumers.createIndex({ name: 1 })
+db.prosumers.createIndex({ timestamp: -1 })
+
+db.markets.createIndex({ name: 1 })
+db.markets.createIndex({ timestamp: -1 })
+
+db.weathers.createIndex({ name: 1 })
+db.weathers.createIndex({ timestamp: -1 })
 ```
 
 ## Authors
