@@ -1,4 +1,4 @@
-# m7011e-dynamic-web-systems
+# energy-market-simulator
 A web system to simulate and control a small scale electricity market. Has front-ends for prosumers and market managers. Created for the course M7011E, Design of Dynamic Web Systems at Lulea University of Technology.
 
 ## Requirements
